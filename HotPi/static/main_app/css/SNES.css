@@ -1,0 +1,82 @@
+body{
+    font-family: 'Raleway', sans-serif;
+    background-color: rgb(47, 45, 56);
+    color: whitesmoke;
+}
+h1{
+    background-color: rgb(11, 9, 29);
+    padding: 10px;
+}
+h3{
+    margin-left: 15px;
+    margin-top: 40px;
+}
+p{
+    margin-left: 15px;
+}
+a{
+    color: rgb(113, 165, 113);
+}
+li{
+    margin-top: 10px;
+}
+.container{
+    margin: 15px;
+}
+.codeblock{
+    margin-left: 25px;
+    margin-right: 20%;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: lightgray;
+    border-radius: 5px;
+    color: black;
+    padding: 5px;
+}
+.newsection{
+    margin-top: 70px;
+}
+.mattthoughts{
+    margin-left: 40px;
+    margin-right: 40%;
+    background-color: lightslategray;
+    font-style: italic;
+    color: black;
+    padding: 5px;
+    border-radius: 10px;
+}
+.issueheading{
+    margin-top: 100px;
+    background-color: rgb(78, 21, 21);
+}
+.codecomment{
+    font-style: italic;
+    color: rgb(49, 110, 49);
+}
+table{
+    margin: auto;
+}
+thead, th{
+    padding: 10px
+}
+.funbutton{
+    margin-left: 40%;
+    margin-top: 25px;
+}
+.sneaky{
+    color: rgb(19, 5, 83);
+}
+.commentheading{
+    background-color: rgb(50, 50, 71);
+}
+.commentblock{
+    background-color: rgb(143, 160, 160);
+    font-style: italic;
+}
+.gamewindow{
+    justify-content: center;
+}
+#bottom{
+    margin-top: 100px;
+    padding: 10px;
+    background-color: rgb(11, 9, 29);
+}

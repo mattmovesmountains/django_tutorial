@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+{% extends "main_app_templates/base.html" %}
+
+    {% block body_block %}
+    <h1>Django Notes</h1>
+
+    <div class="container" id="top">
+        <h3>What's here</h3>
+        <ul>
+            <li><a href="#venv">Virtual Environments</a></li>
+            <li><a href="#newproj">Start a New Django Project</a></li>
+            <li><a href="#whatsitmean">What's It All Mean? (explaining the standard project files)</a></li>
+            <li><a href="#terminology">Understanding the terminology</a></li>
+            <li><a href="#createapp">Create an App</a></li>
+            <li><a href="#mapping1">Creating a View and Mapping to a URL</a></li>
+            <li><a href="#mapping2">Other Ways to Map URLs</a></li>
+            <li><a href="#templates">Templates</a></li>
+            <li><a href="#runthrough">Run-through (Concise and Helpful)</a></li>
+            <li><a href="#staticfiles">Static Files</a></li>
+            <li><a href="https://www.etsy.com/listing/951961369/auto-mouse-mover?ga_order=most_relevant&ga_search_type=all&ga_view_type=gallery&ga_search_query=electronics&ref=sr_gallery-1-36&from_market_listing_grid_organic=1&frs=1">Buy a Mouse Mover!</a></li>
+            <li><a href="#issues">Issues</a></li>
+            <ul>
+                <li><a href="#issue1">Issue 1 - Can't import Django</a></li>
+                <li><a href="#issue2">Issue 2 - 13 unapplied migrations...</a></li>
+                <li><a href="#issue3">Issue 3 - Django imports not working in VS Code</a></li>
+                <li><a href="#issue4">Issue 4 - I can't stop the server!</a></li>
+            </ul>
+        </ul>
+        <p class="mattthoughts">
+            This stuff might look like it's not written for you. It's not. <br>
+            <br>
+            It might be helpful though if you're learning Django. I made this while taking a 
+            Udemy course "Python and Django Web Development Bootcamp". This page follows the 
+            first few lectures of the Django section of the course, breaking down each of 
+            the topics, and then there's an "ISSUES" section at the bottom, with the main 
+            issues I encountered while going through the lectures.
+        </p>
+        <p style="border: 3px darkslategray solid; margin-right: 30%;">If you're looking for the course I'm following, it's here: <br>
+            <a href="https://www.udemy.com/course/python-and-django-full-stack-web-developer-bootcamp/">Python and Django Full Stack Web Developer Bootcamp</a><br>
+            This isn't promoted or an affiliate link; it's just the course I'm using, and it's been extremely helpful. 
+            The Udemy courses always say they cost ~$100, but there are 'special' sales almost constantly. I got this 
+            course for between $10-$12. Though it honestly would've been worth it at $100; I learned more than I did 
+            in a lot of my college courses that cost several thousand. How do I make facepalm emojis in HTML?
+        </p>
+
+
+
+        <h2 class="newsection" id="venv">First... a virtual environment</h2>
+        <p>Create & activate your venv:</p>
+        <p class="codeblock">
+            python -m venv NameYourEnv <br>
+            source NameYourEnv/bin/activate
+        </p>
+        <p>Super helpful YouTube video regarding the purpose of virtual environments,
+            and how to set them up:
+        </p>
+        <iframe style="margin-left: 75px;" width="600" height="300" src="https://www.youtube.com/embed/brJR5Qjp4SM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+        <h2 class="newsection" id="newproj">Start a New Django Project</h2>
+        <ul>
+            <li>Go to your text editor (VS Code for me);</li>
+            <li>Navigate to the folder location you want to use;</li>
+            <li>Type this command:</li>
+            <p class="codeblock">django-admin startproject name_your_project</p>
+        </ul>
+
+        <p>It'll initialize by creating the following:</p>
+        <ul>
+            <li>Folder with the name "name_your_project";</li>
+            <li>That folder has a subfolder with the same name;</li>
+            <li>The subfolder will have the following:</li>
+                <ul>
+                    <li>__init__.py</li>
+                    <li>settings.py</li>
+                    <li>urls.py</li>
+                    <li>wsgi.py</li>
+                </ul>
+            <li>The main folder will have:</li>
+                <ul><li>manage.py</li></ul>
+        </ul>
+
+        <a href="#top">Back to the Top</a>
+
+
+        
+
+        <h2 class="newsection" id="whatsitmean">What's It All Mean???</h2>
+
+        <h3>__init__.py</h3>
+        <p>Blank python script</p>
+        <p>Lets python know that this directory can be treated as a package</p>
+
+        <h3>settings.py</h3>
+        <p>This is where we store the project settings</p>
+
+        <h3>urls.py</h3>
+        <p>Stores URL 'patterns' for your project;</p>
+        <p>Basically, the different pages for your project;</p>
+        <p>*Uses a lot of regular expressions*</p>
+
+        <h3>wsgi.py</h3>
+        <p>"Web Server Gateway Interface" - when you want to deploy the app</p>
+
+        <h3>manage.py</h3>
+        <p>We'll use it a lot while building our apps</p>
+
+        <a href="#top">Back to the Top</a>
+
+
+
+        <h2 class="newsection" id="terminology">Now What?</h2>
+
+        <h3>Understanding the terminology:</h3>
+        <p><em>Django Project</em></p>
+        <p>A collection of apps and configurations that make up the full web app.</p>
+        
+        <p><em>Django Application</em></p>
+        <p>Performs particular functionality for the entire web app. </p>
+        <p>ex.)</p>
+        <ul>
+            <li>Registration app</li>
+            <li>Polling app</li>
+            <li>Comments app</li>
+        </ul>
+        <p>You can also reuse your Django apps in other Django projects...</p>
+        <p>AND... you can use other people's Django apps in your projects.</p>
+
+        <h2 class="newsection" id="createapp">Create An App</h2>
+        <p>Make sure you're in the main project folder; in my example, "matt_first_project"</p>
+        <p>In the command line, once in the directory above:</p>
+        <p class="codeblock">python3 manage.py startapp some_new_app_name</p>
+        <p>Alternatively, you can create an app with this command:</p>
+        <p class="codeblock">django-admin startapp some_new_app_name</p>
+        <p class="mattthoughts">
+            Not sure if there's a difference between these two methods; I just happened to 
+            notice that he did the first one when explaining it, and then in a later lecture 
+            he did it the second way. I looked it up, and both methods work.
+        </p>
+
+        <p>This should create a folder called "some_new_app_name" just under the main directory "matt_first_project".</p>
+        <p>That new folder has a bunch of stuff in it:</p>
+        <ul>
+            <li>__init__.py</li>
+                <p>Same as the main folder, this is a blank file to let Python know that this directory can be used as a package.</p>
+            <li>admin.py</li>
+                <p>I don't understand this yet, but I'm writing it optimistically:</p>
+                <p>You can register your models here, which Django will then use its admin interface.</p>
+            <li>apps.py</li>
+                <p>This is where you can place application-specific configurations.</p>
+            <li>models.py</li>
+                <p>This is where you store the application's data models.</p>
+            <li>tests.py</li>
+                <p>Store functions to test out your application's code.</p>
+            <li>views.py</li>
+                <p>This is where you have functions that handle requests and return responses.</p>
+            <li>Migrations Folder</li>
+                <p>Directory that stores database-specific information as it relates to the models.</p>
+        </ul>
+        <p>*models.py and views.py are the two main files you'll use</p>
+
+        <a href="#top">Back to the Top</a>
+
+
+
+        <h2 class="newsection" id="mapping1">Creating a View and Mapping to a URL</h2>
+        
+        <h3>In views.py</h3>
+        <p>Add this import:</p>
+        <p class="codeblock">from django.http import HttpResponse</p>
+        <p>Add this function:</p>
+        <!-- Note to self: -->
+        <!-- "&emsp;" is a special character that gives you 4 spaces and can be used as a leading tab -->
+        <p class="codeblock">
+            def index(response): <br>&emsp; return HttpResponse('some string which can include HTML code')
+        </p>
+
+        <h3>In urls.py</h3>
+        <p>Add this import:</p>
+        <p class="codeblock">from some_new_app_name import views</p>
+        <p>Add this URL pattern, even though you don't know what it means yet:</p>
+        <p class="codeblock">url('^$', views.index, name='index')</p>
+        <p>In settings.py, add this to your list of INSTALLED APPS:</p>
+        <p class="codeblock">'some_new_app_name'</p>
+
+        <h2 class="newsection" id="mapping2">Other Ways to Map URLs</h2>
+        <p>We just did mapping to URLs from the views.py file; now we'll be using the <strong>include()</strong> function from django.conf.urls...</p>
+        <p><strong>But wait!</strong>..It was at this time that I had django import issues</p>
+        <p>
+            There's an Issues section; check out Issues 1 and 3
+            <a href="#issues">(go to Issues section)</a>
+        </p>
+        <h3>Issues solved; back to the how-to:</h3>
+        <p>Add this import to the MAIN urls.py file:</p>
+        <p class="codeblock">from django.conf.urls import include</p>
+        <p>Now add this urlpattern to the MAIN urls.py file:</p>
+        <p class="codeblock">url(r'first_app/', include('first_app.urls'))</p>
+        <p class="mattthoughts"> What's this doing? <br> It's saying that if 'first_app' is typed
+            by the user at the end of the URL, it is now going to 'include' a different url file
+            that we're about to make...
+        </p>
+        <p class="mattthoughts">But first, see the <strong>r'first_app'</strong>  above? With that line, you're basically defining
+            the extension that will be used on your website to access whatever page you then
+            specify. So in this case, it's called 'first_app', which is good practice because
+            it matches our 'first_app'. But in reality, you could call it 'turtle_farts', and
+            nothing else would change other than the user would access the page by typing 
+            yourwebsite.com/turtle_farts
+        </p>
+        <p>As mentioned a moment ago, we're going to make a separate 'urls.py' file
+            INSIDE the 'some_new_app_name' directory. That way, the app can behave in 
+            generally the same way as the overall site, but with its own unique urls.py direction.
+        </p>
+        <p>In the new urls.py file, import these:</p>
+        <p class="codeblock">
+            from django.conf.urls import url <br>
+            from some_new_app_name import views
+        </p>
+        <p>In the new urls.py file, add urlpatterns. For simplicity (and I say that kinda
+            jokingly, since I barely understand this 'simple' statement at the moment), we'll
+            use this example:
+        </p>
+        <p class="codeblock">urlpatterns = [ <br>
+            &emsp; url(r'^$', views.index, name='index'), <br>
+            ]        
+        </p>
+
+        <a href="#top">Back to the Top</a>
+
+
+
+        <h2 class="newsection" id="templates">Templates</h2>
+        <p>The video intro to this was overwhelming, and there's definitely more packed into this
+            than in prior lectures. This will be something to re-watch as I progress.
+        </p>
+        <p>First concept we discuss: using the <strong>os import</strong>, and its various implementations. 
+            For starters, we look at its default usage in <strong>settings.py</strong>, noting
+            that, by default, os is imported by Django into your settings.py file:
+        </p>
+        <p class="codeblock">BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))</p>
+        <p class="mattthoughts">What on earth is this? <br>
+            BASE_DIR is a variable which, not surprisingly, is the base directory for 
+            your project. It'll be something you can work with and add to, so that you
+            can conveniently reference and access other project files. <br>
+            Again, this line is in settings.py by default.
+        </p>
+        <p>Notice that within the line of code above, we have the following:</p>
+        <p class="codeblock">os.path.abspath(__file__)</p>
+        <p><strong>__file__ </strong>returns whatever file you're in. In this case, it's settings.py.</p>
+        <p><strong>os.path.abspath() </strong>returns the ENTIRE path to whatever is specified in parentheses.</p>
+        <p>Similar to the <strong>BASE_DIR </strong> we saw above, we're going to create 
+            a path that maps to our "templates" folder (which we're about to create). We'll
+            accomplish this using the <strong>join </strong>function. First, the aforementioned
+            "templates" folder. 
+        </p>
+        <p class="mattthoughts">Make sure your current working directory is the main project folder "name_your_project". 
+            In that folder, create a subfolder called "templates". And THEN, the best practice
+            is to create another subfolder with the same name as your app, under templates. So 
+            let's say we had a new app called "new_app", then you'd make your templates folder,
+            and make a "new_app" folder under templates. Got it? Good.
+        </p>
+        <p>
+            Now that we have our templates folder, we'll create our path to it in the settings.py file. 
+            We'll do that by joining the base directory with the word "templates". The reason we're 
+            using the join function rather than concatenating strings is that the join function will 
+            work across multiple operating systems, automatically using the correct file path format.
+        </p>
+        <p class="codeblock">TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")</p>
+        <p>You've defined your template directory, so now let's set up the access to it. 
+            We'll scroll further down in settings.py, to where there's a list object called 
+            TEMPLATES with a dictionary nested inside. In the dictionary, there's an 
+            item/key called DIRS, whose value is an empty list. We'll add TEMPLATE_DIR 
+            to that list. <br>
+            You've now set up access to the templates directory.
+        </p>
+        <p><strong>Make an html file:</strong><br>
+            Under templates > new_app, create an html file matching the name of the app. 
+            For simplicity, the only thing we'll add to the body of the html is this:
+        </p>
+        <p class="codeblock">{{ insert_stuff }}</p>
+        <p class="mattthoughts">The double bracket notation above is the syntax that allows 
+            us to pull something from our python code into an HTML file. Then the text 
+            in those brackets needs to match the key of the dictionary we're about to make <br>
+            This is important.
+        </p>
+        <p>Moving over to <strong>views.py</strong>, we'll replace our "index" function 
+            with something new. Currently the index function returns an HttpResponse. 
+            Now we'll replace 'response' with 'request' as the argument to pass in, and 
+            we'll use these two lines of code instead:
+        </p>
+        <p class="codeblock">
+            some_dictionary = {'insert_stuff' : 'This is the text that will get inserted into the html!'} <br><br>
+            return render(request, 'new_app/new_app.html', context=some_dictionary)
+        </p>
+        <p class="mattthoughts">
+            Notice 'insert_stuff' matches what we just put in the html. Then the 
+            return statement is different - containing 'request' instead of 'response'. 
+            The 'new_app/new_app.html' tells it which file: new_app.html, which is in the 
+            new_app subfolder under "templates"; and then 'context' is how we point 
+            specifically to the dictionary containing what we're trying to insert.
+        </p>
+
+        <a href="#top">Back to the Top</a>
+
+
+        <h2 class="newsection" id="runthrough">Run-through</h2>
+        <p>This stuff is still overwhelming; let's make a concise run-through.</p>
+        <p>Make sure you've set up your project, first of all:</p>
+        <p class="codeblock">django-admin startproject my_project</p>
+        <ol>
+            <li>Create an app:</li>
+                <p class="codeblock">python3 manage.py startapp your_app</p>
+            <li>Make a <strong>templates </strong>directory under your main project folder.</li>
+                <ul><li>Make a folder named "your_app" under "templates"</li></ul>
+            <li>In settings:</li>
+                <ul>
+                    <li>Make <strong>TEMPLATE_DIR </strong> <a href="#templates">(see previous section)</a></li>
+                    <li>Add <strong>TEMPLATE_DIR </strong>to the templates list, under <strong>DIRS.</strong></li>
+                </ul>
+                <p>*Steps 2 & 3 are already done if this isn't your first app for the project.</p>
+            <li>Create a separate urls.py in your app directory. Import these:</li>
+                <p class="codeblock">
+                    from django.conf.urls import url <br>
+                    from your_app import views
+                </p>
+                <p>Then create a urlpatterns list and add:</p>
+                <p class="codeblock">url(r'^$', views.your_app, name='your_app')</p>
+            <li>Go to your main urls.py and connect it to the one you just made:</li>
+                <p class="codeblock">
+                    from django.conf.urls import include <br>
+                    <br>
+                    # For each new app, you need to add this to your main urls.py: <br>
+                    from your_app import views <br>
+                    <br>
+                    # Add a new regex to the existing urlpatterns list: <br>
+                    url(r'^your_app', include(your_app.urls))
+                </p>
+            <li>Create the view by modifying views.py in your_app:</li>
+                <ul>
+                    <li>You always need an index() function, it seems (*see confused note below)</li>
+                    <li>Make a new function called "your_app" which contains the following:</li>
+                        <p class="codeblock">
+                            some_dictionary = {'insert_stuff':'Text that gets inserted'} <br>
+                            return render(request, 'your_app/your_app.html', context=some_dictionary
+                        </p>
+                </ul>
+            <li>Create the html file (under "templates/your_app") that gets called in views.py.</li>
+                <p>In the body you'll add a <strong>template tag</strong>: double brackets 
+                    containing your dictionary key: <strong>insert_stuff</strong></p>
+        </ol>
+        <p class="mattthoughts"><strong>Confused Note:</strong><br>
+            It seems to me that each app you make needs to have an index() function
+            in its views.py file. What totally throws me off is... which index()
+            actually gets called when you go to the home page? <br>
+            <br>
+            You see, as best I can tell, the index() function is what gets displayed
+            on the main page (i.e. no '/extension' is typed). But if two different
+            apps have two different index() functions governing the display of the
+            main page, which one gets used, and why?
+        </p>
+
+        <a href="#top">Back to the Top</a>
+
+
+
+        <h2 class="newsection" id="staticfiles">Static Files</h2>
+        <p><strong>Building on what we learned about templates</strong></p>
+        <p>
+            Figuring out templates was a bit much, but I think I got it, and now this 
+            will build on that concept. <br>
+            <strong>Static Files</strong> can be images, css, javascript, etc., and 
+            they're files that we keep in our Django project folders, so they can 
+            be called and inserted into our html.
+        </p>
+        <p>In the templates lecture, we saw how to insert some text using:</p>
+        <p class="codeblock">{{ insert_stuff }}</p>
+        <p>Now we'll use this similar notation to insert static files:</p>
+        <p class="codeblock">
+            # This will go at the top of your HTML, right under the !DOCTYPE tag <br>
+            {% load staticfiles %} <br>
+            <br>
+            # This will go in the body of the HTML to insert whatever your file is <br>
+            # Specifically, it'll go in the 'src=' of an <strong>img tag</strong> - ex.) <br>
+            {% static 'filepath/imagename.jpg' %}
+        </p>
+        <p><strong>The Process:</strong></p>
+        <ul>
+            <li>Make a <strong>"static" </strong>folder at the same level as "templates" was.</li>
+            <li>In that folder, make another called <strong>"images" (at least for this example).</strong></li>
+                <p>Alternatively, you could put your each app name under static, and then images under that.</p>
+            <li>Add the two code lines mentioned above to our html file.</li>
+            <li>Modify <strong>settings.py </strong> to access your new static folder:</li>
+                <p class="codeblock">
+                    <em># Add this under TEMPLATE_DIR</em>  <br>
+                    STATIC_DIR = os.path.join(BASE_DIR, "static") <br>
+                    <br>
+                    <em># Scroll down to "Static files" section of settings.py</em>  <br>
+                    <em># Depending on your version of Django, this line is probably already there:</em>  <br>
+                    STATIC_URL = '/static/'  <em># Add it if it's not already there</em> <br>
+                    <br>
+                    <em># Add this line below STATIC_URL to point to your directory variable:</em> <br>
+                    STATICFILES_DIRS = [ <br> 
+                    &emsp; STATIC_DIR, <br>
+                    ]
+                </p>
+            <li>Add your images to your 'static/images' or 'static/your_app/images' folder.</li>
+        </ul>
+        <p>We can follow a similar process for something like a CSS file:</p>
+        <ul>
+            <li>Add a <strong>"css" </strong>folder under "templates" (same level as the "images" folder).</li>
+            <li>Add your css file to the new folder.</li>
+            <li>The code to implement is almost the same as for an image, except it goes in a link tag in the "head" of the html:</li>
+                <p class="codeblock">link rel="stylesheet" href="{% static 'css/your_stylesheet.css' %}"</p>
+        </ul>
+
+        <a href="#top">Back to the Top</a>
+
+
+
+
+
+        <!-- The "ISSUES" section of the page -->
+        <h2 class="newsection" id="issues">ISSUES (How to Train Your Django)</h2>
+
+        <h3 class="issueheading" id="issue1">Issue 1 - I can't import Django?!</h3>
+        <p>I'm in my virtual environment, like I'm supposed to be. I just made a django project
+            with the course, and everything worked. Now I figured I'll make my own using what I learned.
+            What could go wrong? So much.
+        </p>
+        <p>I ran the command to start the server:</p>
+        <p class="codeblock">python manage.py runserver</p>
+
+        <p>I got an error when I tried that command. It tried to tell me it couldn't import
+            django because it doesn't exist. <br>
+            The hell it doesn't.
+        </p>
+        <p>I tried the following installs while in my venv:</p>
+        <p class="codeblock">pip3 install Django==1.10.5 <br>#So I had the same version as the course
+            <br> <br> pip install Django==1.10.5 <br>#just in case the issue was related to python versions
+        </p>
+        <p>Went into a stackoverflow rabbit hole.</p>
+
+        <h3>Solution to Issue 1!</h3>
+        <p>I simply ran the command using 'python3' instead of python.</p>
+        <p class="codeblock">python3 manage.py runserver</p>
+        <p class="mattthoughts">Now this is odd because I have an alias that maps to
+            python3 when I type 'python', but what do I know? You know what it might be?
+            Maybe aliases don't work in virtual environments? I don't know, but this worked.
+        </p>
+
+        <h3 class="issueheading" id="issue2">Issue 2 - "13 unapplied migrations..."</h3>
+        <p>Once I execute the 'runserver' command, I get this warning:</p>
+        <p class="codeblock">You have 13 unapplied migration(s). Your project may not work properly until you apply the migration...yadayda</p>
+
+        <h3>Solution to Issue 2 (kinda):</h3>
+        <p>Course instructor says this is a standard warning that we'll address later.
+            Something to do with moving databases. I just didn't like the red font, 
+            but he says it's ok. Fine with me.
+        </p>
+
+        <h3 class="issueheading" id="issue3">Issue 3 - Django Imports Not Working After Opening New/Different Folder in VS Code</h3>
+        <p>Backdrop: <br>
+            I wanted to have a clean workspace, so I opened a different folder in VS Code.
+            That way I'm only looking at the relevant project files.    
+        </p>
+        <p>
+            My virtual environment was deactivated, so I had to reactivate that. <br>
+            Note: If your venv doesn't reactivate, check your working directory to make sure
+            it's set to the directory that the venv was created in, then you can switch
+            directories once activated.
+        </p>
+        <p>
+            So my urls.py file had 3 errors related to django imports. A stackoverflow
+            search came up with this being a python path issue.
+        </p>
+        
+        <h3>Solution to Issue 3!</h3>
+        <p>
+            The issue is that Django was installed in a virtual environment, and the associated
+            python path is somehow also in the virtual environment path. So first activate your venv, 
+            then type "which python" to get the path associated with the venv.
+        </p>
+        <p>
+            Copy that path; then click the bottom left of your VS Code window, where it shows
+            the version of python you're using. It'll pop up a window near the top of the screen
+            looking for your python path. Choose 'enter path' or similar option, then paste in 
+            the one you just copied.
+        </p>
+        <p>Bingo bango, you imported Django.</p>
+
+
+        <h3 class="issueheading" id="issue4">I can't stop the server!</h3>
+        <p>
+            We now know how to use <strong>runserver</strong> to start the server, but I ran into an 
+            issue where I already had the server running, and then for whatever reason, my terminal 
+            reset so the server status wasn't being displayed on the screen anymore. When that happens, 
+            you can't really hit CTRL+C to stop the server. What do you do?
+        </p>
+        
+        <h3>Solution to Issue 4! *on Unix/Linux systems</h3>
+        <p>
+            If you're on Windows, you'll need to find the equivalent solution, but basically 
+            you're looking for a stop/kill process command. I found this solution for Linux:
+        </p>
+        <p class="codeblock">ps auxw | grep runserver</p>
+        <p>From what I can tell, that should return a list of processes containing 'runserver'. 
+            In my case, there were a few of them. The second column contains a process ID of sorts, 
+            and you'll need to figure out which one corresponds to your active server so you can stop it. 
+            Here's what my results looked like (shortening file path for ease of viewing):
+        </p>
+        <p class="codeblock">
+            pi        4887  5.7  0.2  50656 23920 pts/1    Sl+  09:25   0:53 /shortened_path/python3 manage.py runserver <br>
+            pi        8637  0.0  0.0   7480   552 pts/3    S+   09:41   0:00 grep --color=auto runserver <br>
+            pi       27191  0.0  0.2  30404 21180 pts/1    S+   08:44   0:00 python3 manage.py runserver
+        </p>
+        <p>Did some trial and error with the following command and process ID's, and this was the ID that 
+            stopped the server:
+        </p>
+        <p class="codeblock">kill 4887</p>
+        <p>And here's the <a href="https://stackoverflow.com/questions/27066366/django-development-server-how-to-stop-it-when-it-run-in-background">
+            stackoverflow link</a> that further detailed the answer. Do a similar search to find the Windows version. 
+            Mac should be similar since it's Unix-based.
+        </p>
+        <p><strong>Bonus (untested) solution:</strong><br>
+            I saw this shorter solution after trying the one above. I didn't try it, but it's one line of 
+            code that supposedly accomplishes the same thing.
+        </p>
+        <p class="codeblock">pkill -f runserver</p>
+        <p>
+            A user commented below this solution, cautioning against using it when multiple servers are running, 
+            as this will... 
+        </p>
+        <p>
+            <img src="https://getmetal.club/uploads/posts/2016-04/1460744972_front.jpg" 
+            alt="...There was supposed to be a 'Kill em All' album cover. It was clever."
+            width=250 height=250>
+        </p>
+
+
+        <a href="#top">Back to the Top</a>
+
+
+    </div> <!-- end of container -->
+    <div id="bottom"></div>
+    
+    {% endblock %}

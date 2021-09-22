@@ -1,0 +1,22 @@
+#canvas1{
+    border: 5px solid black;
+    position: absolute;
+    /* These two are where the point of origin will be... */
+    top: 50%;
+    left: 50%;
+    /* But then this one shifts what you draw so that it's actually centered */
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+}
+.controls{
+    position: absolute;
+    z-index: 10; /*don't know why*/
+    top: 50px;
+    left: 50%;
+    transform: translate(-50%);
+}
+/* Notice how we access option from the parent element */
+.controls, select, option{
+    font-size: 25px;
+}

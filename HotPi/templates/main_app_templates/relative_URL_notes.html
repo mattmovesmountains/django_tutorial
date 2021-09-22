@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+{% extends "main_app_templates/base.html" %}
+
+
+    {% block body_block %}
+    <h1>Relative URL's & Template Inheritance</h1>
+    <div id="top">
+
+        <h3>What's here:</h3>
+        <ul>
+            <li><a href="#intro">Overview of Relative URL's and Templates</a></li>
+            <li><a href="#templates">Template Inheritance</a></li>
+            <li><a href="#relative">Relative URL's</a></li>
+            <li><a href="#runthrough">Run-Through</a></li>
+            <li><a href="#templatefilters">Template Filters</a></li>
+            <li><a href="#issues">Issues</a></li>
+        </ul>
+        <br><br>
+        <p class="mattthoughts">
+            This stuff might look like it's not written for you. It's not. <br>
+            <br>
+            It might be helpful though if you're learning Django. I made this while taking a 
+            Udemy course "Python and Django Web Development Bootcamp". This page will cover 
+            the <strong>Relative URL's</strong> lectures in that course. </p>
+        
+
+        <h2 class="newsection" id="intro">Overview of Relative URL's and Templates</h2>
+        <p>
+            One particularly useful feature in Django is the ability to 'inherit' an html file, so that 
+            you can create a bunch of web pages with minimal code, having the same look and feel, 
+            as they'll inherit their basic structure from a main page (<strong>base.html</strong>). All you'll need to do is 
+            update the body of the page, instead of having to keep copying CSS, JavaScript, navbars, etc.
+        </p>
+        <p>
+            In addition to template inheritance, this section also discussed the proper way 
+            to set up relative URL's to other pages within your site. That way you can avoid 
+            hard-coded links, while successfully pointing to your many similar-looking web pages.
+        </p>
+        <p>
+            <img width="250" src="https://media1.tenor.com/images/837072ca19e3c5cebea76e2693f3100d/tenor.gif?itemid=11796793" alt="Spider-man was here">
+        </p>
+
+
+        <h2 class="newsection" id="templates">Template Inheritance</h2>
+        <p>
+            You can save a lot of time when creating multiple pages for website, if you don't 
+            have to copy or re-enter all the basic style and structure information for each page. 
+            Django allows us to create a base.html file that we'll use as a template for all 
+            other pages on our site. The base.html file will have your CSS, JavaScript, headers and 
+            footers, if you have those, and basically anything that you want to look the same 
+            on each page.
+        </p>
+        <p>
+            This is all done, as alluded to above, by creating the <strong>base.html</strong> file 
+            in the appropriate templates folder, and then using a special kind of template tagging 
+            wherever you want each page to have its own custom content. For example - and it's 
+            probably the most common use example - let's put template tagging in the body of the 
+            page. In other words, headers and footers will be the same on all pages, but we can 
+            change the body from page to page.
+        </p>
+        <p class="codeblock">
+            body <br>
+            &emsp; <span class="codecomment">Everything above will appear on each page</span><br>
+            &emsp; {% block body_block %<!-- -->} <br>
+            &emsp; {% endblock %<!-- -->} <br>
+            &emsp; <span class="codecomment">Everything below will appear on each page</span><br>
+            body
+        </p>
+        <p>
+            The template tagging format is about the same as in previous applications. The first word, 
+            <strong>block</strong> tells Django to start the block. The second word <strong>body_block</strong> 
+            is whatever name you give to the block - something to help you understand the purpose of the 
+            block; you'll have to refer to it in the other html files. Then the <strong>endblock</strong> 
+            is pretty self-explanatory.
+        </p>
+
+        <p>
+            Now when you go to the other project html files, all you'll really need to do is make 
+            reference to the base.html template, and then add your page-specific content in between 
+            the block tags:
+        </p>
+        <p class="codeblock">
+            <span class="codecomment"># Always need this line</span><br>
+            !DOCTYPE html <br>
+            <br>
+            <span class="codecomment"># This tells Django we're using a template</span><br>
+            {% extends "my_app_templates/base.html"} <br>
+            <br>
+            &emsp; {% block body_block %<!-- -->} <br>
+            &emsp; <span class="codecomment"># YOUR CUSTOM STUFF FOR THIS PAGE</span><br>
+            &emsp; {% endblock %<!-- -->} <br>
+        </p>
+
+
+
+        <h2 class="newsection" id="relative">Relative URL's</h2>
+        <p>
+            Now that we're talking about making all these nice pages that share the same overall look, 
+            how do we get from one to another?
+        </p>
+        <p>
+            Up until now the approach has utilized hard-coded paths to the various html files in our 
+            project(s). This isn't the best practice though because your project may move around to 
+            different hosting locations, and the absolute path won't work properly.
+        </p>
+        <p>
+            A <strong>Relative URL</strong> path will avoid this issue. A basic example of this would be 
+            an <strong>a-tag</strong> with an href having a hard-coded reference like this:
+        </p>
+        <p class="codeblock">
+            href="my_app/thankyou"
+        </p>
+        <p>
+            A dynamic substitute for this using Django would like this instead:
+        </p>
+        <p class="codeblock">
+            href="{% url 'thanku' %<!---->}"
+        </p>
+        <p>
+            ...where <strong>url</strong> tells Django we're dealing with a link, and <strong>thanku</strong> 
+            is the <strong>name</strong> that was given to the particular <strong>urlpattern</strong> in our 
+            <strong>urls.py</strong> file.
+        </p>
+        <p class="mattthoughts">
+            This is the first instance of the "name=" argument making sense to me. It helped that he named 
+            it <strong>"thanku"</strong> rather than <strong>thankyou</strong>, as the latter is the name 
+            of the html file, whereas the former is the "name=" that I mentioned above. Until this point, 
+            I was a bit confused about the name= thing, largely because it was always the same name as the 
+            html file or something in else in the project.
+        </p>
+        <p><strong>The more 'future-proof' method, according to the instructor:</strong><br>
+            At the time he recorded the course, he was in Django v1.something, and trying to future-proof 
+            to version 2.0 and beyond. At the time of my writing this tutorial, I think they're up to 3.0. 
+            My understanding is that this next method is going to work on any versions we have so far.
+        </p>
+        <p>
+            We're going to head to the <strong>urls.py</strong> file <strong>for our app<sup>(1)</sup> </strong>, and we'll create a new 
+            variable called <strong>app_name</strong>, which we will set equal to a string that is the same 
+            as our app name. <br>
+            Example, based on an app called "my_app":
+        </p>
+        <p class="codeblock">
+            app_name = "my_app"
+        </p>
+        <p class="mattthoughts">
+            <sup>(1)</sup> <strong>Use the correct urls.py</strong>: <br>
+            I just found out that it seems to matter which urls.py file you use for this. I tried 
+            setting all this up in the main urls.py and it didn't work. I got an error on my page containing 
+            the url template tag, saying "No Reverse Match .. my_app is not a registered namespace". <br>
+            <br>
+            When I changed the setup so that I was using the urls.py for my_app, everything worked. Perhaps 
+            there are other ways you could make this work in the main urls.py, but hey, why fight it? Learn 
+            to set up your main urls.py to point to the app's urls.py.
+        </p>
+        <p>
+            So with an "app_name" created, the left side of the colon in the statement below will make 
+            sense. This is the format of his 'future-proof' template linking method for relative urls:
+        </p>
+        <p class="codeblock">
+            a href="{% url 'my_app:thankyou' %<!---->}"
+        </p>
+        <p>
+            Now, which 'thankyou' is the right side of that colon referring to? He seems to have gone back 
+            to naming everything the same. In this case, <strong>thankyou</strong> or whatever is on the 
+            right side of your colon, will point Django to the urlpattern having the same 'name='.
+        </p>
+        <p><img width="200" src="https://media1.tenor.com/images/f2f55ddccabd0877c2f5b00de53a7000/tenor.gif?itemid=10727715" alt="Where's my gif? Wait, do you pronounce it gif or gif?"></p>
+        <a href="#top">Back to top of page</a>
+
+
+        <h2 class="newsection" id="runthrough">An Overview of the Instructor's Run-Through</h2>
+        <p>
+            In his example, he started a project from scratch. I've already made the tutorial for that 
+            setup, so I'll just add an overview of that here:
+        </p>
+        <ul>
+            <li>startproject</li>
+            <li>startapp</li>
+            <li>templates folder with my_app subfolder</li>
+            <li>Adjust the settings.py file</li>
+        </ul>
+        <p class="mattthoughts">
+            Here's a <a style="color: rebeccapurple;" href="{% url 'main_app:notes' %}">link</a> 
+            to my guide to setting up new Django Projects
+        </p>
+        <p>
+            His example uses both urls.py files. First we'll go through the views he sets up, and 
+            then we'll show urls.py files. He did a main page, an 'other' page, and a 'relative_url' page. 
+            The <strong>views.py</strong> file looked like this:
+        </p>
+        <p class="codeblock">
+            def index(request): <br>
+            &emsp; return render(request, 'my_app/index.html') <br>
+            <br>
+            def other(request): <br>
+            &emsp; return render(request, 'my_app/other.html') <br>
+            <br>
+            def relative(request): <br>
+            &emsp; return render(request, 'my_app/relative_url')
+        </p>
+        <p>
+            Now we'll work on the main <strong>urls.py</strong> file. Be sure to import <strong>views</strong> 
+            from your app (<a href="#issue1">link to related import issue</a>). Also make sure to add 
+            <strong>include</strong> to your imports from <strong>django.conf.urls</strong>.
+        </p>
+        <p>
+            The urlpattern for the main or 'index' view will be pretty basic, and then he set it up 
+            so that if the user types the extension <strong>/my_app/</strong>, it'll point Django 
+            to the <strong>urls.py</strong> file for the app. Here's what that looks like in the main 
+            urls.py file:
+        </p>
+        <p class="codeblock">
+            urlpatterns = [ <br>
+            &emsp; <span class="codecomment"># See? Basic...</span> <br>
+            &emsp; url(r'^$', views.index, name='index') <br>
+            &emsp; <span class="codecomment"># This one's built-in...</span><br>
+            &emsp; url(r'^admin/', admin.site.urls) <br>
+            &emsp; <span class="codecomment"># Point to the app's urls.py if user types '/my_app' extension:</span><br>
+            &emsp; url(r'^my_app/', include('my_app.urls')) <br>
+            ]
+        </p>
+        <p>
+            <strong>Over to your app's urls.py file:</strong><br>
+            In the step above, we made it so that any url with the extension 'my_app' would 
+            point Django to the urls.py for <strong>my_app</strong>, which means we need to set that 
+            up now. First the imports:
+        </p>
+        <p class="codeblock">
+            from django.conf.urls import url <br>
+            from my_app import views
+        </p>
+        <p class="mattthoughts">
+            Again, I had an issue pertaining to imports from my_app. I hacked my way around it, 
+            which is covered in the <a style="color: rebeccapurple;" href="#issue1">issues section</a>, but I didn't really get to the heart 
+            of the matter. I was able to finish what I was working on without further setbacks.
+        </p>
+        <p>
+            We then define system variable <strong>app_name</strong>, as well as the <strong>urlpatterns</strong>:
+        </p>
+        <p class="codeblock">
+            app_name = 'my_app' <br>
+            <br>
+            urlpatterns = [ <br>
+            &emsp; url(r'^relative/$', views.relative, name='relative') <br>
+            &emsp; url(r'^other/$', views.other, name='other') <br>
+            ]
+        </p>
+        <p>
+            <strong>Incorporating this into your html:</strong><br>
+            In the last section, I covered the template tagging format we're going to use for 
+            relative url's. Let's implement that here; we'll take this example where let's the user is 
+            on your 'relative_url' page, and we want to give them a link to your 'other' page. We'll just 
+            create an a-tag, and the href will look like this:
+        </p>
+        <p class="codeblock">
+            href="{% url 'my_app:other' %<!---->}"
+        </p>
+        <p class="mattthoughts">
+            Worth discussing again: <br>
+            The <strong>my_app</strong> on the left side of the colon is pointing Django to that 
+            <strong>app_name</strong> variable we just defined. Then the <strong>other</strong> on the 
+            right side of the colon is pointing Django to the urlpattern whose 'name=' is 'other'.
+        </p>
+        <p>
+            If you wanted a relative url for the <strong>admin</strong> page (which you probably wouldn't 
+            but it does help reinforce understanding of this topic), here's what that template tag would 
+            look like:
+        </p>
+        <p class="codeblock">
+            href="{% url 'admin:index' %<!---->}"
+        </p>
+        <p>
+            Django already has the framework setup to interpret this without any additional coding 
+            on our part; i.e. we don't have to make another instance of 'my_app' because it already knows 
+            what <strong>admin</strong> means. Same with <strong>index</strong>. However, one issue 
+            you'll likely run into if you set up this relative url to the admin page, is that you'll 
+            get a migration error. That simply means you'll need to run the following command before 
+            your admin relative url works:
+        </p>
+        <p class="codeblock">python3 manage.py migrate</p>
+        <p>
+            Here's one you're much more likely to use: a relative url back to your home (index) page:
+        </p>
+        <p class="codeblock">
+            href="{% url 'index' %<!---->}"
+        </p>
+
+        <a href="top">Back to top of page</a>
+
+
+
+        <h2 class="newsection" id="templatefilters">Template Filters</h2>
+        <p>
+            We've gone over how to inherit templates and efficiently display the same information on 
+            multiple pages. This section will give us the ability to change the presentation of the items 
+            that are being inherited, i.e. lets us display the same thing differently on different pages.
+        </p>
+        <h3>Generic Format of Template Filter</h3>
+        <p class="codeblock">
+            {{ value|filter:"parameter" <!---->}<!---->}
+        </p>
+        <p class="mattthoughts">
+            "parameter" is something we'll define, but he notes that not all filters will take in parameters, 
+            and that many of these filters are based off of common built-in Python functions.
+        </p>
+        <p><a href="https://docs.djangoproject.com/en/1.10/ref/templates/builtins/#ref-templates-builtins-filters">Documentation with list of built-in filters</a></p>
+
+        <h3>Example</h3>
+        <p>
+            Here's a simple example of how this might be used, and in this example, we'll use a Python method <strong>.title()</strong> 
+            which, given a string of all lowercase letters, will return the string with the first letter of each word captitalized. Here 
+            is the example string:
+        </p>
+        <p class="codeblock">a string with all lowercase letters</p>
+        <p>
+            Now we'll pass that string through a Django filter based on the <strong>.title()</strong> method. Recall that the 
+            filter format is <strong>value</strong> followed by a pipe, followed by the filter and an optional parameter. We 
+            won't use the parameter on this one.
+        </p>
+        <p class="codeblock">
+            {{ django|title <!---->}<!---->}
+        </p>
+        <p>
+            Elsewhere in our code (in this example), there will be a dictionary object, which is the context for this filter:
+        </p>
+        <p class="codeblock">
+            { 'django': 'a string with all lowercase letters' <!---->}
+        </p>
+        <p>The output of this is:</p>
+        <p class="codeblock">
+            A String With All Lowercase Letters
+        </p>
+        <p class="mattthoughts">
+            Honestly, calling the variable 'django' was confusing. It's not a naming convention as I originally would've assumed. 
+            He just made a 'django' variable.
+        </p>
+
+        <h3>How to Implement BUILT-IN Filters in Your Django Project</h3>
+        <p>
+            First we go to <strong>views.py</strong> for whatever app we're using, and we'll add our context dictionary. He 
+            does this in function for the index view, and then adds the dictionary into the return statement:
+        </p>
+        <p class="codeblock">
+            def index(request)<br>
+            &emsp; <strong>context_dict = {'text': 'hello world', 'number':100}</strong> <br>
+            &emsp; return render(request, 'basic_app/index.html', <strong>context_dict</strong>)
+        </p>
+        <p>Then we make sure those are working by adding template tags to the body of <strong>index.html</strong>:</p>
+        <p class="codeblock">
+            {{ text <!---->}<!---->} <br>
+            {{ numbers <!---->}<!---->}
+        </p>
+        <p>
+            Without using any filtering yet, we can see that when you load the index page, the template tags successfully loaded 
+            'hello world!' and the number 100. Now we'll apply filters to both of these with simple modifications of the template tags:
+        </p>
+        <p class="codeblock">
+            {{ text|upper <!---->}<!---->} <br>
+            {{ numbers|add:"99" <!---->}<!---->}
+        </p>
+        <p>
+            So by adding a pipe and then <strong>upper</strong>, which is just the Python method <strong>.upper()</strong>, the resulting 
+            html will load "HELLO WORLD!". Similarly, using <strong>add</strong> after 'numbers' will call Python's <strong>.add()</strong> 
+            method, and then we'll go one step further to pass in parameters, since the .add() function requires them. It's already using 
+            'number' as the first parameter, and then passing the string <strong>'99'</strong> as the second. The resulting html will now 
+            show <strong>199</strong> instead of 100, having added the two integers.
+        </p>
+
+        <h3>How to Implement CUSTOM Filters in your Django Project</h3>
+        <p>
+            Adding custom filters, not surprisingly, requires that we create our functions. In order for this to work, it has to follow 
+            a convention, and we'll need to create a new folder called <strong>templatetags</strong>, which needs to be located directly 
+            under the folder of whatever app you're using.
+        </p>
+        <p>
+            In your new templatetags folder, you'll create a file called <strong>__init__.py</strong>, which will be an empty file, and it 
+            tells python to treat this as a module.
+        </p>
+        <p>
+            Then we create a custom named file; in his example, he called it <strong>my_extras.py</strong>. In this new file, we'll be adding 
+            the functions, and also creating an instance of Django's <strong>template.Libary()</strong> to register any functions that we make. 
+            In the example below, we create a custom function 'cut', which takes two arguments: a string, and then a smaller string that you 
+            want to remove from any instances of the first string. <br>
+            ex.) <br>
+            Original string: "$hello $world" <br>
+            Desired output: "hello world" <br>
+            <br>
+            So the two arg's you'd pass into <strong>cut</strong> as <strong>value</strong> and <strong>arg</strong> will be "hello world" 
+            and "$", respectively.
+        </p>
+        <p class="codeblock">
+            from django import template <br>
+            <br>
+            register = template.Libary() <br>
+            <br>
+            <span class="codecomment"># Our custom function:</span><br>
+            def cut(value, arg): <br>
+            &emsp; return value.replace(arg, 'CUT') <br>
+            <br>
+            <span class="codecomment"># Now we 'register' the function like so:</span><br>
+            register.filter('cut', cut)
+        </p>
+        <p class="mattthoughts">
+            Some confusing naming: <br>
+            I keep saying that we 'register' our functions, and I also have a variable called 'register'. Keep in mind that the variable 
+            is just that: a variable that we defined/named. It's not a built-in Django function. I probably just made this more confusing by 
+            even bringing that up. <br>
+            <br>
+            Similarly, in the line <strong>register.filter('cut', cut)</strong> the first instance of 'cut' is the string that you use to name 
+            the function in a template tag, whereas the second instance of 'cut' is a call to the function itself.
+        </p>
+        <p><img width="250" src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/d229b92e-af75-4640-a7fb-4f223aff34cd/dbcvpu3-a8bd8f5b-3c74-4ab9-92bb-af8a6bd4e7b5.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwic3ViIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsImF1ZCI6WyJ1cm46c2VydmljZTpmaWxlLmRvd25sb2FkIl0sIm9iaiI6W1t7InBhdGgiOiIvZi9kMjI5YjkyZS1hZjc1LTQ2NDAtYTdmYi00ZjIyM2FmZjM0Y2QvZGJjdnB1My1hOGJkOGY1Yi0zYzc0LTRhYjktOTJiYi1hZjhhNmJkNGU3YjUuZ2lmIn1dXX0.o5fw_GyKyQvmJ_myX6MwGMiYYM9RUloNGRewxWMeL8g" alt="My GIF is gone. Sorry."></p>
+
+        <h3>Alternate Way to 'Register': Decorators</h3>
+        <p>
+            A "cleaner" way to register our filters is to add a <strong>decorator</strong> above the function corresponding to that filter. 
+            For example, instead of calling <strong>register.filter('cut',cut)</strong> after and outside of the function, we can place a decorator 
+            directly above it. This is how that last section of code would look if we use a decorator:
+        </p>
+        <p class="codeblock">
+            from django import template <br>
+            <br>
+            register = template.Libary() <br>
+            <br>
+            <span class="codecomment"># Our decorator:</span><br>
+            <strong>@register.filter(name='cut')</strong> <br>
+            def cut(value, arg): <br>
+            &emsp; return value.replace(arg, 'CUT') <br>
+        </p>
+        <p class="mattthoughts">
+            What I *think* this is doing: <br>
+            If the html makes reference to a template filter named <strong>cut</strong>, then Django needs to make sure the 'cut' function that follows 
+            our decorator is registered as a <strong>templates.Library()</strong> object.
+        </p>
+        
+        <h3>One more thing...</h3>
+        <p>
+            In the course lecture notes, he mentioned that he forgot to load the templates. The filter still worked because he also did another 
+            silly thing: he used 'cut' which is already a built-in filter, so it worked without loading our custom templates. What are the odds?
+        </p>
+        <p>
+            What you need to do is add the following template tag near the top of whichever html file you plan to use it on:
+        </p>
+        <p class="codeblock">
+            {% load my_extras %<!---->}
+        </p>
+        <p>
+            The argument 'my_extras' will be whatever the name is of the .py file you made that holds your template filters.
+        </p>
+
+        <a href="top">Back to top of page</a>
+
+
+
+
+        <h2 class="newsection" id="issues">Issues</h2>
+
+        <h3 class="issueheading" id="issue1">Import "my_app" could not be resolved (VS Code)</h3>
+        <p>
+            In your <strong>urls.py</strong> file(s), you'll have something like:
+        </p>
+        <p class="codeblock">
+            from my_app import views
+        </p>
+        <p>
+            I feel like I've used this line before without issue, but in this particular instance, 
+            I got a little yellow underline from VS Code - i.e. not so much an "error" as a "problem". 
+            The PROBLEMS description indicated the following:
+        </p>
+        <p class="codeblock">Import "my_app" could not be resolved</p>
+        <p>
+            I did a brief check of stackoverflow, but didn't quite follow their solutions. 
+            What I noticed, however, was that my code(s) ran just fine without fixing the issue. 
+            From what I gathered, it's something quirky with Django. I can live with that, at least for now.
+        </p>
+
+
+        <h3 class="issueheading" id="issue2">How to escape curly brackets</h3>
+        <p>
+            This is a problem I just ran into while trying to make this tutorial page. 
+            If you're using Django, and you try to write a template tag into your notes - i.e. 
+            so it appears as text, rather than than being interpreted as an actual tag - you'll 
+            get an error. You need some sort of escape character to prevent Django from trying 
+            to interpret the tag. I found a handful of solutions, but the one that worked for me 
+            was strategic placement of a Code Comment Character (&lt!-- --&gt):
+        </p>
+        <p class="codeblock">
+            {% some_template_tag %<strong>&lt!-- --&gt</strong>}
+        </p>
+        <p>
+            So by adding the Code Comment Character between the <strong>second</strong> percent 
+            sign and the closing curly bracket, I was able to display the template tag as 
+            normal text.
+        </p>
+
+        <a href="#top">Back to top of page</a>
+
+    </div>
+
+
+    {% endblock %}

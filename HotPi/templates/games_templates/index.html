@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+{% extends 'main_app_templates/base.html' %}
+
+{% block body_block %}
+
+    <h1>GAMES PAGE</h1>
+    <ul>
+        <li><a href="{% url 'games:invaders' %}">Play Space Invaders</a></li>
+        <li><a href="{% url 'games:asteroids' %}">Play JS...Teroids</a></li>
+        <ul>
+            <li><a href="{% url 'games:asteroids_about' %}">The making of JS...Teroids</a></li>
+        </ul>
+        <li><a href="{% url 'games:starwars' %}">Play Star Wars Mandalorian (CURRENTLY OUT OF ORDER)</a></li>
+        <li>More games coming soon</li>
+    </ul>
+
+
+{% endblock %}

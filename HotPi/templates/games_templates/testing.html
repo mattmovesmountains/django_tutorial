@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <script src="https://kaboomjs.com/lib/0.5.1/kaboom.js"></script>
+    <!-- <script src="script.js"></script> -->
+    <script>
+        const k = kaboom({
+            global: true,
+            width: 1000,
+            height: 800,
+            //fullscreen: true,
+            //clearColor: [0,0,255]
+        })
+
+        k.loadSprite('characters', 'https://i2.wp.com/sdsandwiches.com/nes-sprites-blankfaces.png')
+
+        // const player = k.add([
+        //     // k.sprite('characters', {
+        //     //     animSpeed: 0.1,
+        //     //     frame: 5,
+        //     // }),
+        //     k.rect(20,30),
+        //     k.color(0,0,255),
+        //     k.pos(width()/3, height()/3),
+        //     k.origin('center')
+        // ])
+
+        k.scene('main', () => {
+            k.add([
+                k.text('Work, you silly code', 20),
+                k.pos(width()/2, height()/2),
+                k.origin('center')
+            ])
+        })
+
+        k.start('main')
+    </script>
+    <h1>TESTING</h1>
+    <embed width=800px height=600px src="https://StageInvaders.mattyb955.repl.co" type="">
+    <!-- <embed width=600px height=500px src="https://InvadingSpace.mattyb955.repl.co" type=""> -->
+    
+</body>
+</html>

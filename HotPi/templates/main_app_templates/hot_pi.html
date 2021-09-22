@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+{% extends "main_app_templates/base.html" %}
+{% load staticfiles %}
+
+
+
+{% block body_block %}
+
+    <h1 id="top">Hot Pi!</h1>
+    
+    <div class="container">
+
+        <img width="500" src="{% static 'main_app/images/coolPi2.jpg' %}" alt="Woops, image not found">
+
+        <h2 class="newsection">How I cooled an overheating(?) Raspberry Pi 4, 8GB</h2>
+        <h3>First, the details:</h3>
+        <ul>
+            <li>Raspberry Pi 4, 8GB model;</li>
+            <li>Four heatsinks previously installed;</li>
+            <li>Use(s):</li>
+            <ul>
+                <li>Primary personal computer for basic web/email;</li>
+                <li>Primary computer for coding/web-dev;</li>
+                <li>No graphics/video-heavy applications;</li>
+            </ul>
+            <li><a href="#tldr">"Alright, cut the bullshit, how did you fix it?" Okay, okay...</a></li>
+        </ul>
+
+        <h3>Step 1: Google Stuff!</h3>
+        <p>
+            Gotta start somewhere; what's the normal temperature for a pi? How do I check 
+            mine? Do all pi's get this hot? Did I do something terrible? Should I check 
+            WebMD?? No. Never check WebMD.
+            <br><br>
+            <span class="codeblock">why is my raspberry pi 4 so fu...</span><br>
+        </p>
+        <p>
+            So the problem at-hand: I noticed a little panicky-looking thermometer icon that 
+            started blinking at the top right of my screen. When I touched the top of the 
+            pi case, it was toasty. But how hot was it normally? It's like smelling the milk... 
+            you never smell milk unless you think it's bad, so what's regular milk even smell 
+            like?? <br>
+            <br>
+            <img width=300 src="{% static 'main_app/images/seinfeld.jpg' %}" alt="...Seinfeld? Four?">
+        </p>
+        <p>
+            One good thing about Raspberry Pi is that there is lots of information available to 
+            help troubleshoot. The downside is it's often written by the Linux All-Star Team, 
+            and the solutions they suggest (whether good or bad) are more puzzling than the original 
+            problem that you were trying to solve. And then they try to out-Linux each other in 
+            the comment threads. It's often entertaining, but for many, it's not helpful.
+        </p>
+        <p>
+            After a handful of sites, I was able to gather that 'normal' operating temp is around 
+            45°C. I also saw that if you're running temps in the high 70's or cracking the 80's, 
+            it's not immediately harmful, but you need to chill out. This is not sustainable.
+        </p>
+        <p>
+            My pi was frequently reaching high 70's, occasionally breaking the 80 barrier as well, 
+            and I was running my codes, but nothing crazy. Sometimes, it was just regular internet 
+            usage - not even videos, just text/image sites. Heatsinks installed, AC on in the house... 
+            I dunno man, it's just a hot pi. Some of the comments suggested a pi that runs that hot 
+            has something else wrong, but I'm not going down that rabbit hole just yet. We all have 
+            something wrong - I'm not here to judge.
+        </p>
+        <p>
+            Oh yeah, do you guys know how to check the temp?  It's this command:
+        </p>
+        <p class="codeblock">vcgencmd measure_temp</p>
+        <p>
+            Since that's a bit tough on the ol' memory, I created an alias <strong>howhot</strong>. 
+        </p>
+        <h3>Step 2: Buy Stuff!</h3>
+        <p>
+            Whether or not the Raspberry Pi zealots were right about an underlying problem, I 
+            decided to solve my problem the old-fashioned American way, by buying stuff! It 
+            always seemed pretty clear to me that I needed a better case because even with heatsinks, 
+            that stock case has no vents! Where's the shit supposed to go?
+        </p>
+        <p>
+            So the obvious first choice is to start looking at cases with fans. I recall from a 
+            previous Raspberry Pi I built for my nephews as a retropie, that the fan was so damn 
+            loud, it was like a little drone. So I researched <strong>quiet</strong> fans. I'm sure 
+            there's plenty of data about which ones are the quietest/loudest, but one piece of 
+            information I was missing when I made the retropie was that you can set up a lot of the 
+            fans on the 3.3V pin instead of the 5V one. It runs slower, but is considerably quieter.
+        </p>
+        <p>
+            Armed with that tidbit, it was simply a matter of choosing from a zillion different 
+            available options. So I picked the one that was like 8 bucks and has a cool little 
+            LED in the fan. <br>
+            <br>
+            <img id="tldr" width="300" src="{% static 'main_app/images/coolPi1.jpg' %}" alt="Woops, image not found">
+        </p>
+        <p>
+            This thing is so quiet. I can't hear it at all, actually.
+        </p>
+        <p>
+            "BUT!", you say... "does it cool the pi?" <br>
+            Yes indeed. My average temps are in the 40's now - just like the Pi People told me 
+            things should be!
+        </p>
+        <p>
+            Putting it together was super easy. The fan is plug-n-play. No clearance issues 
+            between the new fan and my existing heatsinks. For whatever reason, mine has a 
+            white top instead of the clear top that's in the listing, but I haven't the 
+            energy to care about such things. If you want this case, you can get it <a href="https://amzn.to/3wsdf0i">here</a>. 
+            If you want another one, go for it... there's one that looks like an old Nintendo. 
+            Just cool your damn pi, would ya?
+        </p>
+        <form>
+            <input class="funbutton" type="button" onclick="YouClicked()" value="Click if you like clicking!">
+        </form>
+        <p class="sneaky">OK, you got me - that link for the pi case is an affiliate link.</p>
+
+
+    </div>
+
+    
+{% endblock %}

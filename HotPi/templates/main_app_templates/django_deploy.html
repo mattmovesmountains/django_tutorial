@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+{% extends 'main_app_templates/base.html' %}
+
+{% block body_block %}
+
+    <div id="top"></div>
+    <h1>Deploying a Django Project</h1>
+
+    <h3>What's here:</h3>
+    <ul>
+        <li><a href="#github">Host your project files on Github</a></li>
+        <li><a href="#pythonanywhere">Python Anywhere</a></li>
+        <li><a href="#issues">Issues</a></li>
+    </ul>
+    <br><br>
+    <p class="mattthoughts">
+        This stuff might look like it's not written for you. It's not. <br>
+        <br>
+        It might be helpful though if you're learning Django. I made this while taking a 
+        Udemy course "Python and Django Web Development Bootcamp". This page will cover 
+        the lectures in that course pertaining to the actual <strong>deployment of your 
+        project on the web</strong>.</p>
+
+
+
+    <h2 class="newsection" id="github">Hosting your project files on Github</h2>
+    <h3>Get a free Github account</h3>
+    <p>
+        I have one. I'm not great with it, but I have it. I followed an hour-long tutorial on YouTube 
+        a while back - it helped quite a bit, but I haven't used it frequently enough to get comfortable. 
+        So I'm adding that video below to cover the basics of setting up an account, and going through 
+        the basics of both git and Github.
+    </p>
+    <p>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/RGOj5yH7evk" 
+        title="YouTube video player" frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen></iframe>
+    </p>
+
+    <h3>Create a new repository</h3>
+    <p>
+        Once signed up and signed in, we'll create a 
+        <a href="https://github.com/new">new Github repository</a>. We'll call this <strong>django-deployment-example</strong>, 
+        and add a description such as "Repo for Django Deployment Example". The instructor doesn't initialize, in this case, with 
+        a README file, and we set the access to public. We don't add a "gitignore" or "license". Hit <strong>create repository</strong>.
+    </p>
+
+    <h3>Get Git</h3>
+    <p>
+        Before going any further on Github, <a href="https://git-scm.com/">get git</a>. What is git? Here's how they describe themselves: 
+        <em>"Git is a free and open source distributed version control system designed to handle everything from small to very large 
+        projects with speed and efficiency."</em> 
+    </p>
+
+    <h3>Command line setup for your project</h3>
+    <p>
+        Open the command line in your IDE (I'm using VS Code), and create some new folder which will contain the deployment example we're 
+        about to do. Mine is called "django_deployment." Now cd over to that directory. The lines we're going to be entering into the terminal 
+        are the ones that show up after you hit 'create repository' on github. There's a 'quick setup' option for people who know what they're 
+        doing, and I wouldn't really consider myself one of those people at this time. The instructor guides us to the next section: <em>create 
+        a new repository on the command line,</em> which is where you'll find the various command lines that we'll be using.
+    </p>
+    <p>
+        Calling <strong>git init</strong> will initialize a repository in django_deployment, and you should get a command line prompt indicating 
+        this.
+    </p>
+
+    <h3>Using 'git add _'</h3>
+    <p>
+        He then skips 'git add README.md', and suggests instead going to any of the Django projects we created thus far, and copy/paste it into 
+        this django_deployment folder. I'll take <strong>learning_users</strong>, which was the last Django project we did, in which we create 
+        a login/logout functionality. Once copied over, we'll enter the following in the terminal:
+    </p>
+    <p class="codeblock">
+        git add .
+    </p>
+    <p>
+        This 'add .' is saying 'add everything'. When the instructor ran this command, he got a bunch of warnings about line endings, and he said 
+        "that's ok". In my case, I saw no warnings.
+    </p>
+
+    <h3>Using 'git commit _'</h3>
+    <p>
+        The next command on the Github site is: <strong>git commit -m 'first commit'</strong>., but he instead writes it with that dot again to 
+        import everything. So: <strong>git commit . -m 'first commit'</strong>, where '-m' indicates that the next argument will be a string that 
+        gets used as a message accompanying the 'commit' - i.e. our commit message here is 'first commit'.
+    </p>
+    <p>
+        Upon committing, you should see a bunch of 'create mode...' lines in the terminal.
+    </p>
+
+    <h3>Using 'origin' and 'push'</h3>
+    <p>
+        This next line he does copy directly from the suggested lines on Github. Each one will be unique to the particular user and project, 
+        and mine looks like this:
+    </p>
+    <p class="codeblock">
+        git remote add origin https://github.com/mattmovesmountains/django-deployment-example.git
+    </p>
+    <p>
+        You'll hit enter and see no output. You can then copy/paste the next line:
+    </p>
+    <p class="codeblock">
+        git push -u origin main <span class="codecomment"># or 'master'?</span>
+    </p>
+    <p class="mattthoughts">
+        I don't yet know why, but sometimes it says 'main' and sometimes it says 'master'. His said 'master' and it worked for him. Mine said 'main', 
+        and when I tried it, I got two errors: <br> 
+        <br>
+        <strong>error: src refspec main does not match any.</strong> <br>
+        <strong>error: failed to push some refs to [my repo link]</strong><br>
+        <br>
+        So instead I tried the same command with 'master' and it worked. 
+    </p>
+    <p>
+        It'll likely prompt you to log into Github to give VS Code access to Github, or vice versa. Do that and then take a look at your repo, 
+        which should now have the project files for whichever Django project you used.
+    </p>
+
+    <a href="#top">Back to top of page</a>
+
+
+
+    <h2 class="newsection" id="pythonanywhere">Python Anywhere (to host your project site)</h2>
+    <p>
+        For purposes of the course, we're setting up a free account on <a href="https://www.pythonanywhere.com/">pythonanywhere.com</a>, but there 
+        are paid options if you choose to move forward with this site. The free version allows for hosting of one web app, and it can't be on your 
+        own domain; it'll be 'yourusername.pythonanywhere.com' or similar. Also, you'll be required to log in at least once every three months, 
+        and click the <em>'Run until 3 months from today'</em> button.
+    </p>
+
+    <h3>Set up a virtual environment</h3>
+    <p>
+        Once you're signed up and signed in, head to your <strong>consoles</strong> tab, and click on <strong>bash</strong> to open a virtual bash console. 
+        The built-in way to create a venv on pythonanywhere is via the following command in their virtual terminal, which says "create a virtual environment, 
+        where python is set to python3.7, and we'll call the environment 'myproj'."
+    </p>
+    <p class="codeblock">
+        mkvirtualenv --python=python3.7 myproj
+    </p>
+    <p class="mattthoughts">
+        I tried setting python=python3.7.3, but they only got as specific is 3.7. Hopefully that's fine.
+    </p>
+    <p>
+        OK, you run that and you get a bunch of set up text that makes you feel like you're hacking. You should see now that your command prompt is 
+        preceded by your venv in parentheses. Now you can take a look at which packages are already installed by running:
+    </p>
+    <p class="codeblock">
+        pip list
+    </p>
+    <p>
+        Next we're going to pip install django on our virtual terminal, but in order to make sure it's the same version of Django that we used for 
+        our project, we'll (1) make sure we're in the virtual environment that we used on our local machine to make the Django project, and (2) 
+        run the following command [in a local linux shell], which will list out all packages installed to that venv, as well as the particular versions 
+        installed: <br>
+        <strong>pip3 freeze</strong><br> 
+        OR <strong>pip3 freeze | grep Django</strong> to just look at which Django package is installed.
+    </p>
+    <p>The command to install Django to this virtual environment (which is techinically in a virtual environment):</p>
+    <p class="codeblock">
+        pip install -U django==1.10.5 <span class="codecomment"># or whatever version you have</span>
+    </p>
+    <p>
+        This'll take a minute to download, and then you can double check that it's there by running: <br>
+        <strong>which django-admin.py</strong>
+    </p>
+
+    <h3>Github, meet pythonanywhere</h3>
+    <p>
+        Now that our files are hosted on Github, and Django has been set up on our pythonanywhere account, we can link the two. First head over 
+        to the Github repo and find the <strong>clone</strong> button to copy the repo link. Then go back to the virtual terminal to type:
+    </p>
+    <p class="codeblock">
+        git clone https://github.com/[YourUserName]/[YourRepoName.git]
+    </p>
+    <p>
+        You'll see it clone the repo, and then if you type <strong>ls</strong>, you can see the two files in this directory are a README and 
+        the repo itself. So cd into the repo, run <strong>ls</strong> again to see your project folder, and cd into that and run ls once again so 
+        you can now see the main project files and directories.
+    </p>
+    <p class="mattthoughts">
+        Also, you'll notice <strong>(master)</strong> will appear after your command prompt once you cd into the repo directory. Or will it say 
+        <strong>(main)</strong>? Well, one of those anyhow.
+    </p>
+
+    <h3>Classic Django...</h3>
+    <p>
+        Now that everyone's here, let's run the Django migrations commands to make sure all the necessary app migrations are in order. So it's 
+        this [familiar?] combo:
+    </p>
+    <p class="codeblock">
+        python manage.py migrate <br>
+        python manage.py makemigrations basic_app <br>
+        python manage.py migrate
+    </p>
+    <p class="mattthoughts">
+        <strong>python or python3?</strong><br>
+        I'm running linux, and any python commands on my local machine are entered as <strong>python3, pip3</strong>, etc. 
+        Any python commands entered into the virtual terminal are just <strong>python, pip</strong>, etc.
+    </p>
+    <p>
+        Add a superuser because apparently the one you made on your local machine doesn't carry over with the project. You forgot the 
+        command, didn't you... <strong>python manage.py createsuperuser</strong>
+    </p>
+
+    <h3>New Web App</h3>
+    <p>
+        After all that terminal setup, we can navigate our way back to the <strong>Web</strong> tab in pythonanywhere, and click on 
+        <strong>Add a new web app</strong>. You'll be asked to choose a framework. Now if you choose 'Django' you'll be prompted to 
+        pick a version of Python which will have a corresponding version of Django, and it may not be the same as your version of Django 
+        (it wasn't). Let's say you picked one anyhow because it had the right version of Python... you'll soon see that you need to 
+        choose <strong>Manual Configuration</strong> because we brought our own web app to this web party. So we hit the back button 
+        to get back to the 'Select a Web Framework' screen. This time we'll choose the Manual Config. You'll notice now that it lets 
+        you choose a version of Python without an associated version of Django.
+    </p>
+    <p>
+        On the first 'Manual Configuration' screen, there will be some talk about WSGI, which is something I currently cannot tell you 
+        anything about. If you hit Next, they'll make one of these WSGI configuration files for you. I think that's nice of them. So hit next, 
+        and then paste your URL into a new tab (it's the url under the part that says 'Configuration for:'). It'll be a generic 'Hello World' 
+        page, but if you go bak into your <strong>Web App Setup</strong>, you can add your virtual environment path; it should follow this format:
+    </p>
+    <p class="codeblock">
+        /home/YourUserName/.virtualenvs/YourVenvName
+    </p>
+    <p>
+        There should now be an option to <strong>Start console in this virtualenv</strong>. Open that up so you can find your project path 
+        (assuming you're like me and forgot it). 
+    </p>
+    <p>
+        <ul>
+            <li>Run 'ls' and you'll see <strong>django-deployment-example</strong>; cd into that</li> 
+            <li>Run 'ls' and you'll see your project name; cd into that</li>
+            <li>Run <strong>pwd</strong>, and you can just copy that path</li>
+        </ul>
+    </p>
+
+    <h3>WSGI</h3>
+    <p>
+        Take that path, go back to the <strong>Web app setup</strong>, scroll down to the <strong>Code</strong> section, and click where it 
+        says "Source code" to paste in your path; hit the check. Look a couple lines down, and click the link next to <strong>WSGI...</strong> 
+        to edit that file. It brings up an editor with the WSGI, which currently has that 'Hello World' nonsense. In this example, he goes ahead 
+        and deletes from lines 13 through 47, i.e. everything pertaining to the 'Hello World' stuff.
+    </p>
+    <p>
+        Scroll down in that WSGI to the <strong>DJANGO</strong> section and we'll start un-commenting out some of the code. We want:
+    </p>
+    <p class="codeblock">
+        import os <br>
+        import sys <br>
+    </p>
+    <p>Then we'll uncomment and redefine the <strong>path</strong> variable to get that project path you copied in the last step.</p> 
+    <p class="codeblock">
+        path = '/home/mattmovesmountains/django-deployment-example/learning_users' <br>
+        &emsp;<span class="codecomment"># And uncomment these too</span> <br>
+        &emsp;if path not in sys.path: <br>
+        &emsp;&emsp;sys.path.append(path)
+    </p>
+    <p>
+        Then we're going to add this to change our current directory to our project directory, which is saved as <strong>path</strong>. We 
+        also need to tell this file where our <strong>settings.py</strong> is located.
+    </p>
+    <p class="codeblock">
+        os.chdir(path) <br>
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'learning_users.settings')
+    </p>
+    <p>
+        More imports - time to add Django:
+    </p>
+    <p class="codeblock">
+        import django <br>
+        django.setup()
+    </p>
+    <p>And uncomment these:</p>
+    <p class="codeblock">
+        from django.core.wsgi import get_wsgi_application <br>
+        application = get_wsgi_application()
+    </p>
+    <p>Oh boy, "DisallowedHost" error; click <a href="#issue3">here</a> to view the issues section for solution(s).</p>
+
+    <h3>Set your static files path</h3>
+    <p>
+        Depending on the example project you're using, you may have noticed that your CSS or JavaScript didn't make its way to pythonanywhere. 
+        We need to define the static path back on the 'Web app setup' tab. Scroll down to <strong>Static files</strong> and you'll see that 
+        you must provide both a <strong>URL</strong> and a <strong>Directory</strong> for each static file location. One that you'll always 
+        need is on your Admin page, so we add: <br><br>
+        <strong>/static/admin</strong> as the URL, and the directory is: <br>
+        <strong>/home/yourUserName/.virtualenvs/yourVenvName/lib/python3.7/site-packages/django/contrib/admin/static/admin</strong>
+    </p>
+    <p class="mattthoughts">
+        Haha, look at that path! I don't know where/how else you'd be able to find out what that's supposed to be, but there it is in all 
+        its glory! <br>
+        Note: <strong>yourUserName</strong> and <strong>yourVenvName</strong> are items that you fill in with your unique information. Also,
+        where I put 'python3.7', just change that to match whichever version of Python you're using. Reload your site.
+    </p>
+    <p>
+        We're going to add another path in a moment, but first we're going to add some things in the <strong>Files</strong> tab. The main 
+        page of the Files tab should show your highest-level directory, and from there, you should navigate to the directory that contains your  
+        app ('basic_app/' for me), your original Django project name ('learning_users' for me), and your 'templates' folder. Once there, 
+        click in the text field under 'Directories' and type <strong>static</strong>; click the 'New directory' button. Your admin static 
+        files should now be linked, which in this case means when you go to the admin page, the Django-default CSS for admin pages will be 
+        working. Reload your site.
+    </p>
+
+    <h3>Turn off Debug Mode</h3>
+    <p>
+        Now that this site is live, you don't want the debug messages popping up each time a user encounters an error. In your <strong>Files</strong> 
+        tab, navigate once again to your <strong>settings.py</strong> file, scroll down to where it says <strong>DEBUG = True</strong>, and simply 
+        change that to <strong>False</strong>. Reload your site.
+    </p>
+
+    <h3>Back to our static paths...</h3>
+    <p>
+        Head back to the <strong>Static files</strong> section on the <strong>Web</strong> tab, and we'll add another static path - this one is for 
+        any of the typical static project files you might have. In the URL field type <strong>/static/</strong>, and then in the Directory field: <br><br>
+        <strong>/home/yourUserName/django-deployment-example/yourProjectName/static</strong>. Reload your site.
+    </p>
+    <p>
+        For purposes of this tutorial, I'm assuming we all used the repo name 'django-deployment-example', and then my project name is 'learning_users'. 
+        It didn't have any static files, but I'm going to experiment with adding them to make sure that's working too. I got it working after some 
+        adjustments. I uploaded an image to my 'static' folder, but first got "Error 500 Server Error" or similar, so remember to set <strong>DEBUG=True</strong> 
+        again if you're making changes. Once I did that, I could see the error pertained to my template tag for the image. I tried adding 
+        <strong>{% load staticfiles %<!---->}</strong> to <strong>base.html</strong>, but that still didn't work. I then tried adding it to the page 
+        I was working in, instead of the base page, and that worked. However, I also used <strong>load static</strong> instead of <strong>load static<em>files</em></strong>. 
+        Not sure what compelled me to use that option, other than trial and error, and that I vaguely recall reading that the two are very similar, but 
+        maybe one is better for deployment than another.
+    </p>
+    <p class="mattthoughts">
+        Psst! Reload your site.
+    </p>
+
+    <a href="#top">Back to top of page</a>
+
+
+
+
+    <h2 class="newsection" id="issues">Issues</h2>
+
+    <h3 class="issueheading" id="issue1">Issue #1 - Main or Master?</h3>
+    <p>
+        I discussed this in the main text of this page; the issue here is some inconsistency between the terms 'main' and 'master', which you'll use 
+        when running the command <strong>git push -u origin [main/master]</strong>. You may get an error running the command with either word.
+    </p>
+
+    <h3>Solution to Issue #1</h3>
+    <p>
+        From what I've gathered, Github was simply changing its terminology from 'master' to 'main', however on my project, I tried to use 'main' 
+        and got an error, so I used 'master'. Perhaps I have an older version of git? I don't know, but I'd say if you're seeing an error when trying 
+        <strong>git push origin __</strong>, just try it with the other word.
+    </p>
+
+    <h3 class="issueheading" id="issue2">Issue #2 - Other pip installs</h3>
+    <p>
+        When you try to run your website on pythonanywhere, you may instead see errors stating that they couldn't find certain packages.
+    </p>
+
+    <h3>Solution to Issue #2</h3>
+    <p>
+        In this example, the only pip install he runs is Django itself, but if the example project that you're using has other dependencies, 
+        you'll need to run the appropriate pip installs for those too. In my case, I'm working with the User Authentication project, and 
+        I needed to install the two password hashers, as well as pillow for image handling. This'll become increasingly important for larger 
+        projects, and you'll likely want to run a pip freeze into a text file on your local machine, then use that text file to run all the 
+        pip installs in this virtual terminal.
+    </p>
+    <p>
+        Let's say you've got your various packages pip-installed to your virtual environment for the project. You can then run the following 
+        command on your local machine to save them to a text file:
+    </p>
+    <p class="codeblock">
+        pip3 freeze > requirements.txt
+    </p>
+    <p>
+        When you get to the virtual terminal, assuming you've uploaded your txt to Github and brought into pythonanywhere, you should be able to 
+        navigate to its location, and run this to install your packages all at once:
+    </p>
+    <p class="codeblock">
+        pip3 install -r requirements.txt
+    </p>
+    <p>
+        Note: from what I've read, there are certain system-level dependencies that won't work properly in these txt files. Matplotlib seems to 
+        be one example, since one of its dependencies, libfreetype6-dev needs to be installed via 'apt-get install', rather than a pip install. 
+        Related comment thread on <a href="https://stackoverflow.com/questions/41457612/how-to-use-requirements-txt-to-install-all-dependencies-in-a-python-project">stackoverflow</a>.
+    </p>
+
+    <h3 class="issueheading" id="issue3">Issue #3 - DisallowedHost (?!)</h3>
+    <p>
+        Right after setting up the WSGI configuration, I was supposed to be able to look at my site. I clicked the link... Error! "DisallowedHost". 
+        Says that "you may need to add userName.pythonanywhere.com to ALLOWED_HOSTS". I tried that by opening <strong>settings.py</strong> in 
+        the files tab on pythonanywhere; I added their suggestion to 'ALLOWED_HOSTS', felt proud, but only briefly, and once again got the 
+        "DisallowedHost" error.
+    </p>
+
+    <h3>Solution to Issue #3</h3>
+    <p>
+        Wait! Maybe it was the fact that the previous paragraph was at 1 AM, but I just ran through those last couple of steps again, and it worked! 
+        So go to your <strong>settings.py</strong>, scroll down to <strong>ALLOWED_HOSTS</strong>, and add your unique link (<strong>'userName.pythonanywhere.com'</strong>) 
+        in quotes, omitting the 'http://' or any slashes at the end of the URL. Save the file, click the button to 'reload your site'; maybe give it a minute to 
+        make sure changes take effect (probably what I missed in my first attempt), and then try to view your site again. Best practice would actually be to 
+        update the file on your local machine, update Github, then update the pythonanywhere copy.
+    </p>
+
+    <a href="#top">Back to top of page</a>
+
+
+{% endblock %}

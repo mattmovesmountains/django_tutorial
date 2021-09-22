@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+{% extends 'main_app_templates/base.html' %}
+
+{% block body_block %}
+
+    <h1>MAKING JS...Teroids</h1>
+
+    <h2 class="newsection">The Source and My Goals</h2>
+    <p>
+        <iframe width="600" height="300" src="https://www.youtube.com/embed/eI9idPTT0c4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </p>
+    <p>
+        After stumbling upon a tutorial to make games with kaboom.js, I happily convinced myself 
+        that learning how to make games in JavaScript would be a great way to get more familiar 
+        with JavaScript itself. Kaboom was a good gateway, but I didn't want to spend a lot of time 
+        on that specific framework. I started finding tutorials for retro games using only 
+        vanilla JS and CSS on HTML Canvas.
+    </p>
+    <p>
+        For this game, I used the video above, which did a nice job of teaching some basic concepts 
+        to create an Asteroids-type game. All objects are shapes drawn in JS, rather than rendered sprites. 
+        Basically, the player, enemies, and projectiles are all circles - or more accurately, they're 360 degree 
+        arcs. 
+    </p>
+    <p>
+        I typically try to do only enough of these tutorial videos to get a rough version of their 
+        end product, and then I like to mess around with variables and try to make my own version. In 
+        this case, I changed the play mechanics from 'instant game over' to a 'shrinking player ship' 
+        approach, so each time an asteroid collides with the ship, it gets a little smaller - until it's 
+        gone, and then the game's over.
+    </p>
+    <p>
+        I also tried to figure out parts of the game prior to watching the video explanation; things like 
+        creating a 'game over' condition, adding a score board, and randomizing the color of the enemies.
+    </p>
+    <h2 class="newsection">Some key concepts from this video:</h2>
+    <p>
+        <ul>
+            <li>Working with HTML canvas;</li>
+            <li>Practice with JS classes and constructors;</li>
+            <li>Using Math functions like <strong>random</strong> and <strong>PI</strong>, as well as trigonometry functions;</li>
+            <li>Using <strong>arc</strong> to draw a circle on the canvas;</li>
+            <li>Looping via <strong>requestAnimationFrame</strong> rather than the usual for/while loop structures;</li>
+            <li>Array practice:</li>
+            <ul>
+                <li>array.forEach() to quickly iterate through an array;</li>
+                <li>array.push() to add new instances of class objects to an existing array;</li>
+                <li>array.splice(index, how many) to remove an array item at a certain index;</li>
+            </ul>
+            <li>Collision detection;</li>
+            <li>Event Listeners for mouse/keyboard interaction;</li>
+            <li>JavaScript works in radians, which need to be converted to degrees;</li>
+            <li>Use of the <strong>setInterval()</strong> method to override the frame rate;</li>
+        </ul>
+
+    </p>
+
+    <h2 class="newsection" id="issues">Issues and Observations</h2>
+    
+    <h3 class="issueheading">DjavaScript!</h3>
+    <p>
+        While I work on things like JavaScript, I try to bring it back into the context of learning 
+        Django, which is what this website is running on. I noticed an issue which is unresolved as of 
+        now, which is that I've been unable to load any image assets into my JavaScript games when 
+        I run them in my Django project. If I make separate HTML/CSS/JS files outside of Django, I have 
+        no issues loading the necessary files via JavaScript.
+    </p>
+    <p>
+        I've got the images stored properly (I believe) in the static folder for my project, and I've tried 
+        a couple different ways to get an image to load on the canvas... to no avail. I know the static 
+        path is working because that's how I ran the script.js for each game. I tried using the Django 
+        method of serving static files; I tried more standard file path references; and finally, I tried 
+        just linking to a different image entirely, by including the URL to an image from the web.
+    </p>
+    <p>
+        I think one hurdle, in general, is the Chromium browser that the Raspberry Pi uses, and possibly 
+        even the Pi itself? I tried another browser - a Firefox variant for Pi called ESR - but that didn't 
+        work either. I have noticed that many of the JavaScript changes take a while to show up in the 
+        browser. I need to restart the Django server to get some of the changes to be reflected on the page. 
+        For reference, error I get when trying to load the images via JavaScript is:
+    </p>
+    <p class="codeblock">
+        Uncaught DOMException: Failed to execute 'drawImage' on 'CanvasRenderingContext2D': <br>
+        The HTMLImageElement provided is in the 'broken' state
+    </p>
+
+{% endblock %}

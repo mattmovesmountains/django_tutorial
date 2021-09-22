@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+{% extends 'main_app_templates/base.html' %}
+{% load staticfiles %}
+
+{% block body_block %}
+
+    <h1>Welcome to [a Game Like] Space Invaders</h1>
+    <p>
+        A basic version of Space Invaders from an Ania Kubow's tutorial on 
+        FreeCodeCamp. I made some modifications for repeat play after winning 
+        or losing. <br> 
+        Press SPACEBAR to shoot; ARROWS to move.
+    </p>
+
+    <p class=".gamewindow">
+        <embed width=800px height=500px src="https://InvadingSpace.mattyb955.repl.co" type="">
+    </p>
+
+
+{% endblock %}
+
+

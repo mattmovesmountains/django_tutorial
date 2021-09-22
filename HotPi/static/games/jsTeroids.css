@@ -1,0 +1,9 @@
+body{
+    margin: 0; /* Get rid of the white space around the canvas */
+}
+
+canvas{
+    background-image: url('{% static "games/zackground.jpeg" %}');
+    background: black;
+}
+

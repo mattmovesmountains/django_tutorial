@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+{% extends 'commentspage_templates/base.html' %}
+
+<style>
+    .commentheading{
+        background-color: rgb(50, 50, 71);
+    }
+    .commentblock{
+        background-color: rgb(143, 160, 160);
+        font-style: italic;
+    }
+</style>
+
+{% block body_block %}
+
+    <h1>Comments Section</h1>
+    <h3>Where the worst in people comes to life</h3>
+
+    <form method="post">
+        {{ form.as_p }}
+        <input type="submit" value="Submit">
+        {% csrf_token %}
+    </form>
+
+    {% if commentlist %}
+        {% for comment in commentlist %}
+            <h3 class="commentheading" style="border: 0px; background-color: rgb(50, 50, 71);">Comment by:</h3>
+            <p>{{ comment.username }}</p>
+            <p class="mattthoughts">{{ comment.comment }}</p>
+        {% endfor %}
+    {% else %}
+        <p><strong>No comments found</strong></p>
+    {% endif %}
+
+
+
+    <!-- {% if html_username %}
+        <h3>Comment</h3>
+        <p><strong>Comment submitted by: </strong>{{ html_username }}</p>
+        <p><em>{{ html_comment }}</em></p>
+
+    {% else %}
+        <p><strong>No comments found</strong></p>
+    {% endif %} -->
+
+{% endblock %}

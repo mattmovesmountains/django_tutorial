@@ -1,0 +1,31 @@
+#canvas1{
+    width: 800px;
+    height: 500px;
+    border: 1px solid black;
+    background: #d79c50;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+#buttonPTag{
+    position: absolute;
+    top: 80%;
+    left: 47%;
+}
+#reset{
+    /* margin-left: 45%; */
+    border: 2px solid rgb(30, 30, 53);
+    border-radius: 5%;
+    padding: 5px;
+    background: cornflowerblue;
+    color: rgb(30, 30, 53);
+    font-family: 'Courier New', Courier, monospace;
+    width: 70px;
+    height: 30px;
+}
+#ytvid{
+    position: absolute;
+    top: 90%;
+    left: 10%
+}

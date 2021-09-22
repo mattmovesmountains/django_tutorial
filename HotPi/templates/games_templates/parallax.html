@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parallax</title>
+    <link rel="stylesheet" href="../../static/games/spriteAnimation/parallax.css">
+</head>
+<body>
+
+    <div class="container">
+        <canvas id="canvas1"></canvas>
+        <!-- Notice this next span has no inner html; that's because we'll
+        add it using JavaScript -->
+        <p>Game Speed: <span id="showGameSpeed"></span></p>
+        <!-- This is cool, it makes a little slide bar -->
+        <input type="range" min="0" max="20" value="5" class="slider" id="slider">
+    </div>
+    
+    <script src="../../static/games/spriteAnimation/parallax.js"></script>
+    
+</body>
+</html>

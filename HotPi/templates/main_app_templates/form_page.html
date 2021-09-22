@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+{% extends "main_app_templates/base.html" %}
+
+{% block body_block %}
+
+    <h1>If you fill out this form, you can read the article</h1>
+    <form method="POST">
+
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit">
+
+    </form>
+    
+{% endblock %}

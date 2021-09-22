@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+{% extends 'main_app_templates/base.html' %}
+
+{% block body_block %}
+    <h1>Django Forms - Back-end to the Future</h1>
+    <div id="top">
+
+        <h3>What's here:</h3>
+        <ul>
+            <li><a href="#intro">Intro to Forms</a></li>
+            <li><a href="#runthrough">Run-through of making a basic Django Form</a></li>
+            <li><a href="#whereistheinfo">We submitted info... but where'd it go?</a></li>
+            <li><a href="#validation">Form Validation</a></li>
+            <li><a href="#modelforms">Model Forms</a></li>
+            <li><a href="#issues">Issues</a></li>
+        </ul>
+        <br><br>
+        <p class="mattthoughts">
+            This stuff might look like it's not written for you. It's not. <br>
+            <br>
+            It might be helpful though if you're learning Django. I made this while taking a 
+            Udemy course "Python and Django Web Development Bootcamp". This page will cover 
+            the <strong>Forms</strong> lectures in that course. </p>
+
+        
+        <h2 class="newsection" id="intro">Introduction to Django Forms</h2>
+        <p>Advantages of Django Forms as compared to the html ones?:</p>
+        <ul>
+            <li>Quickly generate HTML form widgets;</li>
+            <li>Validate data and process it into a Python data structure;</li>
+            <li>Create form version of our Models, and quickly update models from forms;</li>
+        </ul>
+        <p>Now an overview of what we'll do:</p>
+        <ul>
+            <li>First, create a forms.py file inside your application;</li>
+            <li>Then call Django's built-in forms classes (similar to creating models);</li>
+            <li>Show it by using a view: importing your forms into views.py then adding a view;</li>
+                <p class="codeblock">
+                    <span class="codecomment"># Basic structure looks like this:</span><br>
+                    def form_name_view(request): <br>
+                    &emsp; form = forms.FormName() <br>
+                    &emsp; return render(request, 'form_name.html', {'form':form})
+                </p>
+            <li>Now add the view to the app's urls, either directly or with include():</li>
+                <p class="codeblock">
+                    <span class="codecomment"># Here's the direct approach:</span><br>
+                    from some_app import views <br>
+                    urlpatterns = [ <br> 
+                    &emsp; url(r'formpage/', views.form_name_view, name= 'form_name'), <br>
+                    ]
+                </p>
+        </ul>
+        <p class="mattthoughts">There's a shit-ton of stuff here. I'll do a section with a 
+            run-through like I did with the Models lectures. <br>
+            <br>
+            The lecture that covered this run-through is: <br>
+            <strong>Form Basics Code Along</strong><br>
+            <br>
+            I coded along and wound up with working forms! It was exciting.
+        </p>
+
+
+
+        <h2 class="newsection" id="runthrough">Run-through of making a basic Django Form</h2>
+        <p>In this section we did a complete run-through, which actually started from 
+            making a new project, creating an app, and all the necessary steps to add and 
+            modify project files so that we had a functioning Django form, that can take 
+            in user data, and then print the data to our terminal/console. <br>
+            Really very nice and good.
+        </p>
+        <ol>
+            <li>First step(s) covered in my <a href="{% url 'main_app:notes' %}">"Django Notes"</a> page for setting up your project/app:</li>
+                <ul>
+                    <li>Create your_project</li>
+                    <li>Create your_app</li>
+                    <li>Create your templates folder, app sub-folder, and index.html, and an app_related .html</li>
+                    <li>Edit settings.py to add templates directory, and add your_app to Installed Apps</li>
+                </ul>
+            <li>Make a <strong>forms.py</strong> file in your_app:</li>
+                <p class="codeblock">
+                    from django import forms<sup>(1)</sup> <br>
+                    <br>
+                    class FormName(forms.Form): <br>
+                    &emsp; name = forms.CharField() <br>
+                    &emsp; email = forms.EmailField() <br>
+                    &emsp; text = forms.CharField(widget=forms.Textarea)
+                </p>
+                <p class="mattthoughts">
+                    <sup>(1)</sup>Remember, if you get any issues or warnings when you try to import django, it could 
+                    be related to your virtual environment and python executable path. This is covered 
+                    in <a href="{% url 'main_app:notes' %}" style="color: darkslateblue;">"Django Notes"</a>
+                </p>
+            <li>Set up the views in your_app's views.py:</li>
+                <p class="codeblock">
+                    from . import forms <br>
+                    <br>
+                    <span class="codecomment"># your_app will have a main/index page</span><br>
+                    def index(request): <br>
+                    &emsp; return render(request,'your_app_templates/index.html') <br>
+                    <br>
+                    <span class="codecomment"># The page that'll come up when you type '/yourextension'</span><br>
+                    def form_name_view(request): <br>
+                    &emsp; form = forms.FormName() <br>
+                    &emsp; return render(request, 'your_app_templates/app_related.html', {'form':form})
+                </p>
+                <p><strong>Huh?</strong><br>
+                    We imported our recently-made forms.py. Then we made the basic index view<sup>(1)</sup> for the app. 
+                    Then we made the page that you'll see when you use the extension '/yourextension', but 
+                    note that we haven't yet defined what extension that is. We'll do that next in urls.py.
+                </p>
+                <p>
+                    And in that form_name_view function, we're setting up some template tagging. In 
+                    earlier examples, we defined a dictionary and then passed it into the return statement 
+                    as a variable; in this case, we're passing in the dictionary itself. The dictionary in 
+                    question has the key: <strong>'form'</strong>, which is what we'll type into our html 
+                    later, and by doing so, it'll fill that space with the value: <strong>form</strong>. 
+                    The <em>value</em> form points to the variable we just defined above, which is an 
+                    instance of the class <strong>FormName</strong> that we defined in the previous step.
+                </p>
+                <p>
+                    So once this is all put together, this function is pulling name, email, and text input fields 
+                    which are class attributes from your forms.py file, and it'll push those to your forms 
+                    html page via template tagging.
+                </p>
+                <p class="mattthoughts">
+                    <sup>(1)</sup> I wonder what would happen if you had multiple apps, and each app had its 
+                    own index.html. Can that work? I feel like it wouldn't because you're basically defining 
+                    the main page for your website. This hasn't been covered yet, so I may need to try it out.
+                </p>
+            <li>Configure the urls.py file:</li>
+                <p>In this example we're keeping it simple, and just using the main urls.py file. 
+                    We could alternatively map the main urls to the urls.py for our app.
+                </p>
+                <p class="codeblock">
+                    from your_app import views <br>
+                    <br>
+                    <span class="codecomment"># Now add to the list of urlpatterns</span><br>
+                    url(r'^$', views.index, name='index') <br>
+                    url(r'^formpage/', views.form_name_view, name='form_name')
+                </p>
+                <p>
+                    So we imported the views file, giving us access to the two functions we just defined. 
+                    The index view is straightforward. <br> 
+                    The forms-related view works like this: <br>
+                    We defined 'formpage/' as our extension to pull up the forms page. That url 
+                    will call the <strong>form_name_view</strong> function from views.py, which is all 
+                    the info I described under the "Huh?" paragraph in Step 3.
+                </p>
+            <li>Modifying the HTML files:</li>
+                <p>
+                    There isn't much to do with index.html in this example. We just modified it to direct 
+                    the user to type the extension '/formpage' so that they can get to the forms.
+                </p>
+                <p>
+                    The app_related.html page is where it all comes together, but we go through the process 
+                    in steps to show how each element affects what the user sees. First, we add a basic 
+                    template tag to the body of the app_related.html:
+                </p>
+                <p class="codeblock">{{ form }<!---->}</p>
+                <p class="mattthoughts">
+                    By itself, this template tag succeeds in displaying text input forms. However, 
+                    they look like garbage, and although you can type in them, you can't submit anything.
+                </p>
+                <p>He then spruces up both HTML files with a bootstrap link. But in addition to its 
+                    visual upgrades, we'll also be able to streamline the process of getting a proper 
+                    submit button in a few moments. I'm not showing any of the bootstrap aesthetic stuff here.
+                </p>
+                <p>Now we'll add an HTML form tag to encapsulate our previous template tag. We'll also 
+                    modify the template tag with a <strong>.as_p</strong>, which gives p-tag formatting to 
+                    the template tag, rather than having it strewn about the page like it was before.
+                </p>
+                <p class="codeblock">
+                    form method="POST" <br>
+                    &emsp; {{ form.as_p }<!---->} 
+                </p>
+                <p>
+                    That should help with the formatting, but we still need to take the input from the 
+                    text fields. The first step toward doing that is to add an <strong>input</strong> tag 
+                    right below that template tag. In this example, he also adds some bootstrap classes to 
+                    quickly style the button:
+                </p>
+                <p class="codeblock">
+                    input type='submit' class='btn btn-primary' value='Submit'
+                </p>
+                <p>
+                    We take another look at the webpage - the form looks way better, you can type 
+                    into it, and there's even a submit button now; however, if you try to submit 
+                    the information, you'll get an error saying: <br>
+                    <strong>CSRF verification failed</strong>
+                </p>
+                <p>
+                    In short, the CSRF is two things: <br>
+                    1) A way to protect the data that's being submitted via these forms. <br>
+                    2) Required by Django in order for forms to work. <br>
+                    But here's a <a href="https://stackoverflow.com/questions/5207160/what-is-a-csrf-token-what-is-its-importance-and-how-does-it-work">nice example</a> of how it works that I found on stackoverflow.
+                </p>
+                <p>
+                    Clearly the form won't work without the CSRF token, so we simply add it somewhere 
+                    within the form tag, and it looks like this:
+                </p>
+                <p class="codeblock">{% csrf_token %<!---->}</p>
+                <p><strong>It works!!!</strong></p>
+                <img src="https://media1.tenor.com/images/a6b1a42934038883d5f71194c0491a12/tenor.gif" width=500 height=250 alt="...but this image didn't :(">
+
+        </ol>
+        <a href="#top">Back to the... Top</a>
+
+
+        <h2 class="newsection" id="whereistheinfo">Wait a minute, where'd Einstein go?</h2>
+        <p>
+            So we managed to send a name, email, and some text via a Django form, but now what? 
+            This is going to be a basic (though impractical) example, that will at least show us 
+            how to retrieve and use the information that gets submitted. Particularly, we're 
+            going to print out that information to the console.
+        </p>
+        <p>
+            To do this, we're going to modify <strong>views.py</strong>, and use some new commands, 
+            which are methods that we can call off of <strong>forms</strong>:
+        </p>
+        <p class="codeblock">
+            <span class="codecomment"># Add this under 'form = forms.FormName()' in form_name_view</span><br>
+            if request.method == 'POST': <br>
+            &emsp; form = forms.FormName(request.POST) <br>
+            <br>
+            &emsp; if form.is_valid(): <br>
+            &emsp; &emsp; print("NAME: " + form.cleaned_data['name']) <br>
+            &emsp; &emsp; print("EMAIL: " + form.cleaned_data['email']) <br>
+            &emsp; &emsp; print("TEXT: " + form.cleaned_data['text']) <br>
+        </p>
+        <p>
+            <strong>In English:</strong><br>
+            If the user POSTs something, then we redefine our 'form' variable to include that information, 
+            and we run it through a built-in validation check. 
+        </p>
+        <p>
+            Now I don't know much yet about the validation or this next command, but my guess 
+            is that the built-in validation results in some information that Django refers to 
+            as <strong>cleaned_data</strong>. So if the form is valid, we run some print statements 
+            that call the <strong>.cleaned_data</strong> method off the form object created by 
+            the user's posted information. The data appears to be the entirety of the form, which 
+            you essentially index to get the item you're looking for, e.g. <strong>['name']</strong>.
+        </p>
+        <p style="margin-top: 150px;"><strong>Look out!</strong></p>
+        <img style="margin-left: 40px;" src="https://vignette2.wikia.nocookie.net/bttf/images/3/3c/DeLorean_Arrival.gif/revision/latest?cb=20100901215907" alt="...you disintegrated Einstein?"><br>
+        <a href="#top">Back to the... Top</a>
+
+
+
+        <h2 class="newsection" id="validation">Form Validation - check that data</h2>
+        <img src="https://media.tenor.com/images/4c18fc57d52978e88f4f39882fe73881/tenor.gif" alt="this was supposed to be a fun GIF"><br>
+        <p>This section focuses on creating hidden fields in forms in order to catch bots. We're going to:</p>
+        <ul>
+            <li>Add a check for empty fields;</li>
+            <li>Add a check for a bot;</li>
+            <li>Add a method to 'clean' data for the entire form.</li>
+        </ul>
+        <p>
+            As of right now, our <strong>forms.py</strong> has a NAME, EMAIL, and TEXT field. We're 
+            going to add a new one just below those, and it's going to be a hidden field to catch 
+            bots. The concept here is that a bot won't actually look at your website, they'll be 
+            going straight into your HTML code, and filling out values. The variable we're about to 
+            make is essentially a decoy, and we'll know there's a bot if it's filled out because a 
+            human couldn't fill out that field from the webpage itself.
+        </p>
+        <p class="codeblock">botcatcher = forms.CharField(required=False, <br>
+            &emsp; widget=forms.HiddenInput)
+        </p>
+        <p>
+            So we just created a hidden <strong>CharField</strong> and made sure to set 'required=False'. 
+            The first type of validation we'll try is by building an in-class function:
+        </p>
+        <p class="codeblock">
+            def clean_botcatcher(self): <br>
+            &emsp; <span class="codecomment"># First redefine botcatcher as a cleaned versrion of iteself</span><br>
+            &emsp; if len(botcatcher) > 0: <br>
+            &emsp; &emsp; raise forms.ValidationError("WE CAUGHT A BOT!") <br>
+            &emsp; return botcatcher
+        </p>
+        <p>
+            <strong>Explanation:</strong><br>
+            If the length of the hidden field is greater than 0, there must be a bot! So we 
+            return a ValidationError with custom text. The error is reported automatically by 
+            Django to the top of the form. 
+        </p>
+        <p class="mattthoughts">
+            I *think* that Django just knows when you name a function <strong>clean_Something</strong>, 
+            it knows how to implement it, and it understands that it's supposed to be dealing with 'something'. 
+            I'm not certain of this, but how else is this function getting called? We defined it, but never 
+            wrote a function call anywhere else in our code.
+        </p>
+
+        <p><strong>A simpler way to accomplish what we just did:</strong><br>
+            Go ahead and delete or comment out that function. We're going to handle it with a 
+            Django import instead.
+        </p>
+        <p class="codeblock">from django.core import validators</p>
+        <p>Now we'll add another argument to the definition of <strong>botcatcher</strong>:</p>
+        <p class="codeblock">botcatcher = forms.CharField(required=False, <br>
+            &emsp; widget=forms.HiddenInput, <br>
+            &emsp; <span class="codecomment"># Now the extra line</span> <br>
+            &emsp; <strong>validators=[validators.MaxLengthValidator(0)])</strong> 
+        </p>
+        <p>
+            That extra line replaces the function we made a moment ago. 'Validation', in this case, 
+            is achieved by not exceeding a Max Length of 0. On the other hand, if a string is 
+            passed through - i.e. max length exceeds 0 - then you get a validation error on the page, 
+            similar to the one in the previous example.
+        </p>
+        <p>
+            <strong>DIY Validators:</strong><br>
+            There are other built-in validators, like MaxLengthValidator shown above; however, if 
+            you're looking to validate in a way that isn't covered by the built-in stuff, you can create 
+            your own. In this example, we checked for the arbitrary requirement that all names have 
+            to start with 'Z', and any name that doesn't start with a 'Z' will throw an error. To do 
+            this, we build a function <strong>outside of the class</strong>.
+        </p>
+        <p class="codeblock">
+            <span class="codecomment"># The name 'value' matters to Django</span><br>
+            def check_for_z(value): <br>
+            &emsp; if value[0].lower() != 'z': <br>
+            &emsp; &emsp; raise forms.ValidationError("Name needs to start with Z.")
+        </p>
+        <p>In order to implement this function, we'll modify the class attribute: <strong>name</strong>.</p>
+        <p class="codeblock">
+            <span class="codecomment"># Instead of just name = forms.CharField():</span><br>
+            name = forms.CharField(<strong>validators=[check_for_z])</strong>
+        </p>
+        <p>Once again, we used the <strong>validators</strong> import to streamline the validation 
+            process, but this time we passed in our own function.
+        </p>
+        <p>
+            <strong>Mr. Clean</strong><br>
+            I'm not certain, but I think that data needs to be <strong>cleaned</strong> before it 
+            can be <strong>validated</strong>. In the event you wanted to clean all of your data 
+            at once, rather than individually, you can add a function within in your form class.
+        </p>
+        <p>First, for this example we added an email verification to the form by creating another 
+            EmailField and setting it to a variable: <strong>verify_email</strong>.
+        </p>
+        <p class="codeblock">
+            <span class="codecomment"># I believe 'clean' is another keyword for Django</span><br>
+            def clean(self): <br>
+            &emsp; <span class="codecomment"># This 'super' thing returns all the clean data for the form</span><br>
+            &emsp; all_clean_data = super().clean() <br>
+            &emsp; email = all_clean_data['email'] <br>
+            &emsp; vmail = all_clean_data['verify_email'] <br>
+            <br>
+            &emsp; <span class="codecomment"># This part is unrelated to the clean, <br> 
+            &emsp; #but just bringing closure to the example</span><br>
+            &emsp; if vmail != email: <br>
+            &emsp; &emsp; raise forms.ValidationError("Emails do not match!")
+        </p>
+        <a href="#top">Back to the... Top</a>
+
+
+        <h2 class="newsection" id="modelforms">Model Forms</h2>
+        <p><strong>My attempt (and success!)</strong></p>
+        <p>
+            <a href="https://docs.djangoproject.com/en/3.2/topics/forms/modelforms/">
+            Model Forms</a> 
+            are building on what we just learned about forms. The key concept here 
+            is that instead of building out the form in your forms.py, you can import various 
+            fields that you've already created in your models.py file.
+        </p>
+        <p>
+            In this example, we worked with the project we made earlier, in which we created 
+            a '/user' page that displayed a list of all users <sup>(1)</sup>. What's important 
+            about the list of users isn't the list itself, but the fact that each user fits the 
+            structure of a <strong>User</strong> class object, which is something we defined in 
+            the <strong>models.py</strong> for that app. The class attributes for each user were:
+        </p>
+        <p class="codeblock">
+            first_name = models.CharField(max_length=264) <br>
+            last_name = models.CharField(max_length=264) <br>
+            email = models.EmailField()
+        </p>
+        <p class="mattthoughts">
+            <sup>(1)</sup>Though it's unrelated to this lecture, recall that the way we generated 
+            the list of users was by using the Faker() module. That's covered in the Models page 
+            of my notes.
+        </p>
+        <p>
+            Since we already have that infrastructure in place, this lecture explains how we can 
+            import it into our <strong>forms.py</strong> to avoid duplicating effort. The concepts 
+            used in this lecture are similar to those we've learned already (in their simplest examples). 
+            So before he coded through an example, he challenged us to create a form page using this 
+            approach. Before I get into his run-through, this section is based on my unbiased attempt 
+            at the challenge. Here's what was asked:
+        </p>
+        <ul>
+            <li>Create a <strong>ModelForm</strong> in <strong>forms.py</strong>;</li>
+            <li>Connect the form in a template;</li>
+            <li>Edit <strong>views.py</strong> to show the form;</li>
+            <li>Figure out how to <strong>.save()</strong> the data;</li>
+            <li>Verify the model is admin-registered.</li>
+        </ul>
+        <p>
+            <strong>Create the ModelForm:</strong><br>
+            In the brief overview lecture, we saw the standard imports into <strong>forms.py</strong>:
+        </p>
+        <p class="codeblock">
+            from django import forms <br>
+            from my_app.models import User
+        </p>
+        <p class="mattthoughts"><strong>User</strong> is just the class we made previously 
+            in <strong>models.py</strong>. We're importing it so we can inherit from it to 
+            create our form.
+        </p>
+        <p>
+            Note that when we create this next class below, we're going to pass in <strong>forms.ModelForm</strong> 
+            instead of <strong>forms.Form</strong>. And things get crazy, as we create a 
+            class within the class. <br><br>
+            <img id="inception" width=100 height=100 src="https://gifimage.net/wp-content/uploads/2017/08/inception-gif-20.gif" alt="this would've been a 'clever' inception reference"><br>
+            <span style="font-size: .75em; font-style: italic;">Sorry, wrong movie reference; I'll try again...</span>
+        </p>
+        <p>
+            <img src="https://media.giphy.com/media/EnVW9bXB94aw8/source.gif" alt="">
+        </p>
+        <p class="codeblock">
+            class UserForm(forms.ModelForm): <br>
+            <br>
+            &emsp; <span class="codecomment"># 'Meta' tells Django.. well, something. I dunno yet.</span> <br>
+            &emsp; class Meta: <br>
+            <br>
+            &emsp; &emsp; <span class="codecomment"># Telling Django to base this class on our model class 'User'</span> <br>
+            &emsp; &emsp; model = User <br>
+            &emsp; &emsp; fields = "__all__" <sup>(2)</sup>
+        </p>
+        <p class="mattthoughts">
+            <sup>(2)</sup>There are a few different options for specifying the fields you will 
+            use in your form: <br>
+            <strong>fields = "__all__"</strong>:  get 'em all; <br>
+            <strong>fields = ['field1', 'field3', etc.]</strong>:  inclusion; <br>
+            <strong>exclude = ['field2']</strong>:  exclusion;
+        </p>
+        <p class="mattthoughts">
+            Also, just to reiterate this: that's all we need to do (in this case) in our forms.py 
+            file, since it's importing the rest of the information from something we've already 
+            built in models.py. <br>
+            <br>
+            Alternatively, the models from model.py could've been written in forms.py. In such 
+            cases, those classes would've been defined above the UserForm (ModelForm) class 
+            we're working on now.
+        </p>
+        <p><strong>Add a view for your new form:</strong></p>
+        <p>
+            If you're picking up any sort of pattern about how Django works, you make some classes,
+            and then you make functions in views.py to help bring those classes to a browser, and 
+            finally map your url's accordingly. So in the previous step, we made a class, meaning it's 
+            time to create a corresponding view for the class. To do this, I followed the general 
+            setup we used in the cleverly-named section: <a href="#whereistheinfo">Wait... where'd Einstein go?</a>
+        </p>
+        <p class="codeblock">
+            <span class="codecomment"># Import forms!</span><br>
+            from . import forms <br>
+            <br>
+            def user_form_page(request): <br>
+            &emsp; <span class="codecomment"># Create an instance of our class object UserForm</span><br>
+            &emsp; user_form = forms.UserForm() <br>
+            &emsp; <span class="codecomment"># Now we'll get this object to display via template-tagging</span><br>
+            &emsp; <span class="codecomment"># by passing it as the value in this dictionary:</span><br>
+            &emsp; uf_dict = {'userform': user_form} <br>
+            <br>
+            &emsp; <span class="codecomment"># If user posts data, redefine user_form to include it</span><br>
+            &emsp; if request.method == 'POST': <br>
+            &emsp; &emsp; user_form = forms.UserForm(request.POST) <br>
+            <br>
+            &emsp; &emsp; <span class="codecomment"> # Validate just like before</span><br>
+            &emsp; &emsp; if user_form.is_valid(): <br>
+            &emsp; &emsp; &emsp; <span class="codecomment"># Do something; I printed stuff...</span><br>
+            &emsp; &emsp; &emsp; print("First Name: " + user_form.cleaned_data['first_name']) <br>
+            &emsp; &emsp; &emsp; # And so on... <br>
+            &emsp; &emsp; &emsp; <span class="codecomment"># I'll explain this in a moment...</span><br>
+            &emsp; &emsp; &emsp; user_form.save() <br>
+            <br>
+            &emsp; return render(request, 'my_app/user_form.html', context=uf_dict)
+        </p>
+        <p>
+            For those keeping score on the original task list, I've made the ModelForm, edited 
+            the views.py to show the form, and figured out how to use <strong>.save()</strong> to 
+            save the form data. I'll need to go to the html still, but this was the bulk of the work. 
+            That .save() method is something that I looked up, based on the instructor's direction 
+            to do so. Basically, the data only lives in the current iteration of your program 
+            unless you use the .save(), at which point the data is saved into your database.
+        </p>
+        <p class="mattthoughts">
+            Wait, is it though? The last task on the list is to make sure the model is admin-registered, 
+            which mine already was. I think? Which model is he referring to? User? Because that one 
+            is registered - I confirmed by looking in my admin.py file. But UserForm is not. Does it 
+            need to be? What I DO know is that the .save() function succeeded in taking newly-entered 
+            user data and adding it to my admin database. So to me, it worked. What I do I know though? 
+            I'm just some guy on the internet.
+        </p>
+        <p>
+            Now the final step (which he listed as the second step) is to actually set up the html 
+            so that everything we did (or <strong>I did?</strong> I dunno, is anyone else doing this?)... 
+            Anyhow, we create an html file in our templates folder, and add just a few things:
+        </p>
+        <ul>
+            <li>A form tag, specifying <strong>method='POST'</strong>;</li>
+            <li>A <strong>csrf_token</strong>;</li>
+            <li>Template tagging to bring in our form:</li>
+                <p class="codeblock">{{ userform.as_p }<!---->}</p>
+            <li>An input of type='submit' to actually take in the user's data.</li>
+        </ul>
+        <p>
+            I'm counting this as part of the 'final step' so that my last statement isn't wrong. 
+            And really, you haven't 'set up the html file' unless you've also set up your Django 
+            project to point to that html. For simplicity, I handled that in the main urls.py, 
+            rather than dealing with mapping the main one to the one for the app. Hey man, I'm 
+            new here, and editing double urls.py files was not the point of this exercise. And 
+            here's what that looks like:
+        </p>
+        <p class="codeblock">url(r'^userform/', views.user_form_page, name='userform')</p>
+        <p>There's a shit-ton of 'user' and 'userform' in here.</p>
+        <ul>
+            <li><strong>userform/</strong> is the url extension to get to the page we just made;</li>
+            <li><strong>user_form_page</strong> is the function we made in views.py to show the form;</li>
+            <li><strong>name='userform'</strong> haha, I still don't know what this one's for</li>
+        </ul>
+        <p style="margin-top: 50px;"><strong>The Instructor's solution - did I do anything wrong?</strong> <br>
+            <img width=200 heigh=200 style="margin-top: 15px;" src="https://thumbs.gfycat.com/AnxiousImpossibleArieltoucan-size_restricted.gif" alt="...where'd my fun little gif go?">
+        </p>
+
+        <ul>
+            <li>
+                He switched his import in views.py. Instead of importing <strong>User</strong> from 
+                <strong>my_app.models</strong>, he imports <strong>UserForm</strong> from 
+                <strong>my_app.forms</strong>. Not sure if this impacts the code since mine worked, 
+                but perhaps it's a better way to write it?
+            </li>
+            <li>
+                He also got rid of the HttpResponse import since we're not using it.
+            </li>
+            <li>
+                When he does the <strong>.save()</strong>, he passes in the following argument: <br>
+                user_form.save(<strong>commit=True</strong>) <br>
+                His wording of the rationale is interesting: "..what you can also do is add commit=True" 
+                to commit it to the database." <br>
+                "Can"? Mine seemed to go to the database without doing this, so what's different when 
+                you add this? I simply don't know yet.
+            </li>
+            <li>
+                The biggest difference was related more to the way he linked his web pages, rather 
+                than an issue with the ModelForm concept. He set up the page so that once a user 
+                enters their info, it brings them to the <strong>index/home</strong> page, 
+                whereas I just had mine print the user info to the console to verify that it worked. 
+                I'm not going to code out the differences on his url setup because it spans a few different 
+                files, and it's not the main focus of this section.
+            </li>
+        </ul>
+        <p class="mattthoughts">
+            I couldn't deal with the fact that his web pages were linked differently, so I got mine 
+            to work in a similar manner. Fine, one more codeblock to show you how that happened:
+        </p>
+        <p class="codeblock">
+            <span class="codecomment"># You really just need to add a line under these ones:</span><br>
+            if user_form.is_valid(): <br>
+            &emsp; # Your print statements <br>
+            &emsp; <strong>return user_page(request)</strong>
+        </p>
+        <p>
+            You still keep your return statement that we used earlier, but now you've added this one 
+            underneath the code that's executed after validation. So once user info is validated, 
+            the <strong>user_page(request)</strong> view/function will be called. I don't understand 
+            this well enough to explain how two return statements can be called in one function. I 
+            thought it had to be an either/or scenario, but I have much to learn. Don't we all... <br>
+            Do you kinda get it though? <br>
+            Our <strong>user_form_page</strong> function calls the <strong>user_form.html</strong> page, 
+            and within that process, once data is entered and validated, our user_form_page function 
+            calls upon the user_page view/function, which is how the user is taken to another page.
+        </p>
+        <a href="#top">Back to the... Top</a>
+        
+
+
+        <h2 class="newsection" id="issues">Issues?</h2>
+        <p>Where we're going, we don't need issues...</p>
+        <p>Seriously though, what if you have issues?</p>
+
+        <h3 class="issueheading" id="issue1">The Great Migration</h3>
+        <p>
+            While I didn't specifically run into this issue, you would run into it 
+            if you used a different project for this exercise, and in that project 
+            you had not already run your migrations. So if you get that migration 
+            warning when you run the server, just go handle those migrations. <br>
+            I covered this on the previous section: 
+            <a href="{% url 'main_app:models' %}">Django Models</a>
+        </p>
+        <p>
+            <img width=350 height=200 src="https://i.insider.com/54493bb769bedd824b5ad03d" alt="...just imagine some wildbeests migrating, since this image link didn't work"><br>
+            <span style="font-size: .75em;">Hehe, look at these guys go, would ya?</span>
+        </p>
+        <p style="margin-top: 100px; font-size: 1.25em;">
+            That's all for Forms... <br>
+            <a href="#">
+                <img src="https://media.giphy.com/media/12xvz9NssSkaS4/source.gif" alt="...see you in the future">
+            </a>
+        </p>
+        <a href="#top">Back to the... Top</a>
+
+
+    </div><!-- end of div/top -->
+    <div id="bottom"></div>
+{% endblock %}

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+{% extends 'main_app_templates/base.html' %}
+
+{% block body_block %}
+
+    <h1>Django Models & Databases</h1>
+    <div class="container" id="top">
+
+        <h3>What's here:</h3>
+        <ul>
+            <li><a href="#intro">Intro to Models & Databases</a></li>
+            <li><a href="#faker">Faker! ..adding 'dummy data' to your database</a></li>
+            <li><a href="#mtv">MTV! Models-Templates-Views</a></li>
+            <li><a href="#issues">Issues</a></li>
+            <ul>
+                <li><a href="#issue1">Issue 1 - django.db.utils.IntegrityError</a></li>
+            </ul>
+            <li><a href="#mousemover">Mouse Mover - hi-tech shortcut to long lunches</a></li>
+        </ul>
+        <br><br>
+        <p class="mattthoughts">
+            This stuff might look like it's not written for you. It's not. <br>
+            <br>
+            It might be helpful though if you're learning Django. I made this while taking a 
+            Udemy course "Python and Django Web Development Bootcamp". This page will cover
+            the Models & Databases lectures in that course.
+        </p>
+        <p class="mattthoughts">
+            <strong>Note:</strong><br>
+            Lecture 132 of this course has a pretty thorough walkthrough of everything starting 
+            from setting up a new project, through the "MTV" materials covered on this page, in 
+            which we get Django and SQL to interact with the DOM (Document Object Model).
+        </p>
+
+
+        <h2 class="newsection" id="intro">Introduction to Models & Databases</h2>
+        <p>Here are the steps he went through in the course to set up our models:</p>
+        <ol>
+            <li>Add classes to models.py in my_app (or whatever app you're using).</li>
+                <p class="mattthoughts">
+                    Just realized I explained very little about the classes being created. 
+                    This is partly because I'm unclear if they were standard things that 
+                    you'd create to test out most any website, or if they were specific 
+                    to this course/lesson, or some other scenario that I'm not creative 
+                    enough to have speculated on my own. <br>
+                    <br>
+                    Regardless, the ones we've created are: <br>
+                    <strong>Topic, Webpage, and AccessRecord</strong><br>
+                    <br>
+                    All three Classes inherit from Django's 'Model' class, which is to 
+                    say they follow this type of format: <br>
+                    <span class="codeblock">class ClassName(models.Model):</span>
+                </p>
+                <p class="mattthoughts">
+                    While on the subject of "That which mystefies me", I noticed that 
+                    none of the Classes we created were given an __init__ method, which, 
+                    in my limited knowledge of OOP, I thought was a MUST. Maybe it's 
+                    because Model already has an __init__, and these derive that one?
+                </p>
+                <p class="mattthoughts" >
+                    How about a few more things I don't understand yet? <br>
+                    <br>
+                    Everything's called models or Model. We've got models.Model. From 
+                    what I've learned, 'models' is presumably short for 'models.py', 
+                    and Model is a Class created in models.py. <br>
+                    HOWEVER!... if we're passing in 'models.Model', why are all the 
+                    variables in those classes defined with 'models.something()', 
+                    rather than 'Model.something()'?<br>
+                    Perhaps one day I shall find out. <br>
+                    <br>
+                    Next... what sort of object is Model, the class from which we're 
+                    inheriting things? How does it behave? I can try to guess based 
+                    on how something like AccessRecord, for example, behaves. <br>
+                    AccessRecord seems to be set up as an array, list, or database 
+                    of some sort of object that can take in multiple data points.
+                </p>
+            <li>Then three lines in the terminal to handle 'migrations' (haha, like I know what I'm talking about):</li>
+                <p class="codeblock">
+                    <span class="codecomment"># This one gets rid of that red text migration warning </span> <br>
+                    python3 manage.py migrate <br>
+                    <br>
+                    <span class="codecomment"># Not sure what this one does, but do it!</span>  <br>
+                    python3 manage.py makemigrations my_app <br>
+                    <br>
+                    <span class="codecomment"># Then you run the first line again. Why? I dunno, you just do.</span>  <br>
+                    python3 manage.py migrate
+                </p>
+            <li>
+                Now we'll see if all that worked. We're going to do that with an.. oddly specific
+                python shell, which we'll access by calling:
+            </li>
+                <p class="codeblock">python3 manage.py shell</p>
+            <li>Here's what we do in the python shell:</li>
+                <p class="codeblock">
+                    from my_app.models import Topic <br>
+                    <span class="codecomment"># This'll print an empty list since you haven't added to it yet...</span> <br>
+                    print(Topic.objects.all()) <br>
+                    <br>
+                    <span class="codecomment"># So let's create a Topic object, 't':</span><br>
+                    t = Topic(top_name='Social Network') <br>
+                    <br>
+                    <span class="codecomment"># Apparently you have to save these...</span><br>
+                    t.save() <br>
+                    <br>
+                    <span class="codecomment"># Then run that first command again to see your no-longer-empty list...</span><br>
+                    print(Topic.objects.all()) <br>
+                    <span class="codecomment"># OK, you can quit() the shell now.</span>
+                </p>
+            <li>Configure the admin.py file now:</li>
+                <p class="codeblock">
+                    from my_app import [the classes you added to models.py in step 1] <br>
+                    <br>
+                    <span class="codecomment"># Under "Register your models here:"...</span> <br>
+                    admin.site.register(some_class) <br>
+                    admin.site.register(another_class) <br>
+                    admin.site.register(and_so_on...)
+                </p>
+            <li>Create a <strong>Superuser</strong> to prevent Joe Shmo from making changes to your admin page:</li>
+                <p class="codeblock">
+                    <span class="codecomment"># In terminal...</span> <br>
+                    python3 manage.py createsuperuser <br>
+                    <br>
+                    <span class="codecomment"># You'll be prompted for Name, Password, and Email - remember them or else!</span>
+                </p>
+            <li>Try it out!</li>
+                <p>
+                    Save everything and runserver; everything should LOOK the same on the front end... 
+                    BUT!... type the '/admin' extension on your URL, and you'll be taken to a magical 
+                    page that was created 'automatically' by doing the steps above.
+                </p>
+                <p class="mattthoughts">
+                    There's a lot you can do on this page, in lieu of using the terminal. You can add 
+                    topics like we did above, but now with a graphical interface. <br>
+                    <br>
+                    Be sure to protect this page though because if someone gets in there, they can really 
+                    screw up your interwebbing.
+                </p>
+        </ol>
+
+
+
+        <h2 class="newsection" id="faker">Faker!</h2>
+        <p>Let it be known that I don't yet understand the premise of adding 'dummy data' 
+            to your database. I mean, it's cool that it can just do it, but I don't know 
+            what the reason is. I can tell you that names like 'Faker' and 'Dummy Data' 
+            are giving me esteem issues. I digress.
+        </p>
+        <a href="https://faker.readthedocs.io/en/master/">Some useful documentation on Faker()</a>
+        <ol>
+            <li>First thing's first: install Faker; make sure you're in the correct venv</li>
+                <p class="codeblock">pip3 install Faker</p>
+            <li>Create "populate_my_app.py" in the main project folder.</li>
+            <li>In populate_my_app.py, you need these lines first:</li>
+                <p class="codeblock">
+                    import os <br>
+                    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'my_app.settings')
+                </p>
+            <li>THEN you can import django:</li>
+                <p class="codeblock">
+                    import django <br>
+                    django.setup()
+                </p>
+            <li>Even more imports...</li>
+                <p class="codeblock">
+                    import random <br>
+                    from my_app.models import [the classes you made earlier] <br>
+                    from faker import Faker
+                </p>
+            <li>Create an instance of Faker() and some 'dummy' topics:</li>
+                <p class="codeblock">
+                    fakegen = Faker() <br>
+                    topics = ['Search','Social','News','Games']
+                </p>
+            <li>Make a topic-randomizer function!</li>
+                <p class="mattthoughts">
+                    This little bugger will pull a random topic from our 'topics' list above 
+                    and return it as 't', which is extracted via methods inherited from the 
+                    model class. The confusing [0] index is because the 'get_or_create' method 
+                    returns a tuple, and the first element of that tuple must be the one we want.
+                </p>
+                <p class="codeblock">
+                    def add_topic(): <br>
+                    &emsp; t = Topic.objects.get_or_create(top_name=random.choice(topics))[0] <br>
+                    &emsp; t.save() <br>
+                    &emsp; return t 
+                </p>
+            <li>Now we make a 'populate' function:</li>
+                <p class="codeblock">
+                    <span class="codecomment">'N' is how many fake things to make, and we're defaulting to 5.</span><br>
+                    def populate(N=5): <br>
+                    <br>
+                    &emsp; <span class="codecomment"># In each iteration of this loop...</span><br>
+                    &emsp; for entry in range(N): <br>
+                    &emsp; &emsp;<span class="codecomment"># ...we'll generate a topic from list...</span><br>
+                    &emsp; &emsp;top = add_topic() <br>
+                    <br>
+                    &emsp; &emsp;<span class="codecomment"># ...we'll use our topic to create fake data...</span><br>
+                    &emsp; &emsp;fake_url = fakegen.url() <br>
+                    &emsp; &emsp;fake_date = fakegen.date() <br>
+                    &emsp; &emsp;fake_name = fakegen.company() <br>
+                    <br>
+                    &emsp; &emsp;<span class="codecomment"># ...then we use the fake topic, url, and name to create a webpage...(also fake)</span><br>
+                    &emsp; &emsp;webpg = Webpage.objects.get_or_create(topic=top, url=fake_url, name=fake_name)[0] <br>
+                    <br>
+                    &emsp; &emsp;<span class="codecomment"># ...and we use that webpage plus our fake date to create fake access records</span><br>
+                    &emsp; &emsp;acc_rec = AccessRecord.objects.get_or_create(name=webpg, date=fake_date)[0] <br>
+                </p>
+                <p class="mattthoughts">
+                    I'm unclear on what happens with 'webpg' and 'acc_rec' each time the for loop iterates. 
+                    The Faker library must know how to append them to something because otherwise I imagine 
+                    you'd need to do that manually in this loop, or at least return something.
+                </p>
+            <li>Now we add one of those name/main statements:</li>
+                <p class="codeblock">
+                    if __name__=='__main__': <br>
+                    &emsp; print("Populating script!") <br>
+                    &emsp; populate(20) <span class="codecomment">#make 20 things instead of 5</span><br>
+                    &emsp; print("Populating completed!")
+                </p>
+        </ol>
+        <a href="#top">Back to the Top</a>
+
+
+
+        <h2 class="newsection" id="mtv">MTV! Models-Templates-Views</h2>
+        <p class="mattthoughts">
+            <strong>In Matt terms:</strong><br>
+            We learned how to take the dummy data that was generated by faker, 
+            and use static file insertion to actually insert python-esque 
+            logic into our HTML. This allowed us to iterate through the data 
+            and populate an HTML table with the data.
+        </p>
+        <p>First thing to do is go to the views.py file for whichever app 
+            you're working with, and import the Classes you created previously 
+            in your models.py file. In this particular case it looks like this:
+        </p>
+        <p class="codeblock">from my_app.models import Topic, Webpage, AccessRecord</p>
+        
+        <p><strong>Redefining the index(request) function in views.py:</strong></p>
+        <p>In this example, he starts by populating a new list based on our 
+            AccessRecord object(s?), and then creates a dictionary so that we can 
+            later on pull this information into our html via template tagging:
+        </p>
+        <p class="codeblock">
+            webpages_list = AccessRecord.objects.order_by('date') <br>
+            <span class="codecomment">
+                # Where 'date' is a class attribute of AccessRecord, <br>
+                # .order_by() is some function from SQL that does what it says <br>
+                # 'objects' is probably a parent class function from 'models'
+            </span> <br>
+            <br>
+            date_dict = {'access_records':webpages_list} <br>
+            <span class="codecomment">
+                # Where 'access_records' will be used for template tagging <br>
+                # and 'webpages_list' will be the text that gets inserted into the html
+            </span> <br>
+            <br>
+            return render(request, 'my_app/index.html',context=date_dict)
+        </p>
+        
+        <p><strong>Update index.html</strong></p>
+        <p>He starts by adding a few 'good habit' items:</p>
+        <p class="codeblock">
+            <span class="codecomment"># under "!DOCTYPE":</span><br>
+            {% load staticfiles %<!---->} <br>
+            <br>
+            <span class="codecomment"># in "head" </span><br>
+            link rel="stylesheet" href="{% static 'css/your_css.css' %<!---->}"
+        </p>
+        <p>
+            Then we add some basic text on the page before getting to the kicker... <br>
+            ...some if/then and for logic, passed into {% %<!---->} tags:
+        </p>
+        <p class="codeblock">
+            <span class="codecomment">
+                # where 'access_records' is what you defined in a dictionary earlier
+            </span><br>
+            {% if access_records %<!---->} <br>
+            <br>
+            <span class="codecomment">
+                # That set up what to do if 'access_records' is present <br>
+                # This sets up what to do otherwise...
+            </span> <br>
+            {% else %<!---->} <br>
+            &emsp; #some p-tag saying 'no records found' <br>
+            <span class="codecomment"># followed by...</span><br>
+            {% endif %<!---->}
+        </p>
+        <p>OK, now the logic in that IF statement we started above: <br>
+            We're saying "if access_records" exist, then we're going to make 
+            an html table with table headers. <br>
+            <br>
+            Then we throw in a FOR loop...
+        </p>
+        <p class="codeblock">
+            {% for acc in access_records %<!---->} <br>
+            &emsp; tr <br>
+            &emsp; &emsp; td {{ acc.name }} td <br>
+            &emsp; &emsp; td {{ acc.date }} td <br>
+            &emsp; tr <br>
+            {% endfor %<!---->}
+        </p>
+        <p>Looks and works similar to python code: <br>
+            For some arbitrary iterative variable 'acc' in access_records, we 
+            create a new 'tr' table row; in each table row, we create two 'td' cells 
+            in adjacent columns, and populate them via template tagging: <br>
+            The first takes a name from the current 'acc' in the access_records, <br>
+            And the second takes a date from the current 'acc' in the access_records.
+        </p>
+        <a href="#top">Back to the Top</a>
+
+
+
+
+
+        <!-- The "ISSUES" section of the page -->
+        <h2 class="newsection" id="issues">ISSUES (How to train your Django 2)</h2>
+
+        <h3 class="issueheading" id="issue1">Issue 1 - django.db.utils.IntegrityError: UNIQUE constraint failed:</h3>
+        <p>I ran all the steps up through the 'faker' generation, but when I tried to run 
+            populate_my_app.py, I got this error:
+        </p>
+        <p class="codeblock">django.db.utils.IntegrityError: UNIQUE constraint failed: my_app_user.first_name</p>
+
+        <h3>Solution to Issue 1!</h3>
+        <p>The reason for this appears to be that I made some sort of change to my files after 
+            running the migration commands. So I ran all three again. Did it need to be all three? 
+            I don't know, but that's what I did, and then it worked when I ran populate_my_app.py again.
+        </p>
+        <a href="#top">Back to the Top</a>
+
+
+        
+
+        <h2 class="newsection" id="mousemover">Pretending to Work: Simplified</h2>
+        <p><strong>A programmer's solution to taking longer lunches</strong></p>
+        <p>By simply hooking this chip to your USB port, you can trick work computers 
+            with unchangeable screen-saver settings. Works on Mac, PC, Linux, and Chromebook. 
+            By moving your mouse cursor a small amount every few minutes, you avoid screen 
+            timeouts, logouts, etc., and no software gets installed because it's built into 
+            the chip. 
+        </p>
+        <div class="row">
+            <div class="col-lg-4 col-xs-8">
+                <a href="https://www.etsy.com/listing/951961369/auto-mouse-mover" class="thumbnail">
+                    <img width="400" src="https://cdn-shop.adafruit.com/1200x900/3500-04.jpg" alt="Image not found">
+                </a>
+            </div>
+            <div class="col-lg-4 col-xs-8">
+                <a href="https://www.etsy.com/listing/951961369/auto-mouse-mover" class="thumbnail">
+                    <img width="400" src="https://media1.tenor.com/images/2481fd3acfd32bb9099bcda05b55446d/tenor.gif" alt="Image not found">
+                </a>
+            </div>
+            <div class="col-lg-4 col-xs-8">
+                <a href="https://www.etsy.com/listing/951961369/auto-mouse-mover" class="thumbnail">
+                    <img width="400" src="https://i.etsystatic.com/27517461/r/il/d38d19/2878152643/il_794xN.2878152643_1049.jpg" alt="Image not found">
+                </a>
+            </div>
+        </div>
+
+    </div> <!-- end of container -->
+
+    <div id="bottom"></div>
+{% endblock %}

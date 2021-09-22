@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+{% extends 'main_app_templates/base.html' %}
+{% load staticfiles %}
+
+    {% block body_block %}
+    <h1>Authentication</h1>
+    <div id="top"></div>
+    <p>
+        <img src="{% static '/main_app/images/handprintIdentificationPlease.gif' %}" alt="gif access.. denied">
+    </p>
+    <h3>What's here:</h3>
+    <ul>
+        <li><a href="#passwords">Passwords & General Setup</a></li>
+        <li><a href="#usermodels">User Models</a></li>
+        <li><a href="#connectforms">Connecting the Forms to the Templates</a></li>
+        <li><a href="#registration">Registration</a></li>
+        <li><a href="#logins">Logins</a></li>
+        <li><a href="#issues">Issues</a></li>
+    </ul>
+    <br><br>
+    <p class="mattthoughts">
+        This stuff might look like it's not written for you. It's not. <br>
+        <br>
+        It might be helpful though if you're learning Django. I made this while taking a 
+        Udemy course "Python and Django Web Development Bootcamp". This page will cover 
+        the <strong>Authentication</strong> lectures in that course. </p>
+
+    
+    <h2 class="newsection" id="passwords">Passwords & General Setup</h2>
+    <p>
+        First of all: <br>
+        <strong>Never store your passwords as plain text.</strong><br>
+        <span id="neverplaintext"><strong><em>Never store your passwords as plain text.</em></strong></span> 
+    </p>
+    <p>
+        Django has some default encryption utilities which are more than enough for most applications. 
+        The other ones that he said we'll go over are: <br>
+        <ul>
+            <li>bcrypt (pip install bcrypt)</li>
+            <li>Argon2 (pip install django[argon2])</li>
+        </ul>
+    </p>
+    <p class="mattthoughts">
+        These may already be installed on your Django installation. Mine didn't have them. Either way, you can run 
+        the install commands to double check.
+    </p>
+    <p>
+        But for now, the default hashing uses SHA-256, which produces a 256-bit (32 byte) hash value. Since this 
+        is still new to me, "SHA" is Secure Hash Algorithm, and it's basically taking a given string input, and 
+        returning a lengthy 'hash' which has no discernable patterns.
+    </p>
+
+    <h3>Setting up your project</h3>
+    <p>
+        Start off by creating a new Django project with an app for example "basic_app". <br>
+        <p class="mattthoughts">
+            Here's a <a style="color: rebeccapurple;" href="{% url 'main_app:notes' %}">link</a> 
+            to my guide to setting up new Django Projects.
+        </p>
+    </p>
+    <p>
+        Go to your project's <strong>settings.py</strong> and make sure you have these in your INSTALLED_APPS:
+        <ul>
+            <li>'django.contrib.admin';</li>
+            <li>'django.contrib.auth';</li>
+            <li>'django.contrib.contenttypes;</li>
+        </ul>
+    </p>
+    <p class="mattthoughts">
+        Don't forget to also add 'basic_app'! <br>
+        And don't forget to run <strong>python3 manage.py migrate</strong>... <br>
+        Followed by: <strong>python3 manage.py makemigrations basic_app</strong>
+    </p>
+    <p>
+        Once again, we'll modify <strong>settings.py</strong>. Scroll down to where it has an <strong>AUTH_PASSWORD_VALIDATORS</strong> 
+        list, and just above it (though you could add this anywhere in the file), add a list called <strong>PASSWORD_HASHERS</strong>, and 
+        populate it with these strings below. Now, how the hell would you remember all these? If you look at the commented-out code in 
+        this section your settings.py file, you'll see a link to the Django documentation. You can go there, then head to the 'Auth' section 
+        of that page, and you can past these from there.
+    </p>
+    <p class="codeblock">
+        PASSWORD_HASHERS = [ <br>
+        &emsp; 'django.contrib.auth.hashers.PBKDF2PasswordHasher', <br>
+        &emsp; 'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher', <br>
+        &emsp; 'django.contrib.auth.hashers.Argon2PasswordHasher', <br>
+        &emsp; 'django.contrib.auth.hashers.BCryptSHA256PasswordHasher', <br>
+        &emsp; 'django.contrib.auth.hashers.BCryptPasswordHasher', <br>
+        ]
+    </p>
+    <p><strong>But re-order them to put your best hasher forward...</strong> </p>
+    <p>
+        It's important to note that Django tries these hashers in the same order that they are listed. So in the case above, it's going to 
+        start with PBKDF2PasswordHasher, and work its way down. In the lecture, he wanted to run them in a different order, starting with 
+        what he said is the strongest hasher, and placing the default hashing last.
+    </p>
+    <p class="codeblock">
+        PASSWORD_HASHERS = [ <br>
+        &emsp; 'django.contrib.auth.hashers.Argon2PasswordHasher', <br>
+        &emsp; 'django.contrib.auth.hashers.BCryptSHA256PasswordHasher', <br>
+        &emsp; 'django.contrib.auth.hashers.BCryptPasswordHasher', <br>
+        &emsp; 'django.contrib.auth.hashers.PBKDF2PasswordHasher', <br>
+        &emsp; 'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher', <br>
+        ]
+    </p>
+    <p class="mattthoughts">Not sure if PASSWORD_HASHERS is a required name or just a convention, or just what he felt like calling it.</p>
+
+    <h3>Setting up Project Folders</h3>
+    <p>
+        In addition to the <strong>templates</strong> and <strong>static</strong> folders that you may have already set up, there will now 
+        also be a <strong>media</strong> folder that will be set up at the same folder level as the other two.
+    </p>
+    <p>
+        <ul>
+            <li>Static Folder: your files;</li>
+            <li>Media Folder: content that user provides, like profile pictures;</li>
+        </ul>
+    </p>
+    <p>
+        So now the directory section of your <strong>settings.py</strong> should like this:
+    </p>
+    <p class="codeblock">
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) <br>
+        TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates') <br>
+        STATIC_DIR = os.path.join(BASE_DIR, 'static') <br>
+        MEDIA_DIR = os.path.join(BASE_DIR, 'media')
+    </p>
+    <p>
+        And the counterpart to that is at the bottom of <strong>settings.py</strong>, underneath STATIC_URL = '/static/', 
+        where we will add our static (and media) directory, and we'll define our media URL.
+    </p>
+    <p class="codeblock">
+        STATIC_URL = '/static/' <br>
+        STATICFILES_DIRS = [STATIC_DIR] <br>
+        <br>
+        <span class="codecomment"># MEDIA</span> <br>
+        MEDIA_ROOT = MEDIA_DIR <br>
+        MEDIA_URL = '/media/'        
+    </p>    
+
+    <a href="#top">Back to top of page</a>
+
+
+
+    <h2 class="newsection" id="usermodels">User Models</h2>
+    <p>
+        Now we'll get into working with models again to create users. Following up on that last section about a media folder, 
+        we'll see how Django's Models class object has a method <strong>ImageField</strong>, which allows the user to upload 
+        media. In order to be able to work with that, we need to make sure we have the <strong>pillow</strong> python libary installed. <br>
+        <strong>pip3 install pillow</strong>
+    </p>
+
+    <h3>Get Your Models Lined Up</h3>
+    <p><img width=400 src="{% static '/main_app/images/modelslineup.jpg' %}" alt="Looking for models; none found..."></p>
+    <p>
+        As one might expect, we're going to the <strong>models.py</strong> file, and the first thing to do is to import Django's 
+        built-in <strong>User</strong> class:
+    </p>
+    <p class="codeblock">
+        from django.contrib.auth.models import User
+    </p>
+    <p>
+        Next, we create a class, for example, UserProfileInfo, which will inherit from <strong>models.Model</strong>. He explained the reason 
+        that we don't inherit directly from the User class, saying that the User class has predetermined fields whereas we'd like to use 
+        those fields, as well as some additional fields that we'll define. The way to achieve this is by calling the OneToOneField method 
+        off of models.
+    </p>
+    <p class="mattthoughts">
+        All these instances of models and Model are admittedly confusing, and the fact that he says OneToOneField is a way to avoid directly 
+        inheriting ... but then he also says use models.Model instead of User to avoid directly inheriting ... but he still imports User... <br>
+        It's all a bit of a mystery at this point. I didn't realize that you can't inherit from a class, and then add fields to your child class. 
+        Or can you, and I'm missing some other point? Guess I'll have to keep following along.
+    </p>
+    <p class="mattthoughts">
+        I was right! <br>
+        I don't think he actually mentioned doing it, but at some point he corrected the instance of models.Model, and replaced it with User.
+    </p>
+    <p>
+        Let's define this new class, UserProfileInfo:
+    </p>
+    <p class="codeblock">
+        class UserProfileInfo(models.Model): <br>
+        <br>
+        &emsp; <span class="codecomment"># He originally passed in (models.Model), but at some</span><br>
+        &emsp; <span class="codecomment"># point corrected it to pass in (User)</span><br>
+        &emsp; user = models.OneToOneField(User) <br>
+        <br>
+        &emsp; portfolio_site = models.URLField(blank=True) <br>
+        &emsp; profile_pic = models.ImageField(upload_to='profile_pics', blank=True)
+    </p>
+    <p>
+        So here we've used the OneToOneField to *seemingly* base this class on models.Model, and then we've added a couple of fields; 
+        the first will take a string for the user's website, and is optional; the second will take an image upload, also optional, and 
+        will send it to this location that we called <strong>profile_pics</strong>. This means that Django is going to look for a folder 
+        called 'profile_pics' in the <strong>media</strong> folder, so let's make sure to add that to our media folder now.
+    </p>
+    <p>
+        We'll also add a method for basic string representation of a user profile, where 'user' is what we just defined, and 'username' 
+        is a built-in class method inherited from models.Model.
+    </p>
+    <p class="codeblock">
+        def __str__(self): <br>
+        &emsp; return self.user.username
+    </p>
+
+    <h3>Forms</h3>
+    <p>
+        With <strong>models.py</strong> set up, we create a file under our app folder called <strong>forms.py</strong>, and add the following 
+        imports:
+    </p>
+    <p class="codeblock">
+        from django import forms <br>
+        from django.contrib.auth.models import User <br>
+        from basic_app.models import UserProfileInfo
+    </p>
+    <p class="mattthoughts">
+        For a refresher on Forms, head <a style="color: rebeccapurple;" href="{% url 'main_app:forms' %}">here</a>
+    </p>
+    <p>
+        Defining our form classes for this example:
+    </p>
+    <p class="codeblock">
+        class UserForm(forms.ModelForm): <br>
+        &emsp; password = forms.CharField(widget=forms.PasswordInput()) <br>
+        <br>
+        &emsp; class Meta(): <br>
+        &emsp;&emsp; model = User  <br>
+        &emsp;&emsp; fields = ('username', 'email', 'password') <br>
+        <br>
+    
+        class UserProfileForm(forms.ModelForm): <br>
+        <br>    
+        &emsp; class Meta(): <br>
+        &emsp;&emsp; model = UserProfileInfo <br>
+        &emsp;&emsp; fields = ('porfolio_site', 'profile_pic')        
+    </p>
+    <p class="mattthoughts">
+        Ahhh... 'meta'. I'm still not entirely sure what it means. Not here; not when younger people use it 
+        in conversation; not anywhere. What I've gathered thus far is that it's used in <strong>forms.py</strong> 
+        when you're inheriting a model class into your form class.
+    </p>
+    <p>
+        We just made two form classes. The first one does, in fact, inherit from Django's User class, since it's just 
+        pulling in the basic info built into <strong>User</strong>. Then the second form is based on the model class we 
+        previously made, <strong>UserProfileInfo</strong>, and recalling what we learned in the forms lecture, we're 
+        defining our <strong>fields</strong> variable to only include the two we want.
+    </p>
+    <p class="mattthoughts">...but there are only two fields in there. ~shrug emoji~</p>
+
+    <h3>Register the Model(s)</h3>
+    <p>
+        In order to see the model(s) in your admin page, you need to register them via the <strong>admin.py</strong> file for 
+        your app. That should look like this:
+    </p>
+    <p class="codeblock">
+        from django.contrib import admin <br>
+        from basic_app.models import UserProfileInfo <br>
+         <br>
+        <span class="codecomment"># Register your models here.</span>  <br>
+        admin.site.register(UserProfileInfo)        
+    </p>
+
+    <h3>Remember to Migrate</h3>
+    <p>
+        Each time you add a model or update the admin.py file, you need to run your migrations commands again:
+    </p>
+    <p class="codeblock">
+        python3 manage.py migrate <br>
+        python3 manage.py makemigrations basic_app
+    </p>
+
+    <a href="#top">Back to top of page</a>
+
+    
+
+    <h2 class="newsection" id="connectforms">Connecting the Forms to Our Templates</h2>
+    <p><img width="400" src="{% static '/main_app/images/reachmeme.jpg' %}" alt="image not found"></p>
+    <p>
+        Forms and models are up and running, but we need to connect them to our html. We haven't yet made any html docs 
+        for this project, so we head over to <strong>templates</strong> and create a subfolder matching the name of our 
+        app, such as <strong>basic_app</strong>. Inside that folder we create <strong>base.html</strong>, <strong>index.html</strong>, 
+        and <strong>registration.html</strong>; we also create <strong>login.html</strong>, but will just focus on the first three for now.
+    </p>
+    <p>
+        He goes on to code out a bootstrap-based navbar in <strong>base.html</strong> with relative URLs for a main index page, an admin index, 
+        and our registration page. I'm not including that, and Later Me will probably swear at Current Me. Don't forget to add in the 
+        template tags for <strong>body_block</strong> and <strong>endblock</strong>.
+    </p>
+    <p>
+        On <strong>index.html</strong>, we're using the template tag to extend base.html; then adding a tag for the body_block; then drop 
+        in a bootstrap-based jumbotron div with an h1 tag inside.
+    </p>
+    <p><img width="300" src="{% static '/main_app/images/everybodygotthat.jpg' %}" alt="a funny pic is missing!"></p>
+    <p>
+        The <strong>registration.html</strong> file is where the bulk of the html work seems to be. Inside the body_block, he adds a 
+        jumbotron div with some if/else logic and a form inside. Recall the format of if/else in html:
+    </p>
+    <p class="codeblock">
+      {% if ___ %<!---->}  <br>
+      {% else %<!---->}  <br>
+      {% endif %<!---->}      
+    </p>
+    <p>
+        The logic starts with <strong>if registered</strong>, where 'registered' will ultimately refer to some variable we'll define in 
+        <strong>views.py</strong>... so 'if registered', then show some h1 tags. <br>
+        <strong>Else...</strong><br>
+        ...we bring up some text prompting the user to register, and we also bring up the form itself. Here's his code for the form:
+    </p>
+    <p class="codeblock">
+        form enctype="multipart/form-data" method="POST"
+    </p>
+    <p>
+        He notes that the <strong>enctype</strong> parameter is required for uploading images/media, and he adds that writing the <strong>method</strong> 
+        parameter at the end of the line is a best practice item.
+    </p>
+    <p>
+        Right under the form tag, be sure to include a <strong>csrf_token</strong>; remember that Django won't do anything with your form 
+        unless you've got the token as a security measure.
+    </p>
+    <p>
+        Underneath the token:
+    </p>
+    <p class="codeblock">
+        {{ user_form.as_p }<!---->} <br>
+        {{ profile_form.as_p }<!---->} <br>
+        input type='submit' name='' value='Register'
+    </p>
+    <p>
+        Both <strong>user_form</strong> and <strong>profile_form</strong> are referring to yet-to-be-made variables that will be in our <strong>views.py</strong> 
+        which point back to the similarly-named classes in our forms.py. The <strong>as_p</strong> function we covered before - it puts the form into a 
+        p tag for better formatting. And the last line defines the input type/value for this form.
+    </p>
+
+    <h3>Edit the main urls.py</h3>
+    <p>
+        First we'll modify the main <strong>urls.py</strong> file. We have to add <strong>include</strong> after <strong>url</strong> in the imports. 
+        Also need to import <strong>views</strong> from <strong>basic_app</strong>. Then in urlpatterns add the following patterns:
+    </p>
+    <p class="codeblock">
+        url(r'^$', views.index, name='index'), <br>
+        url(r'^admin/', admin.site.urls), <span class="codecomment"># already there</span> <br>
+        url(r'^basic_app/', include('basic_app.urls'))  
+    </p>
+
+    <h3>Now edit the app's urls.py</h3>
+    <p>
+        Since the <strong>include()</strong> statement above points Django to the urls.py for <strong>basic_app</strong>, we need to make that now. 
+        We'll import <strong>url</strong> from 'django.conf.urls', and import <strong>views</strong> from basic_app. Recall that a variable called 
+        <strong>app_name</strong> must be created in order for relative URL tags to work, and it gets defined as your app, so: 
+        <strong>app_name = basic_app</strong>.
+    </p>
+    <p>
+        For now, we'll create urlpatterns with just one pattern:
+    </p>
+    <p class="codeblock">
+        url(r'^register/$', views.register, name='register'),
+    </p>
+
+    <a href="#top">Back to top of page</a>
+
+
+    <h2 class="newsection" id="registration">Registration</h2>
+    <p>
+        Much of this section takes place in the <strong>views.py</strong> file, although we need to have an understanding of how all of our files are working 
+        together in order to be able to grasp what's really going on here. Django is looking for a <strong>POST</strong> request, 
+        and views.py will tell it what to do when that happens. Typically, you'll either commit the information directly to a database, 
+        or you'll manipulate the data before committing it.
+    </p>
+    <p>
+        The first thing we'll do in <strong>views.py</strong> is import the two form classes from our basic_app forms.py:
+    </p>
+    <p class="codeblock">
+        <span class="codecomment"># He did <strong>from basic_app.forms</strong> instead of just <strong>forms</strong></span> <br>
+        from forms import UserForm, UserProfileForm
+    </p>
+    <h3>Overview of the 'register' function from views.py</h3>
+    <p>
+        We'll build a standard <strong>index</strong> function to return <strong>basic_app/index.html</strong>, and then we'll get into 
+        our register function. <em>Register</em> is going to take in a request, set a 'registered' variable to False, by default, and then check 
+        if the request is of type: <strong>POST</strong>. If it is, <em>register</em> will then take the info posted to UserForm and UserProfileForm, 
+        and save them as user_form and profile_form, respectively.
+    </p>
+    <p>
+        If the forms are both valid, we'll start working with the information contained in the forms. 
+    </p>
+    <p>
+        <ul><strong>user_form</strong>: <br>
+            <li>
+                First we'll work with <strong>user_form</strong>, whose information we'll save as <strong>user</strong>, while simultaneously 
+                saving that to our database. 
+            </li>
+            <li>
+                Then calling the built-in method <strong>.set_password()</strong> and passing in <strong>user.password</strong> will hash the 
+                password entered into the form by the user<sup>1</sup>.
+            </li>
+            <li>Then <strong>user.save()</strong> to save user data again(?), this time including the password hash.</li>
+        </ul>
+        <ul><strong>profile_form</strong>: <br>
+            <li>
+                Similarly, we create a variable <strong>profile</strong> from profile_form, however, this time we pass in <strong>commit=False</strong> 
+                to "avoid collisions with any user info", according to the instructor.
+            </li>
+            <li>
+                And we'll make a duplicate of user (views.py), saving it to <strong>profile.user</strong> to further assist in avoiding collisions, remembering 
+                that <strong>.user</strong> in this second case, refers to the 'user' class attribute in the UserProfileInfo model class that we created; 
+                and that attribute is defined as a one-to-one-field copy of Django's built-in User class. So it exists as an object having the same fields 
+                as any instance of Django's 'User' objects; then we populate that object with user-(views.py), which is a form object that also inherited 
+                from Django's User class.
+            </li>
+        </ul>
+    </p>
+    <p>        
+        <ul class="mattthoughts"><strong>(1) Did I get the right 'user'?</strong><br>
+            <li><strong>User</strong>: a Django built-in model class;</li>
+            <li><strong>UserProfileInfo</strong>: model class we built; inherits from models.Model which is one-to-one-field instance of User;</li>
+            <li><strong>UserForm</strong>: form class we built, based on User model class;</li>
+            <li><strong>UserProfileForm</strong>: form class we built, based on UserProfileInfo;</li>
+            <li><strong>user_form</strong>: an instance of UserForm once info is posted;</li>
+            <li><strong>profile_form</strong>: an instance of UserProfileForm once info is posted;</li>
+            <li><strong>user (in views.py)</strong>: copy of 'user_form' after validity is checked;</li>
+            <li><strong>user.password</strong>: password can be called on 'user' because 'user' is from 'user_form', which is and instance of 
+                'UserForm', which has a class attribute: password.
+            </li>
+        </ul><br>
+    </p>
+    <p style="margin-left: 50px;">
+        <img width="350" src="{% static 'main_app/images/stuntdoubles.gif' %}" alt="missing stunt doubles image">
+    </p>
+
+    <h3>Let's see the code before explaining anything else</h3>
+    <p class="codeblock">
+        def register(request): <br>
+        <br>
+        &emsp;registered = False <br>
+        <br>
+        &emsp;if request.method == 'POST': <br>
+        &emsp;&emsp;user_form = UserForm(data=request.POST) <br>
+        &emsp;&emsp;profile_form = UserProfileForm(data=request.POST) <br>
+        <br>
+        &emsp;&emsp;if user_form.is_valid() and profile_form.is_valid(): <br>
+        <br>
+        &emsp;&emsp;&emsp;user = user_form.save() <br>
+        &emsp;&emsp;&emsp;user.set_password(user.password) <br>
+        &emsp;&emsp;&emsp;user.save() <br>
+        <br>
+        &emsp;&emsp;&emsp;profile = profile_form.save(commit=False) <br>
+        &emsp;&emsp;&emsp;profile.user = user <br>
+        <br>
+        &emsp;&emsp;&emsp;if 'profile_pic' in request.FILES: <br>
+        &emsp;&emsp;&emsp;&emsp;profile.profile_pic = request.FILES['profile_pic'] <br>
+        &emsp;&emsp;&emsp;profile.save() <br>
+        <br>
+        &emsp;&emsp;&emsp;registered = True <br>
+        <br>
+        &emsp;&emsp;<span class="codecomment"># if forms are NOT valid...</span><br>
+        &emsp;&emsp;else: <br>
+        &emsp;&emsp;&emsp;print(user_form.errors, profile_form.errors) <br>
+        <br>
+        &emsp;<span class="codecomment"># else, if nothing was posted, then display the forms</span> <br>
+        &emsp;else: <br>
+        &emsp;&emsp;user_form = UserForm() <br>
+        &emsp;&emsp;profile_form = UserProfileForm() <br>
+        <br>
+        &emsp;<span class="codecomment"># And here's how you display the registration page...</span><br>
+        &emsp;<span class="codecomment"># WITH our context dictionary...</span><br>
+        &emsp;return render(request, 'basic_app/registration.html', <br>
+        &emsp;&emsp;{ <br> 
+        &emsp;&emsp;&emsp;'user_form': user_form, <br>
+        &emsp;&emsp;&emsp;'profile_form': profile_form, <br>
+        &emsp;&emsp;&emsp;'registered': registered, <br>
+        &emsp;&emsp;<!---->} <br>
+        &emsp;)
+    </p>
+    <p>
+        Are we stopped? <br>
+        <img src="{% static 'main_app/images/areWeStopped.jpg' %}" alt="just take a five minute break">
+    </p>
+
+    <h3>OK, let's dig into that last part of the views.py; or else!</h3>
+    <p>
+        I guess this is the 'else' section of the explanation. There was just so much in that first section, I felt 
+        a break was needed. So the first 'else' is for the condition <em>if the forms are not valid</em>, in which case 
+        we'll print out the errors associated with both forms.
+    </p>
+    <p>
+        The next 'else' statement is outside the previous one. This one runs (I believe) if nothing was posted by the user. 
+        We still save <strong>user_form</strong> and <strong>profile_form</strong> as <strong>Userform()</strong> and 
+        <strong>UserProfileForm()</strong>, respectively, but take notice... this time we don't pass in <strong>data=request.POST</strong> 
+        because nothing has been posted, so we're defining those as blank forms.
+    </p>
+    <p class="mattthoughts">
+        Honestly, I'm not sure if that last explanation is entirely accurate, but I think it is.
+    </p>
+    <p>
+        Seemingly regardless of the outcome of these if/else statements, this function will return the <strong>registration.html</strong> 
+        page, along with a context dictionary of everything that will be referenced as a template tag by registration.html; particularly, 
+        <strong>user_form, profile_form, & registered</strong>.
+    </p>
+
+    <a href="#top">Back to top of page</a>
+    
+    
+    
+    <h2 class="newsection" id="logins">Logins</h2>
+    <p><img width="200" src="{% static 'main_app/images/loggins.jpg' %}" alt="image lost in danger zone"></p>
+    <p>
+        If you successfully set up the registration and made a sample user profile, you can then check your admin page (after creating a 
+        superuser), and you'll see that everything made its way to your database, as planned. However, the site as-is will only allow for 
+        registration, but there's no way to log in or out. Here's the instructor's outline of the process of setting up a login:
+    </p>
+    <p>
+        <ul>
+            <li>Adding the LOGIN_URL in settings;</li>
+            <li>Creating the login.html;</li>
+            <li>Setting up the login views;</li>
+            <li>Using built-in decorators for access;</li>
+            <li>Editing the urls.py files;</li>
+        </ul>
+    </p>
+    <h3>In settings.py</h3>
+    <p>
+        All the way at the bottom of <strong>settings.py</strong>, we'll add a <strong>LOGIN_URL</strong> similar to MEDIA and STATIC: <br>
+        <br>
+        &emsp;<strong>LOGIN_URL = '/basic_app/user_login'</strong>
+    </p>
+
+    <h3>Create login.html</h3>
+    <p>
+        We set up another page that extends 'basic_app/base.html', and in a jumbotron div we add a form:
+    </p>
+    <p class="codeblock">
+        form action="{% url 'basic_app:user_login' %<!---->}" method=POST
+    </p>
+    <p>
+        Inside the form tag, we'll add the <strong>{% csrf_token %<!---->}</strong>, then the following labels/input tags using basic html:
+    </p>
+    <p class="codeblock">
+        &lt;label for="username"&gt;Username: &lt;/label&gt; <br>
+        &lt;input type="text" name="username" placeholder="Enter Username"&gt; <br>
+        <br>
+        &lt;label for="password"&gt;Password: &lt;/label&gt; <br>
+        &lt;input type="password" name="password"&gt; <br>
+        <br>
+        &lt;input type="submit" value="Login"&gt;
+    </p>
+    <p class="mattthoughts">
+        At this time, I'm curious why we're setting up a form using html instead of Django. My question got answered.. 
+        he said because it's such a simple form, we'll just use html. Good enough for me.
+    </p>
+    <p>
+        <img width="400" src="{% static 'main_app/images/Spaceballs-Luggage-Combination.gif' %}" alt="gif not found; and change the combination on my luggage!">
+    </p>
+
+    <h3>Back to views.py</h3>
+    <p>
+        The imports we'll need for login-related views:
+    </p>
+    <p class="codeblock">
+        from django.contrib.auth import authenticate, login, logout <br>
+        from django.http import HttpResponseRedirect, HttpResponse <br>
+        from django.core.urlresolvers import reverse <br>
+        from django.contrib.auth.decorators import login_required
+    </p>
+    <p class="mattthoughts">
+        These warrant some explanation. TLDR: Django has a lot of built-in functions that make the overall authentication process much 
+        easier. <br> 
+        <br>
+        How would you remember all this? I don't know that you would, so I guess.. keep looking at this page for reference. 
+        The <strong>authenticate, login</strong> and <strong>logout</strong> functions are straightforward enough, at least in their intent. 
+        Then you have <strong>HttpResponse</strong>, which we've seen before, but then <strong>HttpResponseRedirect</strong> is new to this 
+        section, and it seems to be the way send the user to a different page/view based on whether or not they're logged in. Then you've 
+        got <strong>reverse</strong>. I'll be damned if I know what that thing is. Lastly, <strong>login_required</strong> gets used as a 
+        decorator, which is something I hope to understand by repetition, but I'm not there yet. We'll get back to that momentarily, in the 
+        'logout' section.
+    </p>
+    <p>
+        Now make a function called <strong>user_login</strong>; don't call it 'login' or it could raise an issue with built-in terminology. 
+        This function will check for a POST; if found, it will take the 'username' and 'password' that the user entered into the html form, 
+        and it will save them in views.py variables of the same name.
+    </p>
+    <p>
+        We then call a built-in function, <strong>authenticate</strong>, which will evaluate the 'username' and 'password' against our 
+        database, and return True or False to <strong>user</strong>. If True, we'll run another built-in method to see if the user has an active 
+        account. If they do, they'll be logged in via another built-in function, and redirected to the 'index' page.
+    </p>
+    <p>
+        If their account is not active, we'll raise some sort of message/alert, indicating this. And if they were not able to be authenticated, 
+        for now, we'll just print some stuff to the console and raise that as a message/alert.
+    </p>
+
+    <h3>Let's look at the code for this</h3>
+    <p class="codeblock">
+        if request.method == 'POST': <br>
+        <br>
+        &emsp;username = request.POST.get('username') <br>
+        &emsp;password = request.POST.get('password') <br>
+        <br>
+        &emsp;user = authenticate(username=username, password=password) <br>
+        <br>
+        &emsp;if user: <br>
+        &emsp;&emsp;if user.is_active: <br>
+        &emsp;&emsp;&emsp;login(request, user) <br>
+        &emsp;&emsp;&emsp;return HttpResponseRedirect(reverse('index')) <br>
+        <br>
+        &emsp;&emsp;else: <br>
+        &emsp;&emsp;&emsp;return HttpResponse("Account Not Active") <br>
+        <br>
+        &emsp;else: <br>
+        &emsp;&emsp;print("Someone tried to login and failed.") <br>
+        &emsp;&emsp;print("Username: {} and Password: {}".format(username, password)) <br>
+        &emsp;&emsp;HttpResponse("Invalid login credentials provided.") <br>
+        <br>
+        else: <br>
+        &emsp;return render(request, 'basic_app/login.html', {})        
+    </p>
+    <p class="mattthoughts">
+        A couple things he did here that threw me off .. I mean, I get it overall, but not these specific lines. 
+        First, I don't know what <strong>reverse('index')</strong> actually means, even though I understand that 
+        it's bringing the user back to the index page. And then, see that empty context dictionary at the end of 
+        the last return statement? He goes "you can pass in an empty context dictionary here if you want." <br> 
+        What? <br> 
+        I'm too new at this to "want" to do that.... to be like "hey man, how about an empty context dictionary at 
+        the end there? Can't we just add one please??"
+    </p>
+
+    <h3>Logout</h3>
+    <p>
+        Here's a culmination of the things I don't fully understand. We're going to make a logout function/view, 
+        which uses built-in <strong>logout</strong> to log the user out. We want to make sure, however, that this 
+        can only be called if there is currently a user who is logged in. OK, that makes sense. Now, the way you 
+        do that is by adding a <strong>decorator</strong> [d'oh!] that we imported at the top of views.py. So 
+        we're going to put <strong>@login_required</strong> right above our user_logout function. It'll only 
+        allow the function to be called if a user login has already occurred. Here's what that looks like:
+    </p>
+    <p class="codeblock">
+        @login_required <br>
+        def user_logout(request): <br>
+        &emsp;logout(request) <br>
+        &emsp;return HttpResponseRedirect(reverse('index'))
+    </p>
+
+    <h3>Update URL patterns</h3>
+    <p>
+        We then go to <strong>the main urls.py</strong>, and we add the following pattern for 'logout':
+    </p>
+    <p class="codeblock">
+        url(r'^logout/$', views.user_logout, name='logout'),
+    </p>
+    <p>
+        Next, we add a urlpattern to the <strong>urls.py for basic_app</strong>:
+    </p>
+    <p class="codeblock">
+        url(r'^user_login/$', views.user_login, name='user_login'),
+    </p>
+
+    <h3>Back to base!</h3>
+    <p>
+        Go back to <strong>base.html</strong> because now we need to edit our options that appear in our navbar. Currently, the 
+        navbar has 'HOME', 'ADMIN', and 'REGISTER' options, but we need some login/logout functionality to make all those last 
+        steps worthwhile. We'll do this by adding another 'li' tag to our navbar, but this time, we're going to include some 
+        logic in the html. We'll tailor the view so that if the user is logged in, only then will that user see the navbar 
+        option to log out. Otherwise, they'll see an option to log in.
+    </p>
+    <p class="codeblock">
+        {% if user.is_authenticated %<!---->} <br>
+        &lt;li&gt;&lt;a class='navbar-link href={% url 'logout' %<!---->}'&gt;Logout&lt;/a&gt;&lt;/li&gt; <br>
+        <br>
+        {% else %<!---->} <br>
+        &lt;li&gt;&lt;a class='navbar-link href={% url 'basic_app:user_login' %<!---->}'&gt;Login&lt;/a&gt;&lt;/li&gt; <br>
+        <br>
+        {% endif %<!---->}
+    </p>
+    <h3>Next up: Deploying a Django Project!</h3>
+    <p>
+        I don't know how many hours I've spent on this course so far, and for the tremendous amount that I've learned... 
+        I still couldn't tell you how to actually get this Django project online.
+    </p>
+    
+    <a href="#top">Back to top of page, </a> <br>
+    <a href="{% url 'main_app:djangodeploy' %}">Next section ></a>
+
+
+    <h2 class="newsection" id="issues">Issues</h2>
+
+    <h3 class="issueheading" id="issue1">None?!</h3>
+    <p>
+        I didn't run into any specific issues here, but I did take some extra time to look back through <strong>models.py</strong>, 
+        <strong>forms.py</strong>, and the <strong>registration.html</strong> file to help understand all the different (but so similar) 
+        instances of 'user'-like variables. The flow of information from model classes to form classes to html, via the views.py file 
+        is main concept to take away.
+    </p>
+
+    <!-- This is to make some flashing text on this page -->
+    <script>
+        const neverPlainText = document.getElementById('neverplaintext');
+        const textColor = neverPlainText.style.color
+        const someColors = ['red','cyan'];
+
+        var myInterval;
+        
+        function colorInterval(){
+            myInterval = setInterval(colorChange, 1000);
+        }
+        
+        function stopColors(){
+            clearInterval(myInterval);
+            neverPlainText.style.color = 'whitesmoke';
+        }
+
+        function colorChange(){
+            if (neverPlainText.style.color != 'red') neverPlainText.style.color = 'red';
+            else if (neverPlainText.style.color == 'red') neverPlainText.style.color = 'cyan';
+            //console.log(neverPlainText.style.color);
+        }
+
+        colorInterval();
+        /* Tried for a while to work the interval into a mouseover event listener, and it just wasn't working.
+        I can do either thing by itself, but combining the two wasn't happening. I wanted the text to alternate 
+        colors while the mouse was over it. No real reason, other than to see if I could. */
+        
+
+    </script>
+
+    {% endblock %}
