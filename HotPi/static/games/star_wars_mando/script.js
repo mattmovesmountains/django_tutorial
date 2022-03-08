@@ -180,7 +180,7 @@ playerSprite.src = "/static/games/star_wars_mando/mandalorian2.png";
 
 // Background details
 const background = new Image();
-background.src = "{% static '/games/star_wars_mando/background.png' %}" // I have to download the image he made in photoshop (or get my own)
+background.src = '/static/games/star_wars_mando/background.png' // I have to download the image he made in photoshop (or get my own)
 
 
 // ANIMATION FUNCTIONS

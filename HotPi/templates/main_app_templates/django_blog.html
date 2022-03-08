@@ -1,0 +1,2460 @@
+{% extends 'main_app_templates/base.html' %}
+{% load staticfiles %}
+
+{% block body_block %}
+<style>
+    h3{
+        background-color: rgba(65, 105, 225, 0.5);
+        margin-top: 5rem;
+    }
+</style>
+<div id="top"></div>
+
+    <h1>Make a Blog!</h1>
+    <h3>What's here:</h3>
+    <ul>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#makemodels">Make models</a></li>
+        <li>
+            <a href="#forms">Make forms</a>
+            <ul>
+                <li><a href="#pathconfusion">Demystifying os.path</a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="#viewsandtemplates">Class-Based-Views and Main Templates</a>
+            <ul>
+                <li><a href="#aboutpage">The 'About' page</a></li>
+                <li><a href="#homepage">The homepage</a></li>
+                <li><a href="#postdetail">Post detail pages</a></li>
+                <li><a href="#postcreate">Page to create posts</a></li>
+                <li><a href="#postupdate">Page to update/edit posts</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#templates-and-functions">Make all other templates; add function views</a>
+            <ul>
+                <li><a href="#whichtemplates">List of templates</a></li>
+                <li><a href="#more-views-urls">Make more views and urlpatterns</a></li>
+                <li><a href="#setup-authentication">Set up authentication</a></li>
+                <li><a href="#make-other-templates">Make the other templates</a></li>
+            </ul>
+        </li>
+        <li><a href="#finalizing">Finishing up!</a></li>
+        <li>
+            <a href="#issues">Issues</a>
+            <ul>
+                <li><a href="#issue1">Import issue</a></li>
+                <li><a href="#issue2">Do you understand Decorators?</a></li>
+            </ul>
+        </li>
+        <li><a href="#comments-section">Comments</a></li>
+    </ul>
+
+
+    <!-- ####################### NEW SECTION ###################### -->
+    <h2 class="newsection">Do the work</h2>
+    <p>
+        I just finished watching and coding along with the 'Blog Project' section 
+        of this Django course. I generally understand it, but regardless, it was 
+        a lot of information in one fell swoop. There were several new items that 
+        were thrown into the mix, as well as drumming up all the old stuff that 
+        you may or may not remember.
+    </p>
+    <p>
+        Much as I don't want to go back through all those videos again so that I can 
+        make this website, I think I must. In the spirit of whatever this website is, 
+        I must make the tutorial. I need to make sure I really understand everything, 
+        and in the end, isn't a Django tutorial blog made in Django about making blogs 
+        using Django... 
+    </p>
+    <p class="mattthoughts">I am clearly stalling.</p>
+
+
+    <!-- ####################### NEW SECTION ###################### -->
+    <h2 class="newsection" id="overview">What exactly are we making?</h2>
+    <p>
+        <img width="300" style="margin-bottom: 1rem"
+        src="{% static 'main_app/images/doogiehowser.jpg' %}" alt=""><br>
+        We're going to use everything we've learned, and some things that we haven't, 
+        to build a fully functional blog. The aesthetic will be rather plain, since 
+        this isn't a styling course, but there's still a touch of CSS and JavaScript 
+        thrown into the mix. <br>
+    </p>
+    <p class="mattthoughts">
+        There actually isn't going to be any JavaScript. He just set up a JS folder to 
+        show you where you would put scripts if you had any. <br>
+        <br>
+        &emsp; Sincerely, <br>
+        &emsp; Matt in the future
+    </p>
+    <p>
+        The end product will be a multi-user blog, complete with authentication, a 
+        comments section, the ability to approve or delete comments, the ability to edit 
+        and delete blog posts, and even some text formatting utilities to make you feel 
+        like you knew what you were doing all along.
+    </p>
+    <p class="mattthoughts">
+        If you've somehow stumbled upon this page without having learned the basics of 
+        Django, well, really I have no idea how you got here... but! I have whole bunch 
+        of information that'll help you.
+    </p>
+    <h4><a href="{% url 'main_app:notes' %}">Head right this way for the basics of Django</a></h4>
+
+    <h3>Setting up our project</h3>
+    <p>
+        I'm aware that 'soup to nuts' is used to suggest 'everything', but if I'm getting 
+        soup, I'm damn sure going to be looking for some bread first. Setting up our 
+        project is that bread. And you better believe it's going to be served with butter, 
+        not this 'ohh we are so sophisticated... look at our olive oil with little floaty 
+        things in it'. No. Get outta here with that. Here's your bread and butter.
+    </p>
+
+    <h4>Set up a virtual environment</h4>
+    <p>
+        Maybe you have one already, but make a new one anyhow. It's good practice, and what 
+        the hell else are we doing here?
+    </p>
+    <p>
+        You can go <a href="{% url 'main_app:notes' %}">here</a> for more detail, but 
+        let's talk about <em>where</em> to make the virtual environment this time. Create 
+        some directory that is going to contain your Django project, and in that folder we'll 
+        create our venv:
+    </p>
+    <p class="codeblock">
+        python -m venv NameYourEnv <br>
+        source NameYourEnv/bin/activate
+    </p>
+
+    <h4>Get Django</h4>
+    <p>
+        Since we made a new venv for this project, we need to install Django. Keep in mind that 
+        throughout this course, the instructor is using <strong>Django 1.10.5</strong>. I believe 
+        the latest version as of this writing is 4.0.2, but yeah, go ahead and try to learn some new 
+        concept while working in a version that's 3 versions away from what the instructor is using, 
+        and see how that goes. And therein lies one of the benefits of venv... on this project I can 
+        use version 1.10.5, and I won't impact any other projects that I have worked on or will 
+        work on in the future. 
+    </p>
+    <p class="mattthoughts">
+        Also bear in mind that I am using VS Code on a Linux machine. Your setup may vary, and there 
+        are many websites and videos that can help you with that if needed. I'm working on a blog here, 
+        and I can't start thinking about Windows and Macs or I'll lose my train of thought. I'm 
+        already at risk by even telling you this.
+    </p>
+    <p>
+        All that said, let's install Django 1.10.5 to our active environment via the terminal:
+    </p>
+    <p class="codeblock">
+        pip3 install django==1.10.5
+    </p>
+
+    <h4>Create your project</h4>
+    <p>
+        In the same directory (assuming you followed my suggestion on the last steps), we'll 
+        run <strong>django-admin startproject myproject</strong>
+    </p>
+
+    <h4>Create your app</h4>
+    <p>
+        Now cd into <strong>myproject</strong> and run <strong>django-admin startapp blog</strong>. 
+        In the new directory for <strong>blog</strong>, we'll add <strong>urls.py & forms.py</strong>. 
+        We'll add more later.
+    </p>
+    <p>
+        In <strong>settings.py</strong>, make sure to add <strong>blog</strong> to the list of 
+        INSTALLED_APPS. 
+    </p>
+    <p>
+        Seems a little early, but now we're going to do some migrating I guess. <br>
+        i.e.) <strong>python manage.py migrate</strong>   and   <strong>python manage.py makemigrations blog</strong>.
+    </p>
+
+
+    <!-- ####################### NEW SECTION ###################### -->
+    <h2 class="newsection" id="makemodels">Start making models</h2>
+    <h3>Imports</h3>
+    <p>
+        First thing we'll do in <strong>models.py</strong> is import the following:
+    </p>
+    <p class="codeblock">
+        from django.utils import timezone <br>
+        from django.core.urlresolvers import reverse
+    </p>
+
+    <h3>Post Model</h3>
+    <h4>Attributes</h4>
+    <p class="codeblock">
+        class Post(models.Model): <br>
+        &emsp;author = models.ForeignKey('auth.User') <br>
+        &emsp;title = models.CharField(max_length=200) <br>
+        &emsp;text = models.TextField() <br>
+        &emsp;created_date = models.DateTimeField(default=timezone.now) <br>
+        &emsp;published_date = models.DateTimeField(blank=True, null=True)
+
+    </p>
+    <p>
+        We have a Model Class called 'Post', which represents blog posts (not to be confused with 
+        the POST method). Post will inherit from Django's models.Model class, and we're going to give it 
+        the following attributes: <br>
+        <ul>
+            <li>
+                <strong>author</strong> will be some authorized user, meaning a 'superuser'. The ForeignKey 
+                suggests that the user info comes from elsewhere in our database, but spoiler alert ... 
+                we never wind up making a 'User' model. So I presume that <strong>auth.User</strong> is 
+                pointing to the Django project's list of superusers.
+            </li>
+            <li>
+                <strong>title</strong> is straightforward enough. It'll be a character field with a 
+                character limit of 200.
+            </li>
+            <li>
+                <strong>text</strong> is more accurately the body of the blog post, and we define it as a 
+                text field without further constraint.
+            </li>
+            <li>
+                <strong>created_date</strong> will be a DateTimeField, and in order to properly configure 
+                that, we pass in <strong>timezone.now</strong> as the 'default' function to be used. <br>
+                <p class="mattthoughts">
+                    NOTE: <strong>timezone.now</strong> is passed in without parentheses here because it's 
+                    being identified as the function to use, even though it's not being directly called. We 
+                    will later use the function with parentheses, indicating that we are executing it.
+                </p>
+            </li>
+            <li>
+                <strong>published_date</strong> is also a DateTimeField, but rather than default it to 
+                the timezone.now function, we're allowing it to be blank or null, since the post may not 
+                be immediately published upon its creation.
+            </li>
+        </ul>
+    </p>
+
+    <h4>Methods</h4>
+    <p>
+        We're going to give this Post model the following class object methods:
+    </p>
+    <p class="codeblock">
+        def publish(self): <br>
+            &emsp;self.published_date = timezone.now() <br>
+            &emsp;self.save() <br>
+            <br>
+        def approve_comments(self): <br>
+            &emsp;return self.comments.filter(approved_comment=True) <br>
+            <br>
+        def get_absolute_url(self): <br>
+            &emsp;return reverse('post_detail', kwargs={'pk':self.pk}) <br>
+            <br>
+        def __str__(self): <br>
+            &emsp;return self.title        
+    </p>
+    <p>
+        All of our Post objects will have the ability to: <br>
+        <ul>
+            <li>
+                <strong>publish</strong>: <br> 
+                When a user hits the 'publish' button, this will 
+                take the previously-blank 'published_date' field, and it'll populate it with 
+                the current time/date. Notice that we're now calling the <strong>timezone.now()</strong> 
+                function to execute, since we're adding parentheses.
+            </li>
+            <li>
+                <strong>approve_comments</strong>: <br> 
+                This is just one line of code but it's worth 
+                digging into because it involves a ForeignKey and some thinking ahead. In simple 
+                terms, it's just filtering the way our Post shows its comments, such that only 
+                approved comments will be displayed. <br>
+                <p>
+                    But what is <strong>comments</strong>? You'll notice it doesn't appear anywhere 
+                    else in our Post model. Suffice it to say for now... we'll explain this once we 
+                    get to the <strong>Comment</strong> model.
+                </p>
+                <p>
+                    Fair enough. OK, how about <strong>approved_comment=True</strong>? Where did that 
+                    variable come from? It's also not used or defined anywhere else in our Post model. 
+                    This too will be explained when we set up our <strong>Comment</strong> model.
+                </p>
+            </li>
+            <li>
+                <strong>get_absolute_url</strong>: <br> 
+                This is a Django built-in method which is customizable 
+                by the developer. It is used in conjunction with the 'reverse' method to allow Django 
+                to determine the appropriate urlpattern based on a view. It's called reverse because the 
+                default logic is for Django to see a urlpattern, and to determine the view based on that. 
+                In this case, we'll use it for situations like editing or creating a post, and then 
+                needing to get back to the Post's detail view afterward. In other words, 'After I hit the 
+                button to publish a post, where will I be taken?' And the answer is 'back to the detail view.' <br>
+                <p class="mattthoughts">
+                    The arguments being passed into <strong>reverse</strong> include <strong>post_detail</strong>, 
+                    which is the name of the urlpattern we'd like to direct the user to, and an instance 
+                    of the Primary Key for the particular post, so that the urlpattern knows which detail 
+                    view to direct the user toward.
+                </p>
+            </li>
+            <li>
+                <strong>__str__</strong>: <br>
+                Lastly, we define a string representation of our Post object as simply the title of the post.
+            </li>
+        </ul>
+    </p>
+
+    <h3>Comment Model</h3>
+    <h4>Attributes</h4>
+    <p class="codeblock">
+        class Comment(models.Model): <br>
+        post = models.ForeignKey('blog.Post', related_name='comments') <br>
+        author = models.CharField(max_length=200) <br>
+        text = models.TextField() <br>
+        create_date = models.DateTimeField(default=timezone.now()) <br>
+        approved_comment = models.BooleanField(default=False)       
+    </p>
+    <p>
+        A Comment and a Post are actually somewhat similar in terms of their attributes, but let's look 
+        at where Comment differs from Post, as well as how it is related to Post: <br>
+        <strong>post = models.ForeignKey('blog.post', related_name='comments')</strong>  <br>
+        <ul>
+            <li>
+                In simple terms, this line is going to connect each comment with a particular post. 
+            </li>
+            <li>
+                The <strong>ForeignKey</strong> tells us we're looking at another model.
+            </li>
+            <li>
+                <strong>blog.Post</strong> tells us which model we're looking at: the Post model from 
+                the blog app.
+            </li>
+            <li>
+                And <strong>related_name=comments</strong>... hey, remember 'comments' from our Post model? 
+                <strong>Post</strong> had a method called 'approve_comments', which filtered something 
+                called <strong>comments</strong>, and once Django sees that, it recognizes 'comments' as 
+                the 'related_name' in the particular Comment object. <br> 
+                <br>
+                huh? <br> 
+                <br>
+                In other words, if some guy named Post comes around here looking for comments, good ol' 
+                related_name is going to tell Post exactly which comments to use.
+            </li>
+            <li>
+                Because of the ForeignKey and related_name details, Post now has access to the attributes of 
+                its own comments. For example, it can now take a look at <strong>approved_comment</strong>! 
+                What about that one? Do you remember that from our Post model? The Post model has a method 
+                to view only approved comments, and this is that mysterious variable I said that we'd get 
+                to later. Not surprisingly, we set the default boolean value of the approved_comment to 
+                <strong>False</strong>, i.e. it will not be approved until a superuser approves it. 
+                Which brings us to...
+            </li>
+        </ul>
+    </p>
+
+    <h4>Methods</h4>
+    <p class="codeblock">
+        def approve(self): <br>
+            &emsp;self.approved_comment = True <br>
+            &emsp;self.save() <br>
+            <br>
+        def get_absolute_url(self): <br>
+            &emsp;return reverse('post_list') <br>
+            <br>
+        def __str__(self): <br>
+            &emsp;return self.text       
+    </p>
+    <p>
+        Based on the method descriptions for Post, these should look somewhat familiar and logical. <br>
+        <ul>
+            <li>
+                <strong>approve:</strong><br>
+                Each comment has the functionality to be 'approved', which as previously mentioned, is 
+                something that an admin/superuser would be responsible for.
+            </li>
+            <li>
+                <strong>get_absolute_url:</strong> <br>
+                Same as before - where will I be sent after I post a comment? This method says you'll be 
+                sent back to the <strong>post_list</strong>.
+            </li>
+            <li>
+                And then <strong>__str__</strong> is once again the string representation of each Comment object.
+            </li>
+        </ul>
+        <p class="mattthoughts">
+            Worth Noting: The <strong>author</strong> of the comment is just a CharField, rather than a 
+            ForeignKey. This means that commenting requires no form of authentication. Anyone can write a 
+            comment and put whatever name they want. In most real world applications, you'd require the 
+            potential commenter to register as a user of the site. If that was the case, there'd be a 
+            separate model class 'User', and we'd be using a ForeignKey for the relation between these 
+            two classes.
+        </p>
+    </p>
+
+    <a href="#top">Back to the Top</a>
+
+
+    <!-- ####################### NEW SECTION ###################### -->
+    <h2 class="newsection" id="forms">Use the Models to Create Forms! (with style)</h2>
+    <h3>A new skill emerges</h3>
+    <p>
+        If you're like me, you're pretty tall, sharp-witted, and very uncomfortable in large crowds. But, 
+        more importantly, you may have wondered how to add CSS styling to this sort of template tag:
+    </p>
+    <p class="codeblock">
+        {{ form.as_p }<!---->}
+    </p>
+    <p>
+        We've used this several times in past lectures, and it's very helpful -- it has allowed us to 
+        take forms that we made with python, and then inject them into our html. Django even let us 
+        specify that we'd like to inject the form as a p-tag, which afforded us some additional neatness. 
+    </p>
+    <p>
+        However, the styling was limited when using this approach, and now this lecture is going to show 
+        us how we can style what the instructor refers to as "widgets". This is all going to be handled 
+        in our <strong>forms.py</strong>.
+    </p>
+
+    <h3>First our imports</h3>
+    <p>
+        We'll need Django's <strong>forms</strong> module, and we'll also need to import our own models:
+    </p>
+    <p class="codeblock">
+        from django import forms <br>
+        from blog.models import Post, Comment
+    </p>
+
+    <h3>Two forms: PostForm & CommentForm</h3>
+    <p class="codeblock">
+        class PostForm(forms.ModelForm): <br>
+            <br>
+            &emsp;class Meta(): <br>
+                &emsp;&emsp;model = Post <br>
+                &emsp;&emsp;fields = ('author', 'title', 'text') <br>
+                <br>
+                &emsp;&emsp;widgets = { <br>
+                    &emsp;&emsp;&emsp;'title':forms.TextInput(attrs={'class':'textinputclass'}), <br>
+                    &emsp;&emsp;&emsp;'text':forms.Textarea(attrs={'class':'editable medium-editor-textarea postcontent'}), <br>
+                &emsp;&emsp;}
+    </p>
+    <h4>The PostForm Meta Class</h4>
+    <p>
+        Remember <strong>Meta( )</strong>? We went over this on my <a href="{% url 'main_app:forms' %}">Back to the Future</a>-themed 
+        page, which explained how to set up forms. It was chock-full of clever references, but if you're in a rush, the gist of 
+        <strong>Meta( )</strong> is that it's telling Django to base this particular form class on a model class that you 
+        specify. In this case, straightforwardly enough, we tell Django to base our <strong>PostForm</strong> class on 
+        our <strong>Post</strong> model.
+    </p>
+    <p>
+        We also use <strong>Meta( )</strong> to specify the fields from the original model that will be utilized in the form. 
+        In this case, we take <strong>author, title,</strong> and <strong>text</strong>; excluding fields like 
+        <strong>created_date</strong> and <strong>published_date</strong> since we don't want to provide user access 
+        to these fields.
+    </p>
+    <h4>The PostForm Widgets</h4>
+    <p>
+        Underneath our Meta class, we have our <strong>widgets</strong>, which are defined as a dictionary object whose 
+        key/value pairs consist of one of our <em>form fields</em> as the <strong>key</strong>, and then <em>some instance 
+        of class assignment</em> is our <strong>value</strong>.
+    </p>
+    <p>
+        In our examples above, one should expect the <strong>title</strong> field of our form to take on any styling 
+        associated with the class <em>textinputclass</em>. From these two examples in this project, we can see the standard 
+        syntax, as well as a couple of the options you have for defining the types of form fields (i.e. <strong>forms.TextInput</strong> 
+        and <strong>forms.Textarea</strong>). However, I assume there are many other options that we young Djedi Knights will 
+        have to discover on our own. In fact, here's a list of 
+        <a href="https://docs.djangoproject.com/en/4.0/ref/forms/widgets/#built-in-widgets">Built-in Widgets</a> from the Django documentation.
+    </p>
+    <style>
+        .medium{
+            text-decoration: none;
+        }
+    </style>
+    <p>
+        You'll notice that the second widget field, 'text' has some oddly specific classes. We'll get to these later, but 
+        for now, just know that they're going to allow a user to format the text that they're typing into the body of a blog 
+        post, in a manner that mimics <a class="medium" href="https://www.medium.com">medium.com</a>. Basically, when you highlight some 
+        text that you've typed, a pop-up toolbar appears, which allows you to style the text as bold, italic, heading, etc. 
+        And once again, it isn't necessary or even likely that you're always using this toolbar, but it shows an example of 
+        how you can structure these widgets; it's also showing that there's always some external features that you'll research 
+        and hunt down on your own. The part that will remain the same is that <strong>widgets</strong> will be a dictionary 
+        that you define <strong>within your Meta() class</strong>, and its syntax will generally follow what's shown in our 
+        examples.
+    </p>
+
+    <h4>The CommentForm</h4>
+    <p>
+        I won't go into detail with this one, as it follows the same concepts as our PostForm class above. It will be based 
+        on the <strong>Comment</strong> model and does not offer an editable <strong>title</strong> field. Otherwise, you've 
+        got pretty much the same thing, and it looks like this:
+    </p>
+    <p class="codeblock">
+        class CommentForm(forms.ModelForm): <br>
+            <br>
+            &emsp;class Meta(): <br>
+                &emsp;&emsp;model = Comment <br>
+                &emsp;&emsp;fields = ('author', 'text') <br>
+                <br>
+                &emsp;&emsp;widgets = { <br>
+                    &emsp;&emsp;&emsp;'author':forms.TextInput(attrs={'class':'textinputclass'}), <br>
+                    &emsp;&emsp;&emsp;'text':forms.Textarea(attrs={'class':'editable medium-editor-textarea'}) <br>
+                    &emsp;&emsp;}
+    </p>
+
+    <h3>Linking CSS to our widgets</h3>
+    <h4>First, some folder organizing</h4>
+    <p>
+        In the past, we usually created our <strong>templates</strong> and <strong>static</strong> folders in the 
+        at the same level as the folder for our app. Another way to structure the project is to locate those two 
+        folders inside of our app folder. The advantage to this, which was briefly discussed in my notes about 
+        <a href="#">CBV</a>, is that if you want to reuse an application in an entirely different Django project, 
+        you can grab the app folder, and everything goes with it, inclusive of styling and scripts, html, etc.
+    </p>
+    <p>
+        So in your folder called <strong>blog</strong> (unless you went rogue and named your app something else), 
+        you'll add a <strong>templates</strong> folder, as well as a <strong>static</strong> folder. In the static 
+        folder we create two more folders: <strong>CSS</strong> & <strong>JS</strong>. In <em>CSS</em> we'll create 
+        <strong>blog.css</strong>
+    </p>
+    <h4>Don't forget to set up your static path</h4>
+    <p>
+        Just as we always define our template path, so too must we define our static path. Head over to 
+        <strong>settings.py</strong>, scroll down to the bottom where the <strong>STATIC_URL</strong> 
+        should be located, and add the following:
+    </p>
+    <p class="codeblock">
+        STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    </p>
+    <div class="mattthoughts" id="pathconfusion">
+        <p>
+            Wait a minute...
+        </p>
+        <p>
+            I don't understand why or how this works. We just joined 'static' with BASE_DIR in order to comprise 
+            the string representation of the path where static files are located. Now.. BASE_DIR is: <br>
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        </p>
+        <p>
+            This brings me to the realization that I do not understand how BASE_DIR works because it hasn't really 
+            mattered until this moment. So I started playing around in a terminal window with python. If you run any 
+            command of this basic format - <strong>os.path.abspath('someFileAsAString')</strong>, it will simply 
+            return a string of the current working directory path with '/someFileAsAString' appended to it, like so: <br>
+            <strong>'/home/pi/Documents/someFileAsAString'</strong>
+        </p>
+        <p>
+            To solidify this point, I exited python, changed my working directory in the terminal to the home directory, 
+            then went back into python and repeated the procedure above. I got this: <br>
+            <strong>'home/pi/someFileAsAString'</strong>
+        </p>
+        <p>
+            I think we've figured out <em>os.path.abspath</em>. What about <strong>os.path.dirname</strong>?
+        </p>
+        <p>
+            So in my terminal running python, I then saved this path ('/home/pi/Documents/someFileAsAString') as a variable 
+            called 'mypath'. To a novice such as myself and most likely anyone reading this... 
+            <em>os.path.dirname(os.path.dirname(...))</em> looks surprinsgly redundant for the coding industry, and 
+            therefore confusing. Let's tackle them one at a time. Next I ran just one instance of os.path.dirname, like this: <br>
+            <strong>os.path.dirname(mypath)</strong>
+        </p>
+        <p>
+            This returned the following: <br>
+            <strong>'/home/pi/Documents'</strong>
+        </p>
+        <p>
+            And doing that one more time resulted in: <br>
+            <strong>'/home/pi'</strong>
+        </p>
+        <p>
+            ...which tells us that each usage of <strong>os.path.dirname</strong> removes the last '/' and any string 
+            to the right of it, and then it returns the remaining path as a string.
+        </p>
+        <p>
+            * * *<br>
+            <strong>CONCLUSIONS?</strong><br>
+            The whole point of this was that I didn't understand how Django would know how to find the static files 
+            if the <strong>STATIC_ROOT</strong> path is just <strong>BASE_DIR</strong> plus <strong>'static'</strong>, 
+            but I <em>THINK</em> the answer (and the reason you set the paths up this way) is that <strong>BASE_DIR</strong> 
+            is dynamic rather than hard-coded. While I couldn't tell you exactly how/when it's updating itself, I believe 
+            that is what it's doing. So Django 'knows' that the current directory is the app, and it's therefore appending 
+            <strong>'/static'</strong> to <strong>'your/particular/path/myproject/blog'</strong>.
+        </p>
+        <p>
+            One last thing before we leave this little, blue, insecure stream-of-consciousness portion of the webpage: <br>
+            I described the basic format of <strong>os.path.abspath</strong> as though you *need* to pass in a <em>FILE</em> 
+            as a string, but it doesn't matter if it's a file or just some directory name. In either case, it's being 
+            passed in as a string which either gets appended-to or removed-from the overall string representation of the path. 
+        </p>
+        <p>
+            Good... for now... until we get to the 'templates' directory.
+        </p>
+    </div>
+    <h4>Templates!</h4>
+    <p>
+        Next up: we create our <strong>templates</strong> folder in similar fashion to the static folder. We're at that same 
+        directory level, which again is just inside your app folder (probably named <strong>blog</strong>). Then inside the 
+        templates folder, we create <em>another</em> subfolder with the same name as the app. This looks silly but he swears 
+        it's common practice, good idea, etc. etc. So now our folder structure looks like: <br>
+        <strong>blog > templates > blog</strong>
+    </p>
+    <p>
+        At the same level as that second <strong>blog</strong> folder, we also create a <strong>registration</strong> folder: <br>
+        <strong>blog > templates > registration</strong> 
+    </p>
+    <p>
+        Where there are templates, there must be template paths, so we add the following to <strong>settings.py</strong>:
+    </p>
+    <p class="codeblock">
+        TEMPLATE_DIR = os.path.join(BASE_DIR, 'blog/templates/blog')
+    </p>
+    <div class="mattthoughts">
+        <p>
+            Again with this?
+        </p>
+        <p>
+            In my last <a href="#pathconfusion">ramblings and experimentation session</a>, I figured out (?) that <strong>BASE_DIR</strong> 
+            is a dynamic path, and THAT was why we didn't need to define our <strong>STATIC_ROOT</strong> relative path as: <br>
+            <strong>'blog/static'</strong>
+        </p>
+        <p>
+            This however, SEEMS to be shooting a sizeable hole in that theory. Does it though? That's not rhetorical. I don't know.
+        </p>
+        <p>
+            For the time being, I will humbly accept that the dynamic nature of our BASE_DIR is perhaps pointed at the outer 
+            project folder when it's looking for templates, and it's pointed at the inner 'blog' folder when it's looking for static 
+            files. 
+        </p>
+    </div>
+    <p>
+        Once you've created your TEMPLATE_DIR, don't forget to add it to your list of TEMPLATES in <strong>settings.py</strong>! 
+        You knew that.
+    </p>
+    <p>
+        Let's add one more thing to our settings that you may or may not understand/remember... This statement will facilitate 
+        redirecting a user to the homepage after they have logged in:
+    </p>
+    <p class="codeblock">
+        LOGIN_REDIRECT_URL = '/'
+    </p>
+    <p class="mattthoughts">
+        This line of code was brought to you by: <br>
+        &emsp;"We'll cross that bridge when we come to it..."
+    </p>
+
+    <a href="#top">Back to the Top</a>
+
+
+    <!-- ####################### NEW SECTION ###################### -->
+    <h2 class="newsection" id="viewsandtemplates">Views and Templates (& Templates and Views)</h2>
+    <p>
+        This is for the views and this for the templates... <br>
+        ...this is for the templates, now back to the views. <br>
+        <img width="300" style="margin-top: 1rem; "
+        src="{% static 'main_app/images/snoop.jpg' %}" alt="at ease"> <br>
+        <span style="font-size: 1.25rem; margin-left: 2rem;"><em>and don't forget the urls</em></span>
+    </p>
+    <h3>Creating the templates</h3>
+    <p>
+        We'll start by just creating the basic templates we'll need (many more to be added later): <br>
+        <ul>
+            <li>base.html</li>
+            <li>about.html</li>
+        </ul>
+    </p>
+    <p>
+        We'll set up <strong>base.html</strong> for template inheritance - i.e. <strong>block</strong> 
+        and <strong>endblock</strong> template tags.
+    </p>
+
+    <h3 id="aboutpage">The AboutView (a TemplateView Production)</h3>
+    <p>
+        <img width="300" style="margin-top: 1rem;"
+        src="{% static 'main_app/images/paramount.jpeg' %}" alt="image missing paramount.jpeg">
+    </p>
+    <p>
+        The first view that we'll make is for the "About" page, and requires the following import 
+        in our <strong>views.py</strong>
+    </p>
+    <p class="codeblock">
+        from django.views.generic import TemplateView
+    </p>
+    <p>
+        This view is actually going to be super easy. Since we're inheriting from Django's 
+        <strong>TemplateView</strong> class, all we need to do is specify a template_name:
+    </p>
+    <p class="codeblock">
+        class AboutView(TemplateView): <br>
+        &emsp;template_name = 'about.html'
+    </p>
+    <p>
+        In our <strong>about.html</strong> we'll inherit from <strong>base.html</strong> via:
+    </p>
+    <p class="codeblock">
+        {% extends 'blog/base.html' %<!---->}
+    </p>
+
+    <h3>URLs ain't nothin' to r'^?' with </h3>
+    <h4>First set up the main urls.py</h4>
+    <p>
+        We'll have several app-specific urlpatterns, so we'll start by pointing the main 
+        <strong>urls.py</strong> to the one for our app for essentially all urlpatterns. 
+        Remember to add <strong>include</strong> to our list of imports, right next to <strong>url</strong>.
+    </p>
+    <p>
+        Then in the list of urlpatterns, we'll add this one:
+    </p>
+    <p class="codeblock">
+        url('', include('blogs.urls'))
+    </p>
+
+    <h4>The app's urls.py</h4>
+    <p>
+        Start as always with imports:
+    </p>
+    <p class="codeblock">
+        from django.conf.urls import url <br>
+        from blog import views 
+    </p>
+    <p>
+        Our first <strong>urlpattern</strong> will be for the "About" page, and will follow the 
+        standard format for a CBV urlpattern:
+    </p>
+    <p class="codeblock">
+        url(r'^about/$', views.AboutView.as_view(), name='about'),
+    </p>
+    <a href="#top">Back to the Top</a>
+
+
+    <h3 id="homepage">The home page: featuring a list of your posts</h3>
+    <p>
+        The word <strong>list</strong> should now clue us in to the fact that we're going to be 
+        using a <strong>ListView</strong>, and as such, we'll add that to our imports, along with 
+        our models:
+    </p>
+    <p class="codeblock">
+        from django.views.generic import TemplateView, <strong>ListView</strong> <br>
+        <strong>from blog.models import Post, Comment</strong>
+    </p>
+
+    <h4>The PostListView and its components</h4>
+    <p>
+        For the main page, we'll create a class called <strong>PostListView</strong>, which 
+        comes from the convention of taking your model name (Post) and appending ListView to it. 
+        The functionality of our <strong>PostListView</strong> is to do a sql query on our Post model, 
+        grab all objects in the model, and filter them out by parameters that we will specify. In this 
+        case, we're going to grab posts having a created date/time of less-than-or-equal-to 
+        'right now', and then order them by their <strong>published_date</strong>. Here's what our 
+        CBV looks like:
+    </p>
+    <p class="codeblock">
+        class PostListView(ListView): <br>
+            &emsp;model = Post <br>
+            <br>
+            &emsp;def get_queryset(self): <br>
+                &emsp;&emsp;return Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date')
+    </p>
+    <style>
+        .postlistview-list li{
+            margin-top: 2rem;
+        }
+    </style>
+    <p>
+        Piece by piece: <br>
+        <ul class="postlistview-list">
+            <li>
+                <strong>model = Post</strong><br>
+                No problems here. We're just saying that this Class-Based-View is based on our 
+                model called "Post".
+            </li>
+            <li>
+                <strong>def get_queryset</strong><br>
+                Instructor's words: "This allows me to use Django's 
+                <a title="Object Relational Mapping" href="https://www.fullstackpython.com/object-relational-mappers-orms.html">ORM</a> 
+                to add a custom touch to our view."<br> 
+                It has to be called <strong>get_queryset</strong> to my knowledge. It's usefulness comes from 
+                the series of parameters that we passed in...
+            </li>
+            <li>
+                return Post.objects<strong>.filter</strong><br>
+                Rather than calling the model name, then "objects", followed by <em>.all</em>, we call the 
+                <strong>.filter()</strong> method...
+            </li>
+            <li>
+                <strong>published_date__lte=timezone.now()</strong><br>
+                This is saying that we're filtering out<sup>(1)</sup> all the posts whose published_date is 
+                <strong>__lte</strong> (less-than-or-equal-to) timezone.now(), which is the current date 
+                and time. 
+            </li>
+            <p class="mattthoughts">
+                <sup>(1)</sup>I always get hung up on the phrase "filter out", wondering if it means 
+                we're <em>including</em> or <em>excluding</em> whatever we're filtering. Think of it 
+                as 'catching' .. we are <em>catching</em> everything that meets our filter criteria. The 
+                initial object does not get modified by this function.
+            </p>
+            <p class="mattthoughts">
+                Note the syntax of <strong>__lte</strong><br>
+                It is a double underscore, and there is no space before it. Django has many of these, 
+                and they are called <strong>field lookups</strong>. <br>
+                <br>
+                Another example is <strong>__contains</strong>. We could have filtered out just the 
+                posts whose body or "text" attribute contains <strong>piano</strong> by saying: <br>
+                <strong>Post.objects.filter(text__contains='piano')</strong><br>
+                <br>
+                I digress. Here's a link to <em>field lookups</em> in the Django documentation. <br>
+                <a href="#">Django docs - Field Lookups</a>
+            </p>
+            <li>
+                <strong>.order_by('-published_date')</strong><br>
+                I'm sure you can guess what this means, but the important thing to note here is that by 
+                adding '-' before the 'published_date' attribute, we're telling Django to order by those 
+                dates in <em>descending order</em>.
+            </li>
+        </ul>
+    </p> <!--end of ul-->
+
+    <h4>PostListView urlpattern</h4>
+    <p>
+        In <strong>urls.py</strong> for our app, we'll add the following pattern above the one we made for 
+        our 'About' page, because typically you'll put the main/home page pattern at the top of the list.
+    </p>
+    <p class="codeblock">
+        url(r'^$', views.PostListView.as_view(), name='post_list')
+    </p>
+    <p>
+        Recall the way we set up our <strong>urls.py</strong> for the project - it'll automatically 
+        direct Django to the <strong>urls.py</strong> for the <em>app</em>. Now this urlpattern in our 
+        app is saying that "if no other extension is inlcuded, direct the user to the homepage," and we'll 
+        name it <strong>post_list</strong> because that's the default name that Django is expecting in 
+        a generic ListView.
+    </p>
+    <a href="#top">Back to the Top</a>
+
+
+    <h3 id="postdetail">PostDetailView</h3>
+    <h4>Set up the CBV</h4>
+    <p>
+        Whereas the homepage is intended to show the user(s) a list of our posts, now we want to show 
+        them the <em>details</em> of a post once they click on one. For that, we call upon Django's 
+        <strong>DetailView</strong>:
+    </p>
+    <p class="codeblock">
+        from django.views.generic import TemplateView, ListView, <strong>DetailView</strong>
+    </p>
+    <p>
+        Then the view itself is as simple as...
+    </p>
+    <p class="codeblock">
+        class PostDetailView(DetailView): <br>
+            &emsp;model = Post
+    </p>
+
+    <h4>PostDetailView urlpattern</h4>
+    <p>
+        We're back to some puzzling-looking regular expressions, similar to the ones from the 
+        <a href="{% url 'main_app:djangocbv' %}">previous section about CBV's</a>. Let's look 
+        at the urlpattern:
+    </p>
+    <p class="codeblock">
+        url(r'^post/(?P&lt;pk&gt;\d+)$', views.PostDetailView.as_view(), name='post_detail'),
+    </p>
+    <p>
+        In human terms, we're saying that when a user clicks on one of the posts listed on the 
+        homepage, they'll be directed to a url having the pattern <strong>/post/</strong> followed 
+        by the <strong>Primary Key</strong> corresponding to that particular post that was clicked; 
+        and then Django will call up our PostDetailView for the clicked post. We'll see shortly how 
+        Django knows to look for this urlpattern when a post is clicked, but spoiler alert, it's 
+        handled via a template tag in the html.
+    </p>
+    <a href="#top">Back to the Top</a>
+
+
+    <h3 id="postcreate">Page to Create Posts</h3>
+    <p>
+        Ahh... putting the 'C' in <em>CRUD</em> - we are going to <em>Create</em> using the 
+        <strong>CreateView</strong> class. OK, let's update that import list...
+    </p>
+    <p class="codeblock">
+        from django.views.generic import TemplateView,ListView,DetailView, <strong>CreateView</strong>)
+    </p>
+    <p class="mattthoughts">
+        When you have this many imports on one line, you can use parentheses to wrap the imports onto 
+        the next line.
+    </p>
+    <p>
+        Now we'll define our <strong>CreatePostView</strong> class, which inherits from <em>CreateView</em>. 
+        This class will be different from those we've made so far because we're going to constrain it in 
+        such a way that only authenticated users may utilize this function... <br>
+        <img width="250" style="margin-top: 1rem;"
+        src="{% static 'main_app/images/regulate.gif' %}" alt="you can't be any geek off the street"><br>
+        <span style="font-size: 0.7rem;">You gotta be authenticated, know what I mean?</span>
+    </p>
+
+    <h4>Time to mix in some mixins!</h4>
+    <p id="mixin-section">
+        In past lectures and examples, we've handled authentication requirements using some of Django's built-in 
+        <strong>decorators</strong>, however, those were <em>function-based-views</em>, not CBV's. Similar 
+        to decorators, we'll be importing something called <strong>mixins</strong> from that same 
+        <strong>django.contrib.auth</strong> library <sup>(<a style="text-decoration: none;" href="#issue1">issue encountered</a>)</sup>
+    </p>
+    <p class="codeblock">
+        from django.contrib.auth.mixins import LoginRequiredMixin
+    </p>
+    <p>
+        Now we'll pass in this <strong>mixin</strong> as we define our <strong>CreatePostView</strong> class.
+    </p>
+    <p class="codeblock">
+        class CreatePostView(LoginRequiredMixin, CreateView): <br>
+            &emsp;login_url = '/login/' <br>
+            &emsp;redirect_field_name = 'blog/post_detail.html'<br>
+            &emsp;form_class = PostForm <br>
+            &emsp;model = Post
+    </p>
+    <style>
+        .createclass li{
+            margin-top: 2rem;
+        }
+    </style>
+    <p>
+        Breaking that down:
+        <ul class="createclass">
+            <li>
+                <strong>login_url</strong> is where a user will be directed if they attempt to access this 
+                view, but they are not logged in. Here we've defined it as '/login/', so that the user will 
+                first be directed to some login page that we've not yet set up.
+            </li>
+            <li>
+                <strong>redirect_field_name</strong> <br>
+                This is where a logged-in user is going to be directed when they click to create a post. Here 
+                we've defined it as <strong>'blog/post_detail.html'</strong>, meaning they'll be redirected to 
+                a detail view.
+            </li>
+            <p class="mattthoughts">
+                Wait, a detail view for what? We're creating a post... doesn't the detail view require us to 
+                pass in a Primary Key? And since this post doesn't exist yet, what key is being used? <br>
+                <br>
+                For now, I'm going to assume again that Django "knows" what to do, but on a technical level 
+                I'm not sure what sort of Primary Key input it comes up with in order to make the urlpattern 
+                work properly. Perhaps if no PK is passed in, it knows to call up the CreateView?
+            </p>
+            <li>
+                <strong>form_class = PostForm</strong> <br>
+                This is pairing our CreateView class with our specified form class (in this case, PostForm), 
+                and therefore preparing Django to display a view based on our PostForm class. In order to 
+                make reference to <strong>PostForm</strong>, we must import it via:
+            </li>
+            <p class="codeblock">
+                from blog.forms import PostForm,CommentForm <span class="codecomment"># might as well get both</span>
+            </p>
+            <li>
+                <strong>model = Post</strong> <br>
+                Everything is still based on the Post model right now.
+            </li>
+        </ul>
+    </p>
+
+    <h4>You Are Elle?</h4>
+    <p>
+        Where there's a view, there must be a urlpattern. This seems quite simple, at least in the sense that 
+        it doesn't have any crazy regex to figure out. 
+    </p>
+    <p class="codeblock">
+        url(r'^post/new/$', views.CreatePostView.as_view(), name='post_new')
+    </p>
+    <p class="mattthoughts">
+        If at this moment you can't wrap your head around how/when/why Django will know that it's 
+        supposed to look for the <strong>post_new</strong> urlpattern, don't worry!... we simply 
+        haven't set that up yet. Eventually there will be a template tag pointing to this. <br> 
+        <br> 
+        This brings about an interesting point that when you're actually making your own blog, or whatever 
+        project... you might not [ and you don't have to be ] following this exact order. This workflow came from an 
+        instructor who's already got this thing laid out and figured out. I suspect that someone making 
+        this from scratch, especially a beginner will be back-and-forth a lot more, but this at least 
+        gives you the general mechanics of how this works... Set up a view, give it a urlpattern, bring 
+        'em all together with html templates, implement forms as needed. Repeat!
+    </p>
+
+    <a href="#top">Back to the Top</a>
+
+    <h3 id="postupdate">Page to update/edit posts</h3>
+    <h4>The imports</h4>
+    <p>
+        You know the drill - we're adding this one to that list of view class imports:
+    </p>
+    <p class="codeblock">
+        [yada yada...] <strong>UpdateView</strong>
+    </p>
+
+    <h4>The views</h4>
+    <p>
+        This class will also require a login, so we'll set it up similarly to the 'Create' class. And 
+        when I 'similar' I mean 'exactly the same!' Why? Because you're really doing the same thing 
+        whether you're updating or creating. The differences are in the way you get to and from this 
+        view, rather than the aesthetic or functionality of the view.
+    </p>
+    <p class="codeblock">
+        class CreatePostView(LoginRequiredMixin, CreateView): <br>
+            &emsp;login_url = '/login/' <br>
+            &emsp;redirect_field_name = 'blog/post_detail.html'<br>
+            &emsp;form_class = PostForm <br>
+            &emsp;model = Post  
+    </p>
+
+    <h4>The urls</h4>
+    <p>
+        The regex here will be similar to the one for the post_detail urlpattern, requiring a 
+        <strong>Primary Key</strong> to identify the particular post that the user wishes to edit. 
+    </p>
+    <p class="codeblock">
+        url(r'^post/(?P&lt;pk&gt;\d+)/edit/$', views.PostUpdateView.as_view(), name='post_edit'),
+    </p>
+    <h4>What should happen?</h4>
+    <p>
+        A user is in the detail view of an existing post, and they click on some link or button to 
+        make changes to that post. Now, if the user isn't already logged in, they'll be directed 
+        to the login page via the <strong>login_url='/login/'</strong>, which tells the main urls.py 
+        to call up Django's built-in <strong>login view</strong>. Once logged in, they'll be taken 
+        to the class-based UpdateView for our PostForm - i.e. the place where they can edit a post.
+    </p>
+    <p>
+        On the other hand, if that user is currently logged in, they'll head directly to the post 
+        editing page mentioned just above, and in either case, users will be redirected back to 
+        the detail view for the post once they've submitted changes or canceled out of their changes.
+    </p>
+
+    <h3>Handling Deletion of Posts</h3>
+    <p>
+        Predictably, we're adding <strong>DeleteView</strong> to our list of CBV imports, and then 
+        our CBV looks like this:
+    </p>
+    <p class="codeblock">
+        class PostDeleteView(LoginRequiredMixin, DeleteView): <br>
+        &emsp;model = Post <br>
+        &emsp;success_url = reverse_lazy('post_list')
+    </p>
+    <p>
+        We of course want only authorized users to be able to delete a post, so we pass in 
+        <strong>LoginRequiredMixin</strong>, and then we pass in our <strong>DeleteView</strong> class. 
+        This view is based on the <strong>Post</strong> model, and then the last line tells us a 
+        couple of things: <em>where a user goes after deleting a post, and how they'll get there</em>. 
+        The first part of that is dictated by naming the urlpattern <strong>post_list</strong>, but 
+        <em>how</em> they get there is by way of <strong>reverse_lazy</strong>, which as it was 
+        described, doesn't run until python has parsed whatever information it needs before 
+        redirecting the user. What information? I'm guessing it waits on your confirmation of 
+        post deletion?
+    </p>
+    <p id="deleting-posts">
+        Don't forget to import <strong>reverse_lazy</strong> <a href="#issue1"><sup>(Issue)</sup></a>:
+    </p>
+    <p class="codeblock">
+        from django.urls import reverse_lazy
+    </p>
+    <p>
+        The <strong>urlpattern</strong> for this will be the same as the one for editing posts, except 
+        we'll replace the instances of the word 'edit' with <strong>remove</strong>:
+    </p>
+    <p class="codeblock">
+        url(r'^post/(?P&lt;pk&gt;\d+)/remove/$, views.PostDeleteView.as_view(), name='post_remove'),
+    </p>
+    <p class="mattthoughts">
+        I finally just typed that regular expression from memory. Repetition works.
+    </p>
+    <a href="#top">Back to the Top</a>
+
+
+    <h3>Page to List All Draft Posts</h3>
+    <p>
+        We want this page to let an authorized user view a list of all unpublished/draft posts, and 
+        then when they're done - i.e. they've published something, or canceled out of this page - we 
+        wanted them directed back to the main post list. So we can expect a CBV that includes login 
+        information, redirect information, and some sort of specification as to which posts we want 
+        pulled from our database and displayed on this page.
+    </p>
+    <p class="codeblock">
+        class DraftListView(LoginRequiredMixin, ListView): <br>
+        &emsp;login_url = '/login/' <br>
+        &emsp;redirect_field_name = 'blog/post_list.html' <br>
+        &emsp;model = Post  <br>
+        <br>
+        &emsp;def get_queryset(self): <br>
+            &emsp;&emsp;return Post.objects.filter(published_date__isnull=True).order_by('created_date')
+    </p>
+    <p>
+        This view class does exactly that: it handles login, redirect, and then the part that warrants 
+        some explanation is actually similar to what we used in the <strong>PostListView</strong>. 
+        We're saying <em>take all our Post objects and filter out just the ones that do not have a 
+        published_date; and order those Post objects by their created_date.</em>
+    </p>
+    <p><strong>The urlpattern</strong></p>
+    <p class="codeblock">
+        url(r'^drafts/$, views.DraftListView.as_view(), name='post_draft_list'),
+    </p>
+    <a href="#top">Back to the Top</a>
+
+
+    <!-- ####################### NEW SECTION ###################### -->
+    <h2 class="newsection" id="templates-and-functions">Templates and Some Function Views</h2>
+    <p>
+        After a very busy stretch of making CBV's and urlpatterns, we now need to build a bunch of 
+        html templates to match. We're also going to be adding some function-based-views that will 
+        handle our comments section. 
+    </p>
+    <p class="mattthoughts">
+        This should be a good opportunity to make our case for why you'd use CBV's or function-based, 
+        since this project will have both. At this time, I can understand why you'd use CBV's to 
+        quickly produce generic views using Django's built-in libraries. BUT, maybe this will show 
+        me why you'd use functions instead. Maybe they provide more customization? I don't know, I'm 
+        learning as I go here.
+    </p>
+
+    <h3 id="whichtemplates">Which Templates?</h3>
+    <p>
+        We'll start off by making a list of all the templates that we still need; and we'll actually 
+        build them out later. It is recommended that the names exactly match the ones written here, 
+        because Django, if you recall, creates default template names that it looks for when working 
+        with CBV's. 
+    </p>
+    <p>Under your <strong>templates/blog</strong> directory, create:<ul>
+        <li><a href="#post-detail-html">post_detail.html</a> - a detailed view of a particular post</li>
+        <li><a href="#post-form-html">post_form.html</a> - what you'll see when you edit or create a post</li>
+        <li><a href="#post-list-html">post_list.html</a> - the main page listing all posts</li>
+        <li><a href="#post-draft-list-html">post_draft_list.html</a> - I mean, you get the idea, right?</li>
+        <li><a href="#post-confirm-delete-html">post_confirm_delete.html</a> - this'll be a redirect page to make sure you're serious about deleting</li>
+        <li><a href="#comment-form-html">comment_form.html</a> - could the decline of humanity be loosely based on comments sections? Perhaps.</li>
+    </ul></p>
+    <p>Then under <strong>templates/registration:</strong><ul>
+        <li><a href="#setup-authentication">login.html</a> - a redirect page to authenticate users</li>
+    </ul></p>
+
+    <h3 id="more-views-urls">More Views/URL's</h3>
+    <p>
+        If you liked that last section full of views and wacky urlpatterns, have I got great news for you!...
+    </p>
+
+    <h4>First function view: adding comments to a post</h4>
+    <p>
+        It's not lost on me that this section seems to use and re-use the word "post" until it's 
+        lost all meaning. We have <strong>Post</strong> objects, a <strong>post</strong> variable, and 
+        <strong>POST</strong> method. Prepare yourself and try not to let it mess with your head. <br>
+        <img width="300" style="margin-top: 1rem;" 
+        src="{% static 'main_app/images/postmalone.jpg' %}" alt="post malone image missing; one less post to worry about">
+    </p>
+    <p>
+        Let's look at our first function-based-view. I'm going to drop the whole thing in here, and then 
+        chip away at explaining it.
+    </p>
+    <p class="codeblock">
+        @login_required <br>
+        def add_comment_to_post(request, pk): <br>
+            &emsp;post = get_object_or_404(Post, pk=pk) <br>
+            <br>
+            &emsp;if request.method == 'POST': <br>
+                &emsp;&emsp;form = CommentForm(request.POST) <br>
+                &emsp;&emsp;if form.is_valid(): <br>
+                    &emsp;&emsp;&emsp;comment = form.save(commit=False) <br>
+                    &emsp;&emsp;&emsp;comment.post = post <br>
+                    &emsp;&emsp;&emsp;comment.save() <br>
+                    &emsp;&emsp;&emsp;return redirect('post_detail', pk=post.pk)   <br>  
+            &emsp;else: <br>
+                &emsp;&emsp;form = CommentForm() <br>
+            <br>
+            &emsp;return render(request, 'blog/comment_form.html', {'form':form})
+    </p>
+    <p>
+        So we call the function <strong>add_comment_to_post</strong>, and we pass in <strong>request</strong> 
+        as we normally we would; we also pass in the <strong>Primary Key</strong> since the functionality of 
+        adding a comment is specific to a particular post.
+    </p>
+    <h4>And now a word from our imports</h4>
+    <p>
+        You'll notice there's an unfamiliar line about 404, which will be explained later, but 
+        in order to use it (and some other items in this function), we'll deal with our imports 
+        (new stuff is shown in <strong>bold</strong> font):
+    </p>
+    <p class="codeblock">
+        from django.shortcuts import render, <strong>get_object_or_404, redirect</strong> <br>
+        <br>
+        <strong>from django.contrib.auth.decorators import login_required</strong> <br>
+        <br>
+        <strong>from django.utils import timezone</strong> <br>
+    </p>
+    <h4>Breaking down the add_comment_to_post function</h4>
+    <p>
+        <strong>@login_required</strong><br>
+        The first line in this function is Django's built-in decorator to require login/authentication. 
+        It's not necessary on this function but was put here just to get practice using it.
+    </p>
+    <p class="mattthoughts" id="decorator-note">
+        Learn more about <a href="#issue2">DECORATORS</a> even though it's not necessarily critical for 
+        purposes of completing this blog site. You could simply accept that Django has some built-in 
+        functionality that you can add on top of your functions, and said functionality allows you to 
+        authenticate users without any further thought. Maybe you already have a good understanding 
+        of decorators. <br>
+        <br>
+        I don't. <br>
+        <br>
+        So if you feel like going on a tangent with me to figure these things out, step 
+        <a href="#issue2">right this way</a>...
+    </p>
+    <p>
+        <strong>post = get_object_or_404(Post, pk=pk)</strong><br>
+        We're saving our <strong>Post object</strong> as a <strong>post variable</strong>, and this odd-looking 
+        404 thing is just saying that this function is going to either get our object, or it's going to show 
+        one of those <em>404 not found</em> pages. Honestly, I thought those just came up automatically if 
+        the thing you're looking for wasn't found.
+    </p>
+    <p>
+        Then!.. if the request method is <strong>POST</strong>, our associated <strong>CommentForm</strong> 
+        object, along with all posted information, will be saved as a variable <strong>form</strong>.
+    </p>
+    <p>
+        OK, now we've got a CommentForm that's been filled out and POST'ed. Next we validate it, and 
+        assuming it's valid - i.e. fits the constraints of the various attributes of the form - we'll 
+        save this <em>validated</em> form as another variable called <strong>comment</strong>. <br>
+        <br>
+        BUT!...
+    </p>
+    <p>
+        We won't 'commit' it just yet. We'll first associate it with the particular post via: <br>
+        <strong>comment = form.save(commit=False)</strong><br>
+        <strong>comment.post = post</strong> <br>
+        <br>
+        Then save it <em>and</em> commit it to the database with the command below. Note how the first 
+        <strong>.save()</strong> was called off of <strong>form</strong>, but now this one is being called 
+        off of <strong>comment</strong>. <br>
+        <strong>comment.save()</strong>
+    </p>
+    <p>
+        Finally, we define what this function will return when there is a POST'ed and validated form. 
+    </p>
+    <p>
+        <strong>return redirect('post_detail', pk=post.pk)</strong> <br>
+        This means that after someone has submitted their comment, they'll be redirected to the 
+        urlpattern named 'post_detail', which will show the blog post they commented on.
+    </p>
+    <p>
+        If, however, nothing has been POST'ed, we'll just display the blank comment form: <br>
+        <strong>form = CommentForm()</strong> .. with no POST data.
+    </p>
+    <p>
+        In such a case where no info has been submitted yet, the return statement is a standard one, 
+        including the html template and injecting a blank form via template tag.
+    </p>
+
+    <h4>The urlpattern for add_comment_to_post</h4>
+    <p>
+        Since this interaction involves a specific post, you should now be expecting that it's going to 
+        involve a Primary Key, and therefore another not-so-simple regular expression. The good news is 
+        that it's basically the same one we've used before.
+    </p>
+    <p class="codeblock">
+        url(r'^post/(?P&lt;pk&gt;\d+)/comment/$', views.add_comment_to_post, name='add_comment_to_post'),
+    </p>
+    <p>
+        We'll later see a template tag in our html files that directs the user to the named pattern 
+        <strong>add_comment_to_post</strong>.
+    </p>
+
+    <h4>Next function-based-view: approving comments</h4>
+    <p class="codeblock">
+        @login_required <br>
+        def comment_approve(request,pk): <br>
+            &emsp;comment = get_object_or_404(Comment, pk=pk) <br>
+            &emsp;comment.approve() <br>
+            &emsp;return redirect('post_detail', pk=comment.post.pk)
+    </p>
+    <p>
+        Once again, login is required because you only want authorized users to have the ability to approve 
+        a comment. We pass in the request as well as the Primary Key. All good there.
+    </p>
+    <p>
+        We call upon <strong>get_object_or_404</strong> again, this time passing in a <strong>Comment</strong> 
+        object (rather than a <strong>Post</strong> object) and also the Primary Key for the post associated 
+        with this comment. OK.
+    </p>
+    <p>
+        <strong>comment.approve()</strong><br>
+        So keep in mind that <strong>comment</strong> is an instance of a <strong>Comment</strong> object; 
+        and if you go back to our <strong>models.py</strong>, you can see that our Comment class has a method 
+        called <strong>approve()</strong>, which has the ability to change the value of the boolean attribute 
+        <strong>approved_comment</strong> to <em>True</em>.
+    </p>
+    <p>
+        Then, once the authorized user has approved the comment, they get redirected to <strong>post_detail</strong> 
+        for the particular post.
+    </p>
+
+    <h4>The urlpattern for comment_approve</h4>
+    <p class="codeblock">
+        url(r'^comment/(?P&lt;pk&gt;\d+)/approve/$', views.comment_approve, name='comment_approve'),
+    </p>
+    <p>
+        Similar regex again, and this time we're telling Django that when the user clicks an href naming the 
+        urlpattern <strong>comment_approve</strong>, Django will call up this comment_approve() function; the 
+        function will do its thing, and then redirect the user back to the post_detail, which should now show 
+        the affected comment in the list of approved comments for that post.
+    </p>
+
+    <h4>Next function: comment_remove</h4>
+    <p class="codeblock">
+        @login_required <br>
+        def comment_remove(request,pk): <br>
+            &emsp;comment = get_object_or_404(Comment,pk=pk) <br>
+            &emsp;post_pk = comment.post.pk <br>
+            &emsp;comment.delete() <br>
+            &emsp;return redirect('post_detail', pk=post_pk)        
+    </p>
+    <p>
+        Same as 'approve', but it calls the Comment class method, <strong>delete()</strong> instead of approve(). 
+        You'll notice it also adds this line: <br>
+        <strong>post_pk = comment.post.pk</strong>
+    </p>
+    <p>
+        We want <strong>comment.post.pk</strong> saved to some other variable since we're about to delete <strong>comment</strong>. 
+        Because in the return statement, if you called <strong>comment.post.pk</strong>, it wouldn't work .. that 
+        comment will already be gone.
+    </p>
+
+    <h4>The urlpattern for comment_approve</h4>
+    <p>No surprises here...</p>
+    <p class="codeblock">
+        url(r'^comment/(?P&lt;pk&gt;\d+)/remove/$', views.comment_remove, name='comment_remove'),
+    </p>
+
+    <h4>The last view! Publishing a post</h4>
+    <p class="codeblock">
+        @login_required <br>
+        def post_publish(request,pk): <br>
+            &emsp;post = get_object_or_404(Post, pk=pk) <br>
+            &emsp;post.publish() <br>
+            &emsp;return redirect('post_detail', pk=pk)        
+    </p>
+    <p>
+        This should now be a familiar-looking function. This time we're working with a <strong>Post</strong> 
+        object instead of a Comment object, but same setup. We take the request and the Primary Key, use 
+        it to get our Post and save it as a variable, so that we can call the <strong>.publish()</strong> 
+        class method on it, and finally redirect the user to the post_detail view.
+    </p>
+
+    <h4>The urlpattern for post_publish</h4>
+    <p class="codeblock">
+        url(r'^post/(?P&lt;pk&gt;\d+)/publish/$', views.post_publish, name='post_publish'),
+    </p>
+    <p>
+        So picture an authorized user looking at the post_detail view for an unpublished post. When they 
+        click on the appropriate 'publish' link/button, they'll be telling Django to search for this urlpattern named 
+        <strong>post_publish</strong>, which will call the post_publish function, and in doing so, they will be 
+        redirected back to the post_detail view, except now the post will not show up as a draft.
+    </p>
+
+    <h3 id="setup-authentication">Set up Authentication</h3>
+    <p>
+        In <strong>the main urls.py</strong> we'll start with the imports, and then create a urlpattern 
+        for logins... <br>
+        <img width="200" style="margin-top: 1rem;"
+        src="{% static 'main_app/images/loggins2.jpg' %}" alt="image lost in danger zone"> <br>
+        <em>Don't forget logOUTs</em> 
+    </p>
+    <p class="codeblock">
+        from django.contrib.auth import views <br>
+        <br>
+        <span class="codecomment"># Add this to the urlpattern list</span><br>
+        url(r'accounts/login/$', views.login, name='login'),<br>
+        url(r'accounts/logout/$', views.logout, name='logout', kwargs={'next_page':'/'}),
+    </p>
+    <p class="mattthoughts">
+        Oh boy, he threw in some kwargs. We'll need to wait and see how this is implemented, but conceptually, 
+        it's saying that when you log out, the next page you go to will be the home page, which is noted by 
+        a '/'.
+    </p>
+
+    <h4>The corresponding login page</h4>
+    <p>
+        Not a lot of html on this template so let's view it all at once, and then we can break it down:
+    </p>
+    <p class="codeblock">
+        {% extends 'blog/base.html' %<!---->} <br>
+        <br>
+        {% block content %<!---->} <br>
+        &lt;div class="jumbotron"&gt; <br> <span class="codecomment"># a bootstrap class</span>
+            &emsp;&lt;h2&gt;Please Login:&lt;/h2&gt; <br>
+            &emsp;&lt;h3&gt;(Must be SuperUser, please check with the site admin)&lt;/h3&gt; <br>
+            &emsp;<br>
+            &emsp;{% if form.errors %<!---->} <br>
+                &emsp;&emsp;&lt;p&gt;Your username and password didn't match! Please try again.&lt;/p&gt; <br>
+            &emsp;{% endif %<!---->} <br>
+            &emsp;<br>
+            &emsp;&lt;form action="{% url 'login' %<!---->}" method="POST"&gt; <br>
+                &emsp;&emsp;{% csrf_token %<!---->} <br>
+                &emsp;&emsp;{{ form.as_p }<!---->} <br>
+                &emsp;&emsp;&lt;input type="submit" class="btn btn-primary" value="Login"&gt; <br>
+                &emsp;&emsp;&lt;input type="hidden" name="next" value="{{next}}"&gt; <br>
+            &emsp;<br>
+            &emsp;&lt;/form&gt;<br>        
+        &lt;/div&gt;<br>
+        {% endblock %<!---->}        
+    </p>
+    <p>
+        <strong>Summing up this page:</strong><br>
+        User is taken to this login page, which extends from <strong>base.html</strong>, and they are 
+        greeted with a prompt to login.
+    </p>
+    <p class="mattthoughts">
+        Mind you, we've not yet built out our base.html, but we'll get there.
+    </p>
+    <p>
+        We add some logic tags to handle login errors, prompting the user to try again as needed.
+    </p>
+    <p>
+        Then we create the form, whose <em>action</em> is to take the user to the login page.
+    </p>
+    <p class="mattthoughts">
+        Wait, I thought we're already on the login page. The login form on the login page is taking us 
+        to the login page?? Guess I'll need to move on for now and trust that it'll be explained later.
+    </p>
+    <style>
+        .login-form li{
+            margin-bottom: 2rem;
+        }
+    </style>
+    <p>
+        <strong>Components of the form</strong>: <br>
+        <ul class="login-form">
+            <li>
+                OK, so it's a form with an action taking you to the login page, and the method is POST.
+            </li>
+            <li>
+                <strong>{% csrf_token %}</strong><br>
+                Always remember your csrf token.
+            </li>
+            <li>
+                <strong>{{ form.as_p }<!---->}</strong><br>
+                Inject the form as a p-tag via template tagging which is linked to our views.
+            </li>
+            <p class="mattthoughts">
+                Timeout again. I don't actually know which instance of <strong>form</strong> is being 
+                injected in this template tag. I said it's from our <strong>views</strong>, but I don't 
+                know if that's true. Which view has a form for login? <br>
+                <br>
+                My guess is that our <strong>@login_required decorator</strong> is doing the legwork here, 
+                and that we just can't see the instance of <strong>form</strong> that's being used because 
+                it's built into some library that the decorator is using. More thoughts on this in my next 
+                ...point-of-confusion ramblings.
+            </p>
+            <li>
+                Then that first input (<strong>type='submit'</strong>) is our login button, which has some 
+                bootstrap classes added to it, in order to make it button-ee.
+            </li>
+            <li>
+                But then this one... well, I don't know what this one is doing: <br>
+                <strong>input type='hidden' name='next' value='{{next}<!---->}'</strong> <br>
+                <br>
+                <p class="mattthoughts">
+                    It's explained (I think somewhat poorly) as <em>"having to do with the view that we're 
+                    operating with"</em>; at which point the instructor heads over to urls.py, once again 
+                    confusing me because he said 'views'. <br>
+                    <br>
+                    But wait! <br>
+                    Remember in the <strong>main urls.py</strong> we just imported some <strong>views</strong> 
+                    module from one of Django's libraries? I think it's that one, and I also think this helps 
+                    answer my question a few bullet points ago. It's perhaps not the decorator that brings in 
+                    the <strong>form</strong> in question, but rather this Django built-in view. Perhaps.
+                </p><br>
+                Several confusions later, let's just say that this is a hidden input, meaning the user does not 
+                see it, and that this input is essentially telling Django where to direct the user next, after 
+                they've logged in. And to the best of our knowledge, it's using Django built-in's to accomplish 
+                the bulk of this.
+            </li>
+        </ul>
+    </p>
+
+    <h3 id="make-other-templates">Finally making those templates</h3>
+    <h4 id="base-html">base.html</h4>
+    <style>
+        .base-html-explanation li{
+            margin-top: 2rem;
+        }
+    </style>
+    <p>
+        I'm going to try to verbalize as much of this as I can, because it'd be a mess if I just bring in 
+        a whole bunch of html to dissect all at once. So let's try this... <br>
+        <ul class="base-html-explanation">
+            <li>
+                Start by auto-populating an html document, and don't forget to add this: <br>
+                <strong>{% load staticfiles %<!---->}</strong>
+            </li>
+            <li>
+                In the <strong>head</strong> of our document, there are few items we'll be adding: <br>
+                <ul>
+                    <li>
+                        <a href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">Bootstrap CDN</a> for styling; 
+                        just add this link as your stylesheet href.
+                    </li>
+                    <li>
+                        A Medium.com-esque text editing toolbar. This is going to let users make their text bold, italic, 
+                        larger, etc., and we incorporated it by finding some JavaScript and CSS on github. <br>
+                        <br>
+                        For the <em>script:src</em>, copy/paste this 
+                        <a href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js">link</a> <br>, and 
+                        add the following to the script tag: <br>
+                        <ul>
+                            <li>integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" </li>
+                            <li>crossorigin="anonymous"</li>
+                        </ul>
+                        <br>
+                        For the <em>stylesheet href</em>, copy/paste this 
+                        <a href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css">link</a>, and in 
+                        the link tag, add these attributes: <br>
+                        <ul>
+                            <li>type="text/css" media="screen" charset="utf-8"</li>
+                        </ul>
+                    </li>
+                    <li>
+                        Then we add our own stylesheet via a link tag with the href below. Note that it was mentioned 
+                        that you place the custom CSS lower in the HEAD than the Bootstrap and other styling links. <br>
+                        {% static 'css/blog.css' %<!---->}
+                    </li>
+                    <li>
+                        Finally, you can add any custom fonts here.
+                    </li>
+                </ul> <!--End of HEAD ul-->
+            </li>
+            <li>
+                To the <strong>body</strong> tag we'll add our own custom class <strong>loader</strong>.
+            </li> 
+            <li>
+                Next we'll make a <strong>navbar</strong> using Bootstrap styling classes, and we'll utilize some 
+                logic tags so that we can make the navbar's appearance change based on whether or not the user is 
+                logged in. The nav will be made of two unordered lists; the first will have some basic and generic 
+                items, whereas the second will show either a <strong>login</strong> option, or if the user is logged 
+                in already, it'll show some additional utilities available only to authorized users. Let's just code 
+                that one out below: <br>
+                <p class="codeblock">
+                    &lt;nav class="navbar navbar-default techfont custom-navbar"&gt; <br>
+                        &emsp;&lt;div class="container"&gt; <br>
+                            &emsp;&emsp;&lt;ul class="nav navbar-nav"&gt; <br>
+                                &emsp;&emsp;&emsp;&lt;li&gt;&lt;a class="navbar-brand bigbrand" href="{% url 'post_list' %<!---->}"&gt;My Blog&lt;/a&gt;&lt;/li&gt; <br>
+                                &emsp;&emsp;&emsp;&lt;li&gt;&lt;a href="{% url 'about' %<!---->}"&gt;About&lt;/a&gt;&lt;/li&gt; <br>
+                                &emsp;&emsp;&emsp;&lt;li&gt;&lt;a href="your-github-link"&gt;Github&lt;/a&gt;&lt;/li&gt; <br>
+                                &emsp;&emsp;&emsp;&lt;li&gt;&lt;a href="your-linkedin-link"&gt;LinkedIn&lt;/a&gt;&lt;/li&gt; <br>
+                            &emsp;&emsp;&lt;/ul&gt; <br>
+                            <br>     
+                            &emsp;&emsp;&lt;ul class="nav navbar-nav navbar-right"&gt; <br>
+                                &emsp;&emsp;&emsp;{% if user.is_authenticated %<!---->} <br>
+                                &emsp;&emsp;&emsp;&lt;li&gt;&lt;a href="{% url 'post_new' %<!---->}"&gt;New Post&lt;/a&gt;&lt;/li&gt; <br>
+                                &emsp;&emsp;&emsp;&lt;li&gt;&lt;a href="{% url 'post_draft_list' %<!---->}"&gt;Drafts&lt;/a&gt;&lt;/li&gt; <br>
+                                &emsp;&emsp;&emsp;&lt;li&gt;&lt;a href="{% url 'logout' %<!---->}"&gt;Logout&lt;/a&gt;&lt;/li&gt; <br>
+                                &emsp;&emsp;&emsp;&lt;li&gt;&lt;a&gt;Welcome: {{user.username}<!---->}&lt;/a&gt;&lt;/li&gt; <br>
+                                <br>
+                                &emsp;&emsp;&emsp;{% else %<!---->} <br>
+                                &emsp;&emsp;&emsp;&lt;li&gt;&lt;a class="nav navbar-right" href="{% url 'login' %<!---->}"&gt;&lt;span class="glyphicon glyphicon-user"&gt;&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;<br>
+                                <br>
+                                &emsp;&emsp;&emsp;{% endif %<!---->} <br>
+                            &emsp;&emsp;&lt;/ul&gt; <br>
+                        &emsp;&lt;/div&gt; <br>
+                
+                    &lt;/nav&gt;    
+                </p>
+                <ul>
+                    <li>
+                        I'm not going to get into much detail about this since it's primarily html and various types of styling. 
+                        One thing I will note is that if you use this Medium-Editor stuff, you should credit the github user, 
+                        <a href="https://github.com/yabwe/medium-editor"><strong>yabwe</strong></a>, and I'll add a nice little 
+                        disclaimer to do your own research relative to ethics and etiquette when it comes to using code or pieces 
+                        of code that were created by others.
+                    </li>
+                    <div style="background-color: rgba(135, 128, 179, 0.527); border-radius: 5px; 
+                    box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.5);">
+                        <li style="list-style: none; padding: 1rem;">
+                            A little tangent about pre-made stylings available at <a href="https://codepen.io/">codepen.io</a>: <br>
+                            <br>
+                            There are lots of free resources out there, codepen being one example, where you can find lots of  
+                            pre-made front-end code that you can basically copy and paste into your own. There are all kinds of 
+                            display effects, and in the case of this project, we grabbed on that cycles through the colors of a 
+                            rainbow. Again, do your own research in terms of using someone else's code, and crediting them. I'm 
+                            not an attorney; just a guy learning Django. <br>
+                            <br>
+                            Since CSS is not the focus of this tutorial, I'm going to just incorporate the lines of code, but I'm 
+                            not getting into those explanations. None of it is critical to get this blog up and running, so let's 
+                            keep moving onward.
+                        </li>
+                        <p class="codeblock">
+                            <span class="codecomment">/*Here is our CSS; brought to you by CTRL+C and CTRL+V*/</span><br>
+                            .techfont{ <br>
+                                &emsp;font-family: 'Russo One', sans-serif; <br>
+                                &emsp;font-size: 1.5em; <br>
+                                &emsp;margin-bottom: 10px; <br>
+                            } <br>
+                            
+                            .bigbrand{ <br>
+                                &emsp;font-size: 1.5em; <br>
+                            } <br>
+                            
+                            .centerstage{ <br>
+                              &emsp;margin-left: auto; <br>
+                              &emsp;margin-right: auto; <br>
+                            } <br>
+                            
+                            .postdate{ <br>
+                              &emsp;text-align: center; <br>
+                            } <br>
+                            
+                            .posttitle{ <br>
+                              &emsp;font-family: 'Russo One', sans-serif; <br>
+                              &emsp;font-size: 3em; <br>
+                              &emsp;text-align: center;  <br>
+                            } <br>
+                            
+                            .postcontent{ <br>
+                              &emsp;font-family: 'Montserrat'; <br>
+                              &emsp;font-size: 1.5em; <br>
+                            } <br>
+                            
+                            .btn-comment{ <br>
+                              &emsp;position: absolute; <br>
+                              &emsp;right: 0px; <br>
+                            } <br>
+                            <br>
+                            /* Color Changer */ <br>
+                            
+                            
+                            .loader { <br>
+                                &emsp;filter:hue-rotate(0deg); <br>
+                                &emsp;color:linear-gradient(45deg,#0f8,#08f); <br>
+                                &emsp;animation:hue 10000ms infinite linear; <br>
+                            
+                            } <br>
+                            <br>
+                            @keyframes spinify { <br>
+                                &emsp;0% { <br>
+                                  &emsp;&emsp;transform: translate(0px,0px); <br>
+                                  
+                                &emsp;} <br>
+                                &emsp;33% { <br>
+                                  &emsp;&emsp;transform: translate(0px,24px); <br>
+                                  &emsp;&emsp;border-radius:100%; <br>
+                                  &emsp;&emsp;width:10px; <br>
+                                  &emsp;&emsp;height:10px; <br>
+                               
+                                &emsp;} <br>
+                                 &emsp;66% { <br>
+                                  &emsp;&emsp;transform:translate(0px,-16px); <br>
+                                &emsp;} <br>
+                                
+                                 &emsp;88% { <br>
+                                  &emsp;&emsp;transform:translate(0px,4px); <br>
+                                   
+                                &emsp;} <br>
+                                &emsp;100% { <br>
+                                  &emsp;&emsp;transform:translate(0px,0px); <br>
+                                &emsp;} <br>
+                            } <br>
+                            <br>
+                            @keyframes hue{ <br>
+                                &emsp;0%{filter: hue-rotate(0deg);} <br>
+                                &emsp;100%{filter:hue-rotate(360deg);}  <br>                               
+                            }  
+                        </p><br>
+                    </div>
+                    <li>
+                        Next let's focus on the the items that are visible only to users meeting the criteria: 
+                        <strong>is_authenticated</strong>. Once logged in, you can see that instead of a navbar link to 'login', 
+                        there are options to: <br>
+                        <ul>
+                            <li>Make a <strong>New Post</strong>;</li>
+                            <li>View your <strong>Drafts</strong>;</li>
+                            <li>Log yourself out via a <strong>logout</strong> link;</li>
+                        </ul> <!--End of ul explaining user-only navbar options-->
+                        <br>
+                        You can also see the logged in user is greeted by name. Nice touch. More importantly, look at 
+                        the url template tags; make sure you review and understand which url patterns are being called when 
+                        the user clicks the respective links.
+                    </li>
+                    <li>
+                        One last thing in this navbar code: you may have noticed the <strong>glyphicon</strong> near 
+                        the bottom. It's a way to display a little icon via Bootstrap, so instead of simply displaying some 
+                        text, like <em>Login</em>, it'll show some sort of icon that looks like when a Twitter user doesn't 
+                        give themselves a profile pic. (Those guys always have such fun comments, don't they?)
+                    </li>
+
+
+                </ul> <!--End of ul explaining the navbar-->
+            </li>
+            <li>
+                Lastly, we have our page content, which we'll put in a separate div, and in that div will eventually 
+                be our <strong>{% block content %<!---->}</strong> and <strong>{% endlbock %<!---->}</strong> tags, 
+                i.e. this will be the area where the content from all other html templates gets inserted. Most of 
+                these divs and classes are just for compatibility with Bootstrap. The important part is the location 
+                of the block template tag on this page. <br>
+                <p class="codeblock">
+                    &lt;div class="container content"&gt; <br>
+                        &emsp;&lt;div class="row"&gt; <br>
+                            &emsp;&emsp;&lt;div class="col-md-8"&gt; <br>
+                                &emsp;&emsp;&emsp;&lt;div class="blog_posts"&gt; <br>
+                                    &emsp;&emsp;&emsp;&emsp;{% block content %<!---->} <br>
+                
+                                    <br>
+                                    &emsp;&emsp;&emsp;&emsp;{% endblock %<!---->} <br>
+                                &emsp;&emsp;&emsp;&lt;/div&gt; <br>
+                            &emsp;&emsp;&lt;/div&gt; <br>
+                       &emsp;&lt;/div&gt; <br>
+                    &lt;/div&gt;
+                </p>
+            </li>
+        </ul><!--End of base-html-explanation ul-->
+    </p>
+    <a href="#top">Back to the Top</a>
+
+    <h3>Extending base.html</h3>
+    <p>
+        First thing we'll do is open all the other html templates we created, and add the following 
+        tags which allow them to inherit from <strong>base.html</strong>.
+    </p>
+    <p class="codeblock">
+        {% extends 'blog/base.html' %<!---->} <br>
+        <br>
+        {% block content %<!---->}
+        {% endblock %<!---->}
+    </p>
+
+    <h3>The About page</h3>
+    <p>
+        We're not really doing anything here. Make this whatever you want, or just start out with a 
+        placeholder h1 tag and a p tag. Maybe a picture of a puppy.
+    </p>
+
+    <h3 id="post-list-html">The Post List Page</h3>
+    <p>
+        With surprisingly little code, we'll populate this page from our database. It'll be a wholesome 
+        Django moment.
+    </p>
+    <p class="codeblock">
+        {% extends 'blog/base.html' %<!-- -->}<br>
+        <br>
+        {% block content %<!-- -->}<br>
+        &lt;div class="centerstage"&gt;<br>
+        &emsp;{% for post in post_list %<!-- -->}<br>
+        <br>
+        &emsp;&lt;div class="post"&gt;<br>
+        &emsp;&emsp;&lt;h1&gt;&lt;a href="{% url 'post_detail' pk=post.pk %<!-- -->}"&gt;{{ post.title }<!-- -->}&lt;/a&gt;&lt;/h1&gt;<br>
+        &emsp;&emsp;&lt;div class="date"&gt;<br>
+        &emsp;&emsp;&emsp;&lt;p&gt;Published on: {{post.published|date:"D M Y"}<!-- -->}&lt;/p&gt;<br>
+        &emsp;&emsp;&lt;/div&gt;<br>
+        &emsp;&emsp;&lt;a href="{% url 'post_detail' pk=post.pk %<!-- -->}"&gt;Comments: {{ post.approve_comments.count }<!-- -->}&lt;/a&gt;<br>
+        &emsp;&lt;/div&gt;<br>
+        <br>
+        &emsp;{% endfor %<!-- -->}<br>
+        &lt;/div&gt;<br>
+        <br>
+        {% endblock %<!-- -->}       
+    </p>
+    <p class="mattthoughts">
+        On today's episode of <strong>Tooting My Own Horn...</strong><br>
+        I was getting pretty tired of making all these code blocks because when you try to import 
+        some html INTO an html file... well, it tries to read it and interpret it. So I kept having 
+        to do all this tedious business of formatting it so that it wouldn't be interpretted as html. 
+        <br>
+        I decided to get python involved, and I made a script that reformats all the html into plaintext 
+        for me.
+    </p>
+    <p>
+        Alrighty - so we have a page that extends from <strong>base.html</strong>, then we make a div, and 
+        that class <strong>centerstage</strong> is just to center it; it's already in your CSS that you 
+        copied. You copied it, right? Good.
+    </p>
+    <p>
+        The next thing we do is add a logic tag with a <strong>for loop</strong>. It says 
+        <strong>for post in post_list</strong>, meaning it's going to iterate through something called 
+        <strong>post_list</strong>. 
+    </p>
+    <p>
+        <strong>What is 'post_list'?</strong><br>
+        This was covered in the <a href="{% url 'main_app:djangocbv' %}">CBV lecture notes</a>, but Django's 
+        built-in classes - <strong>ListView</strong> in this case - automatically look at your CBV's 
+        and create a variable by lowercasing your <strong>model name</strong>, and then adding 
+        <strong>_list</strong>. So it's helping us by creating a python object out of the objects in 
+        our database. 
+    </p>
+    <p>
+        Now we can quickly populate the page with posts because for each post in the post list, we're 
+        going to add one of those divs with basic information about the post.
+    </p>
+    <p>
+        Inside the div, the first line will be a link to the detail view of the post (i.e. the post itself). 
+        The next line(s) allow us to add the published date...
+    </p>
+    <p>
+        But wait... what's 'published_date<strong>|date:"D M Y"</strong>'? <br>
+        The course doesn't get into depth on this, but there's something called 
+        <a style="text-decoration: none;" href="https://www.djangotemplatetagsandfilters.com/filters/">Template Filters</a> 
+        which you can read about, but they're basically a way of filtering or formatting your template tags, and 
+        in this case, we're using the <strong>date</strong> filter, which has several predetermined formatting 
+        options.
+    </p>
+    <p>
+        The last line, you might have noticed, is also a link to each post's detail view, however, the text 
+        associated with that tag will show up as <strong>Comments</strong>, followed by the number of comments 
+        that are associated with that post. Notice the way that the number of comments is accessed: we pass in 
+        a template tag with <strong>post.approve_comments.count</strong>. This is saying <em>for this particular 
+        post object, pull all the comments whose approved status is TRUE, and count them -- return that number</em>.
+    </p>
+    <p class="mattthoughts">
+        If I'm understanding all of this correctly, I think it would've made more sense to call this model class 
+        attribute '<strong>approved_comment</strong>' rather than <em>approve_comment</em> because the latter 
+        sounds like it's an action that you're taking to approve the comment, but that isn't the case. The actual 
+        functionality of approving a comment is part of our <strong>Comment</strong> model. <br>
+        <br>
+        How appropriate that we're talking about comments sections, and I'm giving you unsolicited opinions.
+    </p>
+    <a href="#top">Back to the Top</a>
+
+
+    <h3 id="post-detail-html">The Post Detail Page</h3>
+    <p>
+        Any time a user clicks a link to view a post, this is the format of that page. It's going to have a good 
+        amount of code<sup style="text-decoration: none;"><a style="text-decoration: none;" href="#yes-code">(1)</a></sup>
+    </p>
+    <p class="codeblock">
+        {% extends 'blog/base.html' %<!-- -->}<br>
+        <br>
+        {% block content %<!-- -->}<br>
+        <br>
+        &emsp;&lt;h1 class="posttitle loader"&gt;{{post.title}<!-- -->}&lt;/h1&gt;<br>
+        &emsp;{% if post.published_date %<!-- -->}<br>
+        <br>
+        &emsp;&emsp;&lt;div class="date postdate"&gt;<br>
+        &emsp;&emsp;&emsp;{{ post.published_date }<!-- -->}<br>
+        &emsp;&emsp;&lt;/div&gt;<br>
+        <br>
+        &emsp;{% else %<!-- -->}<br>
+        <br>
+        &emsp;&emsp;&lt;a href="{% url 'post_publish' pk=post.pk %<!-- -->}" class="btn btn-default"&gt;Publish&lt;/a&gt;<br>
+        <br>
+        &emsp;{% endif %<!-- -->}<br>
+        <br>
+        &emsp;&lt;p class="postcontent"&gt;<br>
+        &emsp;&emsp;{{ post.text|safe|linebreaksbr }<!-- -->}<br>
+        &emsp;&lt;/p&gt;<br>
+        <br>
+        &emsp;{% if user.is_authenticated %<!-- -->}<br>
+        <br>
+        &emsp;&emsp;&lt;a href="{% url 'post_edit' pk=post.pk %<!-- -->}" class="btn btn-primary"&gt;<br>
+        &emsp;&emsp;&emsp;&lt;span class="glyphicon glyphicon-pencil"&gt;&lt;/span&gt;<br>
+        &emsp;&emsp;&lt;/a&gt;<br>
+        &emsp;&emsp;&lt;a href="{% url 'post_remove' pk=post.pk %<!-- -->}" class="btn btn-primary"&gt;<br>
+        &emsp;&emsp;&emsp;&lt;span class="glyphicon glyphicon-remove"&gt;&lt;/span&gt;<br>
+        &emsp;&emsp;&lt;/a&gt;<br>
+        &emsp;{% endif %<!-- -->}<br>
+        <br>
+        &emsp;&lt;hr&gt;<br>
+        &emsp;&lt;a href="{% url 'add_comment_to_post' pk=post.pk %<!-- -->}" class="btn btn-primary btn-comment"&gt;Add Comment&lt;/a&gt;<br>
+        <br>
+        &emsp;&lt;div class="container"&gt;<br>
+        &emsp;&emsp;{% for comment in post.comments.all %<!-- -->}<br>
+        <br>
+        &emsp;&emsp;&emsp;&lt;br&gt;<br>
+        &emsp;&emsp;&emsp;{% if user.is_authenticated or comment.approved_comment %<!-- -->}<br>
+        <br>
+        &emsp;&emsp;&emsp;&emsp;{{comment.created_date}<!-- -->}<br>
+        <br>
+        &emsp;&emsp;&emsp;&emsp;{% if not comment.approved_comment %<!-- -->}<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&lt;a href="{% url 'comment_remove' pk=comment.pk %<!-- -->}" class="btn btn-primary"&gt;<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&lt;span class="glyphicon glyphicon-remove"&gt;&lt;/span&gt;<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&lt;/a&gt;<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&lt;a href="{% url 'comment_approve' pk=comment.pk %<!-- -->}" class="btn btn-primary"&gt;<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&lt;span class="glyphicon glyphicon-ok"&gt;&lt;/span&gt;<br>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&lt;/a&gt;<br>
+        &emsp;&emsp;&emsp;&emsp;{% endif %<!-- -->}<br>
+        <br>
+        &emsp;&emsp;&emsp;&emsp;&lt;p&gt;{{comment.text|safe|linebreaks}<!-- -->}&lt;/p&gt;<br>
+        &emsp;&emsp;&emsp;&emsp;&lt;p&gt;Posted By: {{comment.author}<!-- -->}&lt;/p&gt;<br>
+        <br>
+        &emsp;&emsp;&emsp;{% endif %<!-- -->}<br>
+        <br>
+        &emsp;&emsp;&emsp;{% empty %<!-- -->}<br>
+        &emsp;&emsp;&emsp;&lt;p&gt;No Comments&lt;/p&gt;<br>
+        <br>
+        &emsp;&emsp;{% endfor %<!-- -->}<br>
+        &emsp;&lt;/div&gt;<br>
+        <br>
+        <br>
+        {% endblock %<!-- -->}        
+    </p>
+    <p class="mattthoughts" id="yes-code">
+        (1) OK, guy who pushed his glasses up on his nose and said "actualleeeee..." after seeing that I 
+        called html 'code': <br>
+        <br>
+        Stop...just..go make a friend. Call your mom and say hi or something. You need love. We know what html is; we know 
+        when to use 'whom' instead of 'who', and we know that a snowboarder who goes on a ski trip is "actualleee" on a 
+        snowboard trip. We get it, alright?
+    </p>
+    <h4>Let's get into it</h4>
+    <style>
+        .post-detail-html-explanation li{
+            margin-bottom: 2rem;
+        }
+    </style>
+    <p>
+        <ul class="post-detail-html-explanation">
+            <li>
+                As usual, this template extends <strong>base.html</strong>.
+            </li>
+            <li>
+                The h1 tag uses a template tag to get the title of the post.
+            </li>
+            <li>
+                Then we've got an <strong>if statement</strong> that says <em>if this post has a 
+                published_date</em> meaning that it's been published, <em>then add a div showing 
+                its published date</em>.
+            </li>
+            <li>
+                <strong>else!</strong> ...if the post hasn't been published, then instead of the 
+                published date, we'll just have a little link to publish it. Remember that due to the 
+                way we built our <strong>post_publish</strong> function view, only an authenticated user 
+                will be allowed to proceed with this.
+            </li>
+            <li>
+                The next thing is a p tag that contains the actual text/body of the post. Now, you'll 
+                notice this one uses a couple of those template filters; new ones too... <br>
+                <ul>
+                    <li>
+                        <strong>|safe</strong> <br>
+                        The instructor explained the need for this based on the use of that 
+                        <em>Medium-Editor</em> tool - remember? It formats your input text, lets it be 
+                        bold/italic/etc. Anyhow, that runs on JavaScript, which for reasons I've not yet 
+                        determined, will be returned with escape characters unless otherwise specified. <br>
+                        <br>
+                        Consider an example where the user makes their text bold using the Medium-Editor: <br>
+                        <br>
+                        &emsp;<strong>Some bold text</strong> <br>
+                        <br>
+                        If you do NOT use the <strong>safe</strong> filter, here's what will be returned: <br>
+                        <br>
+                        &emsp;&lt;b&gt;Some bold text&lt;/b&gt; <br>
+                        <br>
+                        You'll actually see the html tags as plaintext because you have not told Django that 
+                        this user-entered text is 'safe'. <br>
+                        <br>
+                        <strong>Why are we doing this?</strong><br>
+                        Picture another scenario where something like the Medium-Editor allowed a user to inject 
+                        a <strong>&lt;script&gt;</strong> tag. Maybe it's a malicious script. So Django's default 
+                        is to convert this to a plaintext display, but adding <strong>safe</strong> is telling 
+                        Django not to worry.
+                    </li>
+                    <li>
+                        <strong>|linebreaksbr</strong><br>
+                        This is a similar premise in the sense that it's assisting the interaction between html 
+                        and regular text. In this case, calling <strong>linebreaksbr</strong> tells Django that 
+                        if there are any <em>newline</em> characters in the text, to replace them with &lt;br&gt; 
+                        break tags. <br>
+                        <br>
+                        Both <strong>safe</strong> and <strong>linebreaksbr</strong>, as well as all the other 
+                        template filters are explained with examples at the 
+                        <a href="https://www.djangotemplatetagsandfilters.com/filters/">site</a> that I linked 
+                        earlier.
+                </ul> <!--End of p tag explanation-->
+            </li>
+            <li>
+                Next up is conditional block that shows up only if the <strong>user.is_authenticated</strong>, 
+                in which case two little glyphicons will show up, allowing the user to edit or delete the 
+                post, and they'll use the <strong>post.pk</strong> to direct the user to either the 
+                <strong>post_edit</strong> or <strong>post_remove</strong> urlpattern accordingly.
+            </li>
+            <li>
+                Then we have an a-tag to <strong>Add Comment</strong>. When clicked, it'll direct the 
+                user to the <strong>add_comment_to_post</strong> urlpattern.
+            </li>
+            <li>
+                <strong>The for loop</strong>: <br>
+                This loop is going to go through all the comments for this post in our database, and it'll 
+                populate the post detail view with all the approved comments, along with some details for each 
+                comment; some of this will be tailored based on whether or not the user is authenticated. <br>
+                <br>
+                <ul>Inside the for loop is an <em>if statement</em>: <br>
+                    <strong>if user.is_authenticated or comment.approved_comment</strong>
+                    <li>
+                        So for each comment on this post in the database, show the comment if either the user is 
+                        authenticated, or if the comment is approved. Meaning an authenticated user 
+                        will see all the comments, and non-authenticated user will just see the comments 
+                        that have been approved.
+                    </li>
+                    <li>
+                        For each instance of a comment being displayed, we will show the 
+                        <strong>comment.created_date</strong>
+                    </li>
+                    <li>
+                        Another <em>if statement</em>: <strong>if not comment.approved_comment</strong> <br>
+                        Let's say a user is authenticated, and they're seeing this not-yet-approved comment. 
+                        In this case, we'll be showing the user two options which are being displayed via 
+                        a-tags: <br>
+                        <br>
+                        &emsp;Remove a comment; <br>
+                        &emsp;Approve a comment; <br>
+                    </li>
+                    <li>
+                        Now here's the actual post. In a p-tag we call the <strong>comment.text</strong>, 
+                        and once again pass in the <strong>safe</strong> and <strong>linebreaksbr</strong> 
+                        template filters.
+                    </li>
+                    <li>
+                        Another p-tag displays the post author.
+                    </li>
+                    <li>
+                        Before we end the <em>for loop</em>, we add something I haven't see yet: the 
+                        <strong>{% empty %<!---->}</strong> template tag which tells Django what to do in 
+                        the case of an empty database, i.e. no comments on this post. In such a case, we'll 
+                        add a p-tag saying <em>No Comments</em>.
+                    </li>
+                </ul> <!--End of for loop explanation-->
+        </ul> <!--End of post-detail-html explanation-->
+        <a href="#top">Back to the Top</a>
+    </p>
+
+    <h3 id="post-form-html">The Post Form Page</h3>
+    <p>
+        After that last one, we need a breather. This is just a few lines of code, paired with our 
+        <strong>PostForm</strong> class. 
+    </p>
+    <p class="codeblock">
+        {% extends 'blog/base.html' %<!-- -->}<br>
+        <br>
+        {% block content %<!-- -->}<br>
+        <br>
+        &emsp;&lt;h1&gt;New Post&lt;/h1&gt;<br>
+        &emsp;&lt;form class="post-form" method="POST"&gt;<br>
+        &emsp;&emsp;{% csrf_token %<!-- -->}<br>
+        &emsp;&emsp;{{ form.as_p }<!-- -->}<br>
+        &emsp;&emsp;&lt;button type="submit" class="save btn btn-default"&gt;Save&lt;/button&gt;<br>
+        <br>
+        &emsp;&lt;/form&gt;<br>
+        <br>
+        &emsp;&lt;script&gt;var editor = new MediumEditor('.editable');&lt;/script&gt;<br>
+        <br>
+        {% endblock %<!-- -->}        
+    </p>
+    <p>
+        <strong>form.as_p</strong> <br>
+        If you're wondering <em>how does it know which form is <strong>form</strong>?</em>... think of 
+        the way that a user got to this page. This is the template they will see if they choose to 
+        create or edit a post. Now if you look at the <strong>CreatePostView</strong> and the 
+        <strong>PostUpdateView</strong>, you can see that we define the <em>form_class</em> as 
+        <strong>PostForm</strong>, and we define the <em>model</em> as <strong>Post</strong>.
+    </p>
+    <p>
+        Also, when we run all of this, you'll see there is styling associated with the form. Recall that 
+        we achieved this in our <strong>forms.py</strong> by adding <em>widgets</em> that contain styling 
+        elements.
+    </p>
+    <p>
+        Then you can see where we incorporate the <em>Medium-Editor</em> via a <strong>script</strong> 
+        tag after the form. And that's something that came from the creator of that editor, so no real 
+        need to dig into it, as it's not part of the Django-ing that we're doing here. But it's basically 
+        creating in instance of a custom object <strong>MediumEditor</strong>, which takes in a class, 
+        and if it sees text having that class, then it can be utilized. So if you look at our 
+        <strong>forms.py</strong> widgets, you'll see that both Post and Comment have Textarea 
+        fields to which we previously assigned the class <strong>editable</strong>. It's all coming 
+        together.
+    </p>
+
+    <h3 id="post-draft-list-html">The Post Draft List Page</h3>
+    <p>
+        This one is handled with a simple <em>for loop</em>:
+    </p>
+    <p class="codeblock">
+        {% extends 'blog/base.html' %<!-- -->}<br>
+        <br>
+        {% block content %<!-- -->}<br>
+        <br>
+        &emsp;{% for post in posts %<!-- -->}<br>
+        &emsp;&emsp;&lt;div class="post"&gt;<br>
+        &emsp;&emsp;&emsp;&lt;p class="date"&gt;created: {{ post.created_date|date:'d-m-Y'}<!-- -->}&lt;/p&gt;<br>
+        &emsp;&emsp;&emsp;&lt;h1&gt;&lt;a href="{% url 'post_detail' pk=post.pk %<!-- -->}"&gt;{{ post.title }<!-- -->}&lt;/a&gt;&lt;/h1&gt;<br>
+        &emsp;&emsp;&emsp;&lt;p&gt;{{ post.text|truncatechars:200 }<!-- -->}&lt;/p&gt;<br>
+        &emsp;&emsp;&lt;/div&gt;<br>
+        &emsp;{% endfor %<!-- -->}<br>
+        <br>
+        {% endblock %<!-- -->}
+    </p>
+    <p>
+        For all the posts in our database, this loop will make a div containing the Date Created, a link to 
+        the Post Detail with the Post Title as the text, and then it'll show the first 200 characters of the 
+        post, like a preview. Done.
+    </p>    
+    <a href="#top">Back to the Top</a>
+
+    <h3 id="post-confirm-delete-html">The 'Confirm Delete' Page</h3>
+    <p>
+        The Delete button is actually on the detail view page for each post, if you're an authenticated user, 
+        but we want an extra page to pop-up and make sure the user didn't Delete in error. So this is a simple 
+        page using just an html form:
+    </p>
+    <p class="codeblock">
+        {% extends 'blog/base.html' %<!-- -->}<br>
+        <br>
+        {% block content %<!-- -->}<br>
+        &emsp;&lt;form method="POST"&gt;<br>
+        &emsp;&emsp;{% csrf_token %<!-- -->}<br>
+        &emsp;&emsp;&lt;p&gt;Are you sure you want to delete '&lt;strong&gt;{{ object }<!-- -->}&lt;/strong&gt;'?&lt;/p&gt;<br>
+        &emsp;&emsp;&lt;input type="submit" class="btn btn-danger" value="Confirm"&gt;<br>
+        &emsp;&lt;/form&gt;<br>
+        <br>
+        {% endblock %<!-- -->}        
+    </p>
+    <p>
+        Why the csrf_token? <br>
+        Remember that a <strong>form</strong> as far as html is concerned, doesn't have to be something that 
+        you fill out. In this case, a button submitting a confirmation is a form. As such, Django needs that 
+        token for all of this to work.
+    </p>
+    <p>
+        How about <strong>object</strong>? What is that? <br>
+        Django's built-in <strong>DeleteView</strong> automatically creates this variable. In other words, the 
+        way everything is set up, it already knows what you're deleting, and it just assigns the name 
+        <em>object</em> to it; so you can call <em>object</em> in a template tag associated with <em>DeleteView</em>.
+    </p>
+
+    <h3 id="comment-form-html">The Comment Form Page</h3>
+    <p>
+        Basically the same html as the <em>post_form.html</em>; the difference being that this time, the user 
+        arrived at the 'form' by clicking an <strong>Add Comment</strong> button, and so Django's routing is 
+        already aware that this form is going to be based on the <strong>Comment</strong> model and 
+        <strong>CommentForm</strong> form.
+    </p>
+    <p class="codeblock">
+        {% extends 'blog/base.html' %<!-- -->}<br>
+        <br>
+        {% block content %<!-- -->}<br>
+        &emsp;&lt;h1&gt;New Comment&lt;/h1&gt;<br>
+        &emsp;&lt;form class="post-form" method="POST"&gt;<br>
+        &emsp;&emsp;{% csrf_token %<!-- -->}<br>
+        &emsp;&emsp;{{ form.as_p }<!-- -->}<br>
+        &emsp;&emsp;&lt;button type="submit" class="btn btn-default"&gt;Post Comment&lt;/button&gt;<br>
+        &emsp;&lt;/form&gt;<br>
+        <br>
+        &emsp;&lt;script&gt;var editor = new MediumEditor('.editable');&lt;/script&gt;<br>
+        <br>
+        {% endblock %<!-- -->}        
+    </p>
+    <p>
+        We use the same script we used in the PostForm because we're giving those same text 
+        formatting abilities to people in the comments section. 
+    </p>
+    <p class="mattthoughts">
+        Honestly, I think we need to start taking AWAY abilities from people in comments sections. They 
+        already have more power than they should.
+    </p>
+    <a href="#top">Back to the Top</a>
+
+
+    
+    <!-- ####################### NEW SECTION ###################### -->
+    <h2 class="newsection" id="finalizing">Finishing Up Our Blog Project!</h2>
+    <h3 id="admin-setup">Set up the Admin Page</h3>
+    <h4>Register our models</h4>
+    <p>
+        We used a couple models in this project - <strong>Post</strong> and <strong>Comment</strong> - 
+        and now it's time to register them. So in <strong>admin.py</strong>:
+    </p>
+    <p class="codeblock">
+        from blog.models import Post,Comment <br>
+        <br>
+        admin.site.register(Post) <br>
+        admin.site.register(Comment)
+    </p>
+
+    <h3>Head over to the terminal</h3>
+    <h4>Making migrations</h4>
+    <p>
+        After registering the models, we want to make our migrations in the terminal:
+    </p>
+    <p class="codeblock">
+        <span class="codecomment"># First...</span><br>
+        &gt;python manage.py migrate <br>
+        <br>
+        <span class="codecomment"># Followed by...</span> <br>
+        &gt;python manage.py makemigrations blog
+    </p>
+    <p>
+        Now, in the course of running these commands, you may get some errors. You <em>probably</em> will 
+        get some errors. This is the first time that we've actually tried to run anything that we've been 
+        making. Even the instructor had a few typos and such. I obviously can't tackle the errors you might 
+        encounter, but keep in mind that Django's error messages in the browser and terminal typically contain 
+        some good detail and context in terms of what to look at, and how to fix it.
+    </p>
+
+    <h4>Make a superuser and try running our Site!</h4>
+    <p class="codeblock">
+        &gt;python manage.py createsuperuser
+    </p>
+    <p>
+        Create your username, email, and password. Then we'll try our first run of the server...
+    </p>
+    <p class="codeblock">
+        &gt;python manage.py runserver
+    </p>
+    <p>
+        Another 'opportunity' to deal with some errors. The instructor had a few common ones based on typos, as 
+        well as missing quotation marks. In each case, he handled them systematically by looking closely at the 
+        error messages in the browser to see the code context for each error. It seems one of the most common 
+        errors is the <strong>NoReverseMatch</strong>, which often pertains to these typos. He then encountered 
+        a <strong>TemplateSyntaxError</strong> with the login page. He used the wrong brackets, and was quickly 
+        able to correct those by following the detail of the error message. 
+    </p>
+    <p class="mattthoughts">
+        Unless I made my own typos, the code in my tutorial should already have these items corrected.
+    </p>
+
+    <h3>Checking out our Site!</h3>
+    <p>
+        Once you've handled any errors and successfully run the server, we can start testing out the site. At this 
+        point the best thing you can do is run through each of the site's functionalities on one screen, while 
+        looking at the respective sections of code on another screen. Really make sure you understand the way 
+        that models, views, urlpatterns, forms, and templates are communicating with each other.
+    </p>
+    <p>
+        The instructor once again encounters a minor error, something to do with inconsistent variable naming. 
+        I wouldn't bring this up again since we've covered typos, but in this case, he makes a change in his 
+        <strong>models.py</strong>, and any time you do that, you need to rememeber to redo your migrate & 
+        makemigrations.
+    </p>
+
+    <h3>Success!</h3>
+    <p>
+        I mean, I hope it was a success. Mine was, and I'm just some guy on the internet.
+    </p>
+    <a href="#top">Back to the Top</a>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <!-- ISSUES -->
+    <h2 class="newsection" id="issues">Issues</h2>
+
+    <h3 class="issueheading" id="issue1">Import Issue</h3>
+    <p>
+        For reasons still unknown, I got a warning when I imported a couple of modules: <br>
+        <ul>
+            <li>from django.urls import reverse_lazy</li>
+            <li>from django.contrib.auth.mixins import LoginRequiredMixin</li>
+        </ul>
+    </p>
+    <p>
+        Both warnings said "[the module] could not be resolved from source Pylance", but as far as I 
+        can tell, my completed website was working fine regardless of these warnings. I'm both blessed 
+        and cursed with the ability to say <em>It's working; just move on</em>.
+    </p>
+    <p>
+        <a href="#mixin-section">Back to Mixin section</a> <br>
+        <a href="#deleting-posts">Back to Post Deletion section</a> <br>
+        <a href="#top">Back to the Top</a>    
+    </p>
+
+
+    <h3 class="issueheading" id="issue2">Decorators: hard to wrap your head around</h3>
+    <h4>Pun totally intended</h4>
+    <p>
+        Contrary to the last issue, in this case I wasn't content to simply accept and move on. I get 
+        how they're being used here, but since Django is doing most of the work, we never get to really 
+        understand what's happening.
+    </p>
+    <p>
+        So here's some more stream-of-consciousness learning as I go. I checked out a few websites to 
+        try to get an understanding of decorators, how they're made, how they're used, and when/why 
+        they are used. There's plenty of sites talking about it. I was able to make some sense of 
+        <a href="https://pythongeeks.org/python-decorators/">this one</a>, so I decided to code through 
+        some of the examples and mess around with them .. <em>what happens if I turn this dial up?</em> 
+        That sort of thing.
+    </p>
+    <p>
+        A core concept that I needed to understand (and still need some work on) is the way functions are 
+        viewed in your python code. They're objects. They can be called or simply returned as the objects 
+        they are. You can return the result of a function, or you can return the function itself. You can 
+        pass a function INTO another function, and you can define a function inside another function.
+    </p>
+    <p>
+        This sort of thing makes my head spin, so I needed to really sit down with examples, and I suggest 
+        you do the same. That link above is a good starting point, but search until you find one that makes 
+        sense to you, the way you learn things.
+    </p>
+    <p>
+        One key takeaway should be the basic format of a decorator, and its equivalent statement in python. 
+        This is an example from the linked website:
+    </p>
+    <p class="codeblock">
+        <span class="codecomment"># Creating a decorator function:</span><br>
+        def my_decorator(func): <br>
+        <br>
+        &emsp;def my_wrap(): <br>
+        &emsp;&emsp;print("Decorator Function") <br>
+        &emsp;&emsp;return func() <br>
+        <br>
+        &emsp;return my_wrap
+    </p>
+    <p>
+        Note that for this function to even work, some other function MUST be passed into it. 
+        we'll make that next. Also note that the end result of this function is to return <strong>my_wrap</strong>; 
+        but <strong>my_wrap</strong> is not actually being called/executed here. In contrast, take a look 
+        at what <strong>my_wrap</strong> returns. It's returning <strong>func()</strong> with its parentheses. 
+        This means when my_wrap runs, it's going to run some other function; specifically, the function that is 
+        going to be passed into <strong>my_decorator</strong>.
+    </p>
+    <p>
+        OK, now we make the main function, and let's call it just that:
+    </p>
+    <p class="codeblock">
+        def main_function(): <br>
+        &emsp;print("This is the main function.")
+    </p>
+    <style>
+        .decsplanation li{
+            margin-bottom: 2rem;
+        }
+    </style>
+    <p>
+        <strong>Now what?</strong> <br>
+        <ol class="decsplanation">
+            <li>
+                If you call <strong>main_function()</strong>, you'll only get what's in the main_function. Makes sense.
+            </li>
+            <li>
+                If you call <strong>my_decorator()</strong>, you won't get anything unless you pass in a function.
+            </li>
+            <li>
+                If you call <strong>my_decorator(main_function)</strong>, you'll just get the object showing 
+                <strong>my_wrap</strong> as a child of <strong>my_decorator</strong>. Nothing 
+                will actually run though.
+            </li>
+            <li>
+                If you call <strong>my_decorator(main_function())</strong>, which this time adds parentheses to 
+                main_function, you'll see that "This is the main function" will print, but it's still not calling 
+                my_wrap; it's just returning it as an object again.
+            </li>
+            <li>
+                <strong>How do we unwrap my_wrap??</strong><br>
+                To avoid throwing things, I used the more rational portion of my brain, and tried adding one 
+                more set of parentheses at the end of option 3, since it's clearly returning function objects, 
+                you use parentheses to call them, right?<br>
+                <strong>my_decorator(main_function)()</strong>
+            </li>
+        </ol>
+    </p>
+    <p>
+        <strong>Where does all that leave us?</strong><br>
+        Well, for one thing, I found that the more pythonically acceptable way to achieve what I just did, is 
+        to write it this way:
+    </p>
+    <p class="codeblock">
+        <span class="codecomment"># Reassign main_function</span><br>
+        main_function = my_decorator(main_function) <br>
+        <br>
+        <span class="codecomment"># Call main_function now that it's been reassigned</span><br>
+        main_function()
+    </p>
+    <p>
+        So, presumably with all that in mind, someone who was both clever and motivated decided to create 
+        a simplified representation of what we just did.
+    </p>
+    <p class="codeblock">
+        <span class="codecomment"># Once again, our decorator function:</span><br>
+        def my_decorator(func): <br>
+        <br>
+        &emsp;def my_wrap(): <br>
+        &emsp;&emsp;print("Decorator Function") <br>
+        &emsp;&emsp;return func() <br>
+        <br>
+        &emsp;return my_wrap   <br>
+        <br>
+        <span class="codecomment"># And now this...</span><br>
+        @my_decorator <br>
+        def main_function(): <br>
+        &emsp;print("This is the main function.") <br>
+        <br>
+        <span class="codecomment"># And finally, to run it...</span><br>
+        main_function()
+    </p>
+    <p>
+        The decorator is now directly implemented without that extra variable reassignment. Taking this all 
+        at face value, you might wonder why you even need that extra decorator function, since it all seems 
+        to run as one now. But as you can imagine (c'mon, imagine it), real life usage of decorators would 
+        involve some sort of 'if' statements in the decorator function, so that it's only extending 
+        the original function if some condition is met; otherwise it bypasses to the main function.
+    </p>
+    <p>
+        I'm still not 100% comfy with all this, but I feel better. I started questioning more things, like 
+        <em>why does the decorator function have to be a function-in-a-function?</em> I found that technically, 
+        it doesn't. I got a couple examples to work without a func-ception situation, but I assume that real 
+        world implementations of decorators are such that this way just wouldn't work properly. I can live 
+        with that.
+    </p>
+
+    <p>
+        <a href="#decorator-note">Back to where you were</a> <br>
+        <a href="#top">Back to the Top</a>    
+    </p>
+
+
+
+    <!-- ################# COMMENTS SECTION ################## -->
+    <style>
+        .comment-button{
+            margin-bottom: 3rem;
+            background-color: rgb(44, 12, 35);
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            color: whitesmoke;
+            height: 4rem;
+            border-radius: 8px;
+            border: none;
+        }
+        .comment{
+            background-color: rgba(226, 246, 247, 0.5);
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            padding: 0px 1px 0.5rem 0.5rem;
+            box-shadow: 5px 5px 5px rgba(17, 10, 46, 0.719);
+            color: black;
+        }
+        .commentdate{
+            font-size: 0.7rem;
+        }
+        .comment-background{
+            background-color: rgba(226, 246, 247, 0.5);
+        }
+        .comment-background input,label{
+            display: block;
+        }
+    </style>
+
+    <div id="comments-section">
+        <h2 class="newsection" id="blog-comments-section">Comments</h2>  
+        <h3>Add Comment</h3>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <p>
+               <button class="comment-button" type="submit">Submit Comment</button> 
+            </p>
+            
+        </form>
+
+        {% if commentlist %}
+
+            {% for comment in commentlist %}
+            <div class="comment">
+                <p><span class="commentdate">Date: {{ comment.create_date }}</span> | 
+                    <strong>{{ comment.author }} wrote:</strong> 
+                </p>
+                <p>
+                    {{ comment.text}}
+                </p>                
+            </div>
+            {% endfor %}
+
+        {% else %}
+            <h4>No comments on this post yet</h4>
+
+        {% endif %}
+    </div>
+    
+
+{% endblock %}

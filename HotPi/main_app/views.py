@@ -4,6 +4,9 @@ from . import forms
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 
+from main_app.forms import CommentForm
+from main_app.models import Comment
+
 # Create your views here.
 
 # Goal here is to get the home page to be a form, and once that's 
@@ -54,5 +57,37 @@ def django_authentication(request):
 
 def django_deployment(request):
     return render(request, 'main_app_templates/django_deploy.html')
+    
+def django_cbv(request):
+    return render(request, 'main_app_templates/django_cbv.html')
+
+def django_blog(request):
+
+    form = CommentForm()
+
+    if request.method=='POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            author = form.cleaned_data['author']
+            text = form.cleaned_data['text']
+            #date = form.cleaned_data['create_date']
+            print(author, text)
+            form.save()
+            comment_list = Comment.objects.all
+            comment_dict = {
+                'form':CommentForm(),
+                'commentlist':comment_list,
+                'commentauthor':author,
+                'commenttext':text,
+                #'date':date,
+            }
+            return render(request, 'main_app_templates/django_blog.html', context=comment_dict)
+        else:
+            form = CommentForm()
+
+    return render(request, 'main_app_templates/django_blog.html', {
+                'form':form,
+                'commentlist':Comment.objects.order_by('create_date'),
+            })
 
     

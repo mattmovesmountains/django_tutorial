@@ -12,4 +12,6 @@ urlpatterns = [
     url(r'^relative/$', views.relative_url_view, name='relative'),
     url(r'^authentication/$', views.django_authentication, name='djangoauth'),
     url(r'^deployment/$', views.django_deployment, name='djangodeploy'),
+    url(r'^cbv/$', views.django_cbv, name='djangocbv'),
+    url(r'^blog/$', views.django_blog, name='djangoblog'),
 ]

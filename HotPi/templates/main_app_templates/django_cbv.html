@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+{% extends "main_app_templates/base.html" %}
+{% load static %}
+
+{% block body_block %}
+    <style>
+        .explanation-list li{
+            margin-top: 50px;
+        }
+    </style>
+
+    <h1>Class-Based Views (CBV)</h1>
+    <div id="top">
+
+        <h3>What's here:</h3>
+        <ul>
+            <li><a href="#overview">CBV Overview</a></li>
+            <li><a href="#basicCBV">A Basic CBV</a></li>
+            <li><a href="#templateview">The TemplateView</a></li>
+            <li><a href="#detail-and-list">Detail View & List View</a></li>
+            <li><a href="#crud">CRUD</a></li>
+            <li><a href="#issues">Issues</a></li>
+        </ul>
+
+        <h2 class="newsection" id="overview">CBV Overview</h2>
+        <p>
+            Until now we've been led to believe that a <strong>view</strong> is simply (or not so simply) 
+            a function that determines what and how web pages are displayed based on 
+            what the user does.
+        </p>
+        <p>
+            What we're about to find out is that the professionals were never using 
+            function-based views, but something entirely different. A Class-Based View... [dramatic music plays]
+        </p>
+        <p>
+            <img width="250" src="{% static 'main_app/images/rod-serling1.png' %}" alt="rod is missing!">
+        </p>
+
+
+        <h2 class="newsection" id="basicCBV">A very (very) basic CBV</h2>
+        <p>
+            First we'll set up our <strong>views.py</strong> with the proper imports and 
+            write the most basic use case, even though this would never be what you'd 
+            actually use on your project.
+        </p>
+        <p class="codeblock">
+            from django.views.generic import View <span class="codecomment"># Uppercase V!</span><br>
+            <br>
+            class CBView(View): <br>
+            &emsp;def get(self,request): <br>
+            &emsp;&emsp;return HttpResponse('This is a class-based view!')
+        </p>
+        <p>
+            You can see we've created a class called CBView, which inherits from 
+            built-in class, View. We then have a class-based method, <strong>get</strong>, 
+            which I'm unsure if it has to be called that, or if it's just what he wanted 
+            to call it, or if it's a naming convention. Then we simply return an HttpResponse, 
+            just for simplicity's sake.
+        </p>
+
+        <h3>...and the corresponding most basic instance of a urlpattern</h3>
+        <p>
+            First make sure you import views from your app into your urls.py, as you 
+            normally would. In this use case, I'll refer to the project urls.py; we 
+            won't use a separate urls.py for the app just yet.
+        </p>
+        <p>
+            It sounded like the following urlpattern is pretty standard as we move 
+            forward with class-based views. It'll be <strong>views</strong> followed by 
+            the <strong>name of your class</strong>, followed by <strong>.as_view()</strong>. Note that 
+            .as_view must be followed by parentheses.
+        </p>
+        <p class="codeblock">
+            url(r'^$', views.CBView.as_view())
+        </p>
+        <a href="#top">Back to the Top</a>
+
+
+        <h2 class="newsection" id="templateview">The TemplateView</h2>
+        <h3>Considerably less basic</h3>
+        <p style="font-size: .7rem;">
+            <img width="250" src="{% static 'main_app/images/Twilight-Zone.jpg' %}" alt="where is rod serling??">
+            <br><em>CBV intensifies</em>
+        </p>
+        <p>
+            This is a more realistic representation of how you'd use class-based views. 
+            In addition to importing <strong>View</strong>, we'll also import 
+            <strong>TemplateView</strong> in our <strong>views.py</strong>. Here's the 
+            CBV example we did:
+        </p>
+        <p class="codeblock">
+            class IndexView(TemplateView): <br>
+            &emsp;template_name = 'index.html' <br>
+            <br>
+            &emsp;def get_context_data(self,**kwargs): <br>
+            &emsp;&emsp;context = super().get_context_data(**kwargs) <br>
+            &emsp;&emsp;context['inserted_content'] = 'Some text to insert' <br>
+            &emsp;&emsp;return context
+        </p>
+        <h3>"What..the hell..is that supposed to mean?" - Frank Costanza</h3>
+        <p>
+            This was a lot to unload on someone all at once. I was offended. You might 
+            be offended. Let's get through this line by line, and see if we can figure 
+            out what happened to our basic understanding of how things work.
+        </p>
+        <p>
+            <ul class="explanation-list">
+                <li><strong>class IndexView(TemplateView)</strong></li>
+                <ul><li>
+                    Just know that <strong>TemplateView</strong> is something in Django 
+                    that we're inheriting properties from.
+                </li></ul>
+
+                <li><strong>template_name = 'index.html'</strong></li>
+                <ul><li>
+                    It's our new [and improved?] way to specify which html file we're 
+                    going to use for this view. What about <strong>template_name</strong>? 
+                    Does that have to be called that? I think it does. Let's not mess with 
+                    it, and we'll assume for now that Django is looking for that particular 
+                    variable name.
+                </li></ul>
+
+                <li><strong>def get_context_data(self,**kwargs):</strong></li>
+                <ul>
+                    <li>
+                        Crap. Well, 'get_context_data' is something built-in, I believe, and 
+                        I once again assume you have to call it that. This class object method 
+                        takes in two arguments:  the obligatory 'self', and then the intimidating 
+                        '**kwargs'.
+                    </li>
+                    <li>
+                        OK.. <strong>**kwargs</strong><br>
+                        This means 'keyword arguments'. It's really the asterisks 
+                        that do the work, and then 'kwargs' is just a naming convention. I believe 
+                        you could just as easily call it **whale_pharmacy.
+                    </li>
+                    <p class="codeblock">
+                        def some_function(**kwargs): <br>
+                        &emsp;for a in kwargs: <br>
+                        &emsp;&emsp;print(a, kwargs[a])
+                    </p>
+                    <p>
+                        And if a user ran this function with their own inputs:
+                    </p>
+                    <p class="codeblock">
+                        some_function(parameter1='some string', parameter2=100) <br>
+                        > parameter2 100 <br>
+                        > parameter1 some string <br>
+                    </p>
+                    <h3>What happened?</h3>
+                    <p>
+                        Declaring that 'some_function' will take in <strong>**kwargs</strong> 
+                        is saying that the user can pass in an arbitrary number of key value pairs 
+                        when calling this function (ex. 'parameter2' is a key and 100 is a value). 
+                        In our example, the user passes in two key value pairs. Could've been a thousand, 
+                        but they do have to be entered that way - i.e. you couldn't just run 
+                        <strong>some_function('some string', 100)</strong>.
+                    </p>
+                </ul>
+
+                <li>
+                    This next line doesn't get any easier: <br>
+                    <strong>context = super().get_context_data(**kwargs)</strong>
+                </li>
+                <ul>
+                    <li>
+                        First, it's reassuring to know that the instructor mentioned that 
+                        this line is somewhat standard, and that we don't need to go crazy 
+                        figuring it out just yet.
+                    </li>
+                    <li>
+                        Here's <strong>get_context_data</strong> again; this time as a method 
+                        off of something called <strong>super()</strong>. <br>
+                        Does it matter that the function is also called get_context_data? <br>
+                        Are they the same? <br>
+                        Is this recursion? <br>
+                        Is this why I'm not getting hired??
+                    </li>
+                    <li>
+                        <strong>super()</strong> allows a subclass object to inherit from 
+                        its parent or super class. So in this case, I believe our IndexView 
+                        class object is inheriting from the TemplateView.
+                    </li>
+                    <li>
+                        And taking a step back, all of this is defining our <strong>context</strong>, 
+                        which you recall (<em>right?</em>) is what we use to insert text 
+                        into html via template tagging.
+                    </li>
+                    <li>
+                        My knucklehead assessment of this line: <br>
+                        <strong>get_context_data</strong> is parsing <strong>kwargs</strong> 
+                        for some content that'll ultimately get inserted into the html. And 
+                        <strong>super()</strong> is telling our function to use properties 
+                        from the built-in <strong>TemplateView</strong> class.
+                    </li>
+                </ul>
+
+                <li>
+                    There's more though: <br>
+                    <strong>context['inserted_text'] = "Some text that we'll insert"</strong>
+                </li>
+                <p>
+                    <strong>inserted_text</strong> will correspond to a template tag in our 
+                    html; then the text on the right will be what actually gets inserted.
+                </p>
+
+                <li>And finally: <strong>return context</strong></li>
+                <p>
+                    The least puzzling line of the bunch is saying that this class method 
+                    is going to return some context, which we just defined, albeit in a 
+                    way that I found to be quite confusing.
+                </p>
+                <p style="font-size: .7rem;">
+                    <img width="250" src="{% static 'main_app/images/twilight-zone-5.jpg' %}" alt="where is rod serling??">
+                    <br><em>Get me outta here</em>
+                </p>
+            </ul>
+        </p>
+        <a href="#top">Back to the Top</a>
+
+
+        <h2 class="newsection" id="detail-and-list">Detail View & List View</h2>
+        <h3>Using CBV to Show Models</h3>
+        <p>
+            "Often when we have models, we want to either list the records from the model, or show details 
+            of a single record." 
+        </p>
+        <p>
+            That was the instructor's summary of the problem at-hand, which he purports 
+            will be improved upon when we use CBV. I'm just stacking up face-value-assumptions like a 
+            house of cards right now. <br>
+            Anyhow, the way we previously listed records was via commands like:
+        </p>
+        <p class="codeblock">
+            MyModel.objects.all()
+        </p>
+        <p>
+            You can head back to the <a href="{% url 'main_app:models' %}">Models</a> page to revisit the fun times we had using the 
+            <strong>objects.all()</strong> method inside of a manage.py shell; but now, it seems we'll be 
+            moving on, and perhaps getting more efficient. Maybe this is the thing that'll get me hired; 
+            I'll just be so efficient now.
+        </p>
+        <p>
+            At this point, the instructor is super excited about how excited you're going to be once you find out 
+            what Class-Based-Views are going to do in terms of getting information from your models.
+        </p>
+        <p>
+            You can inherit generic view classes that will quickly display information from the model, and somehow CBV 
+            makes it all possible. As part of this, we're going to be focusing on <strong>List View</strong> as well as 
+            <strong>Detail View</strong>.
+        </p>
+        <p>
+            Be on the lookout for other procedural shifts that'll make you just a little uncomfortable... <br>
+            <img width="300" style="margin-top: 1rem; margin-left: 2rem;"
+            src="{% static 'main_app/images/uncomfortable.jpg' %}" alt="image missing; this is uncomfortable">
+        </p>
+        <p>
+            For example, he's talking about reversing the 'templates' folder structure - i.e. instead of <br>
+            <strong>templates -> myapp -> index.html</strong>, <br> you'll have a template folder inside your 
+            app folder; so.. this: <br>
+            <strong>myapp -> templates -> myapp</strong>
+        </p>
+        <p>
+            <strong>Why that folder structure is good:</strong><br>
+            The main advantage, as I understand it, is that if you can contain the relevant web pages inside 
+            a templates folder in your app, it's much easier to copy that entire app over to another Django project.
+        </p>
+
+        <h3>Doing something with this information!</h3>
+        <p>
+            Setting up our example project to work with Detail View and List View:
+        </p>
+        <p>
+            <ul>
+                <li>Add a couple classes to <strong>models.py</strong>;</li>
+                <li>Update <strong>admin.py</strong>;</li>
+                <li>Run your migrations;</li>
+                <li>Create a superuser;</li>
+                <li>Run server and head to <strong>/admin</strong> page;</li>
+                <li>Set up templates folder inside app folder;</li>
+                <li>Three tasks to complete in any order:
+                    <ul>
+                        <li>Set up CBV's for your new model classes;</li>
+                        <li>Set up new html pages;</li>
+                        <li>Set up your <strong>urls.py</strong>;</li>
+                    </ul>
+                </li>
+            </ul>
+        </p>
+
+        <h4>The model classes</h4>
+        <p>
+            For this exercise we created <strong>School</strong> and <strong>Student</strong>. 
+            Both classes inherit from <strong>models.Model</strong> and are given various information 
+            fields, as well as a string function to identify what they are. Not much happening right now 
+            in <strong>models.py</strong>.
+        </p>
+
+        <h4>Set up the views</h4>
+        <p>
+            In <strong>views.py</strong> we made two new CBV's, but first we import <strong>ListView</strong> 
+            and <strong>DetailView</strong> into our views.py. We also import our two model classes. <br>
+            Then the CBV's look like this:
+        </p>
+        <p class="codeblock">
+            class SchoolListView(ListView): <br>
+            &emsp;model = models.School <br>
+            <br>
+            class SchoolDetailView(DetailView): <br>
+            &emsp;model = models.School <br>
+            &emsp;template_name = 'basic_app/school_detail.html'
+        </p>
+        <p>
+            You can see that our ListView class is inheriting from <strong>ListView</strong> and the 
+            DetailView class inherits from <strong>DetailView</strong>. We then have to define a 
+            model; they both are based on <strong>School</strong>.
+        </p>
+        <p>
+            Remember that whole thing about the templates folder inside the app folder? Now we're going 
+            to add some template files to it. <br>
+            <ul>
+                <li>basic_app_base.html;</li>                
+                <li>school_list.html;</li>
+                <li>school_detail.html;</li>
+            </ul>
+        </p>
+        <p class="mattthoughts">
+            Right now I'm wondering if we have to update anything pertaining to the templates directory 
+            in our <strong>settings.py</strong> since this location was not defined in the original 
+            project setup.
+        </p>
+
+        <h4>Let's talk about those HTML templates</h4>
+        <p>
+            I won't go into full detail about the html files because it's not really part of the Django 
+            tutorial, but some of it is necessary to explain for context purposes. The basic_app_base.html 
+            gets a straight-up copy/paste from the original base.html file. That's easy enough.
+        </p>
+        <p>
+            Then <strong>school_list.html</strong> extends basic_app_base, and he adds a for-loop, 
+            which, by itself isn't that important, but in that for-loop, we have the following:
+        </p>
+        <p class="codeblock">
+            {% for school in school_list %<!---->} <br>
+            &emsp;&lt;li&gt;{{school.name}<!---->}&lt;/li&gt;
+        </p>
+        <p>
+            At first glance, that seems to make sense - i.e. we're just iterating through some list 
+            and injecting that text into the html via template tag.
+        </p>
+        <p>
+            <strong>However!</strong>... where did <strong>'school_list'</strong> actually come from? 
+            It doesn't show up in any of our project files, BUT it turns out that <strong>ListView</strong> 
+            has some built-in functionality that looks at your CBV's and auto-creates a variable by 
+            lowercasing the name of your referenced model class [ in this case: <strong>School</strong> ], 
+            and appending <strong>'_list'</strong> to it.
+        </p>
+        <p>
+            To elaborate a bit: in our <strong>views.py</strong> recall that we have two CBV's, and both 
+            are inheriting from <strong>School</strong>, which is a model class that we imported, and we also 
+            defined it as our <strong>model</strong> here in views.py - i.e. <strong>model = models.School</strong>.
+        </p>
+        <p>
+            So <strong>ListView</strong> is looking at the referenced model class, <strong>School</strong>, and it's 
+            lowercasing it; then it's concatenating this string to the end: <strong>_list</strong>. You still have to 
+            know and understand this format in order to be able to write the appropriate template tag, but the big 
+            takeaway here is that suddenly Django is making the database info accessible via template tagging.
+        </p>
+
+        <h4>Let's make things more complicated though</h4>
+        <p>
+            What if you don't want your tagging to follow the above format? Step one would be: type 
+            whatever you want in the template tag:
+        </p>
+        <p class="codeblock">
+            for school in mattsListOfSchools
+        </p>
+        <p>
+            But how will Django know to update things on its end? <br>
+            Answer: By adding a <strong>context_object_name</strong> to your <strong>views.py</strong>:
+        </p>
+        <p class="codeblock">
+            class SchoolListView(ListView): <br>
+            &emsp;<strong>context_object_name = 'mattsListOfSchools'</strong><br>
+            &emsp;model = models.School
+        </p>
+        <p>
+            You have now overridden the defaul tag-naming. <br>
+            <img width="200" style="margin-top: 1rem; margin-left: 2rem;" 
+            src="{% static 'main_app/images/serve_man.png' %}" alt="">
+        </p>
+
+        <h4>Why's DetailView gotta be different?</h4>
+        <p>
+            Based on the auto-naming we saw in <strong>ListView</strong>, one would expect that 
+            <strong>DetailView</strong> would auto-name your context by again lowercasing your 
+            model name, and this time appending <strong>'_detail'</strong> to it. Yeah, well it doesn't. 
+            Its default name is simply the lowercase of your model name - i.e. 'school' in this example.
+        </p>
+        <p>
+            We can once again override this with <strong>context_object_name</strong>. <br>
+            <img width="300" style="margin-top: 1rem; margin-left: 2rem;" 
+            src="{% static 'main_app/images/serve_man.png' %}" alt=""><br>
+            <em><span style="font-size: 0.75rem; margin-left: 2rem;">* OVERRIDE INTENSIFIES*</span></em>
+        </p>
+        <p>
+            Similar to school_list.html, we set up a basic html for <strong>school_detail.html</strong>, 
+            which also extends from <strong>basic_app_base.html</strong> and uses similar template 
+            tagging. We inject things like the examples below into our html:
+        </p>
+        <p class="codeblock">
+            &lt;p&gt;School Name: {{school_detail.name}<!---->}&lt;/p&gt;
+        </p>
+
+        <h4>Set up the urls.py (both of 'em)</h4>
+        <p>
+            We're going to work with <strong>urls.py</strong> for our app, so first we have to update the 
+            project's urls.py file by adding this urlpattern:
+        </p>
+        <p class="codeblock">
+            url(r'^basic_app/', include('basic_app.urls', namespace='basic_app'))
+        </p>
+        <p class="mattthoughts">Don't forget to import <strong>include</strong>.</p>
+        <p>
+            Now create the urls.py for basic_app, and start with the following imports:
+        </p>
+        <p class="codeblock">
+            from django.conf.urls import url <br>
+            from basic_app import views <br>
+            <br>
+            <span class="codecomment"># Don't forget this for template tagging</span><br>
+            app_name = 'basic_app'
+        </p>
+        <p>
+            Your urlpattern(s) follow the standard format mentioned earlier: <br>
+            <strong>r'[your regex], views.yourCBV.as_view(), name='some_name'</strong>
+        </p>
+
+        <h4>I forgot my keys!</h4>
+        <p><img width="300" style="margin-left: 2rem; margin-top: 1rem;" src="{% static 'main_app/images/bemis.jpg'%}" alt=""></p>
+        <p>
+            I created an <a href="">Issues Section</a> at the bottom of the page for those like me, 
+            who've forgotten what <strong>Primary Key</strong> and <strong>Foreign Key</strong> 
+            are referring to.
+        </p>
+        <p>
+            Recall that in our two model classes we did not assign any <strong>Primary Keys</strong>. 
+            We did, however, have a <strong>Foreign Key</strong> in the <strong>Student</strong> class. 
+            The purpose of the latter was to pull in information from the <strong>School</strong> class, 
+            that could be accessed/used by <strong>Student class objects</strong>.
+        </p>
+        <p>
+            But going back to the absence of a Primary Key, as mentioned in the Issues Section - since 
+            no Primary Key was defined, Django automatically creates a serial ID for objects of a 
+            particular class. For example, <strong>School</strong> has no Primary Key, and we created 
+            (so far, at least) two unique schools. Django automatically numbers them 1 and 2.
+        </p>
+        <p>
+            More importantly, these serial ID's can be accessed via html tags, but we'll get back to that 
+            in a moment. First let's talk about the Foreign Key that we used in order to relate the 
+            <strong>Student</strong> model class to the <strong>School</strong> model class. We did this 
+            using the <strong>related_name='students'</strong> in our <strong>Student</strong> model class. 
+            We'll go to <strong>school_detail.html</strong> for the implementation of this...
+        </p>
+
+        <h4>How the Foreign Key works in Template Tagging</h4>
+        <p>
+            We'll make a for-loop in <strong>school_detail.html</strong> to pull all student names from 
+            our database and inject them into our html.
+        </p>
+        <p class="codeblock">
+            {% for student in school_detail.students.all %<!---->} <br>
+            &lt;p&gt;{{student.name}<!---->} is {{student.age}<!---->} years old&lt;/p&gt;
+        </p>
+        <p>
+            In the above example, we're going to iterate through the database and list each student's 
+            name and age. But look at how the student info is accessed in the for-loop. We say 
+            <strong>for student in school_detail</strong>, which makes sense based on what we're used to, 
+            but then we add <strong>.students.all</strong>. Once again, <strong>students</strong> is 
+            the <strong>'related_name'</strong> that we defined in the construct of the Student model 
+            class, so that it would be accessible when looking through the School objects in our database.
+        </p>
+
+        <h4>Back to urls.py for some not-so-regular expressions</h4>
+        <p>
+            We're hopping back and forth quite a bit between the <strong>school_detail.html</strong> and 
+            the <strong>school_list.html</strong>. We're working toward setting up the latter so you can 
+            click on the Django-assigned school ID and bring up the corresponding <strong>school_detail</strong>. 
+            To accomplish this, we also need to add to our <strong>urls.py</strong> for <strong>basic_app</strong>.
+        </p>
+        <p>Look at this god-forsaken thing...</p>
+        <p class="codeblock">
+            url(r'^(?P&lt;pk&gt;[-\w]+)/$', views.SchoolDetailView.as_view(), name='detail')
+        </p>
+        <p>
+            <img width="300" style="margin-top: 1rem; margin-left: 2rem;" 
+            src="{% static 'main_app/images/beholder.jpg' %}" alt="">
+        </p>
+        <p>Let's work this regex from the outside in: <br>
+            <style>
+                .regtable{
+                    border: 1px solid block;
+                    border-radius: 5px;
+                    background-color: rgba(5, 5, 5, 0.7);
+                    margin-left: 40px;
+                }
+                .regtable td{
+                    padding: 1rem 3rem;
+                }
+            </style>
+            <table class="regtable">
+
+                <tr>
+                    <td><em>r'...'</em></td>
+                    <td>OK, no problems here</td>
+                </tr>
+                <tr>
+                    <td><em>^.../$</em></td>
+                    <td>Yep, standard stuff</td>
+                </tr>
+                <tr>
+                    <td><em>( )</em></td>
+                    <td>So, some expression between the ^ and the /$</td>
+                </tr>
+                <tr>
+                    <td><em>?P...[-\w]+</em></td>
+                    <td>Do I need a doctorate now?</td>
+                </tr>
+                <tr>
+                    <td><em>&lt;pk&gt;</em></td>
+                    <td>The Primary Key!</td>
+                </tr>
+            </table>
+        </p>
+        <p>
+            That last part: pk is the Primary Key, which in our case, is going 
+            to correspond to the serial ID's that Django created for each school object. So in 
+            very rough url-terms, this regex is looking for an extension that includes the 
+            unique ID for the respective school, so that the <strong>SchoolDetailView</strong> 
+            CBV will be properly loaded. I think.
+        </p>
+        <p>
+            Man, 'reg' can't be short for 'regular'. Nothing regular about it. Maybe it's just a name... 
+            like Reginald. <br>
+            <img width=150
+            src="{% static 'main_app/images/reginald.jpg' %}" alt="did I do that?">
+        </p>
+
+        <h4>Putting it all together and making sense of what just happened</h4>
+        <p>
+            Taking a step back from that last regex that looked like someone's cat stepped on the keyboard, 
+            let's look at what all this accomplished.
+        </p>
+        <p>
+            The main focus of <strong>DetailView</strong> and <strong>ListView</strong> is that we 
+            can build on our Class-Based Views by inheriting this two Django built-in's, and we 
+            can use them to more quickly and conveniently access information in our database.
+        </p>
+        <p>
+            While I understand conceptually the difference between the two, I'm not yet sure how to articulate 
+            it. In this use case, the <strong>ListView</strong> allowed us to inject into our html, some 
+            representation of objects in our database. So we had a page, and we populated it with the 
+            names of the schools from our database.
+        </p>
+        <p>
+            Meanwhile, <strong>DetailView</strong> was used to customize the view of a single page, 
+            depending on which database item was selected from our list of schools. Now, I don't know if 
+            the page display is as much a feature, as is the detailing of database items, but that's how 
+            we used it in this example. 
+        </p>
+        <h4>More questions than answers</h4>
+        <p>
+            <img width="250" src="{% static 'main_app/images/diner.jpg' %}" alt=""><br>
+            But what's really the difference? Could ListView be used to pull some details from a database 
+            object? Why or Why Not? Where in our code is the feature that is unique to DetailView that allows 
+            it to do that?
+        </p>
+        <p>
+            For example, ListView was successfully used to access details of the various schools, as was 
+            seen in these couple lines of code:
+        </p>
+        <p class="codeblock">
+            {% for school in school_list %<!---->} <br>
+            &lt;h2&gt;&lt;li&gt;&lt;a href="{{school.id}<!---->}"&gt;{{school.name}<!---->}&lt;/a&gt;&lt;/li&gt;&lt;/h2&gt;
+        </p>
+        <p>
+            Right? We were able to call <strong>.id</strong> and <strong>.name</strong> off of school. Aren't 
+            those details? The biggest difference in all of this was that in the DetailView, we did something 
+            to be able to cross-reference instances of <strong>Student</strong> in our database from within 
+            our <strong>School</strong> object(s). But really, it was the <strong>related_name='students'</strong> 
+            that was part of the 'ForeignKey' which allowed us to accomplish this. Maybe.
+        </p>
+        <p class="mattthoughts">I don't know if that was a good way to say that.</p>
+        <p>
+            So, whether it was because of the ForeignKey or the DetailView, or perhaps some combination of 
+            the two, the end result is that in contrast to the two lines of code I showed above, we were 
+            able to write the following:
+        </p>
+        <p class="codeblock">
+            {% for student in school_detail.<strong>.students.all</strong> %<!---->}
+        </p>
+        <p>
+            ...in which <strong>students.all</strong> is being called off of <strong>school_detail</strong>. 
+            That's something that didn't happen in ListView. But could it have? As best I can tell, the 
+            difference has something to do with Keys - primary, foreign, or both. I actually think it's the 
+            passing of the Primary Key in the horrendous regex in the urls.py.<br> 
+            <img width="250" style="margin-top: 1rem;"
+            src="{% static 'main_app/images/angrydiner.jpg' %}" alt=""><br>
+            <span style="font-size: .75rem;">?!?!</span> 
+        </p>
+        <a href="#top">Back to the Top</a>
+
+
+        <h2 class="newsection" id="crud">CRUD!!</h2>
+        <h3>(Create. Retrieve. Update. Delete)</h3>
+        <p>
+            <img width="300"
+            src="{% static 'main_app/images/crudbot.jpg' %}" alt="create.review.update.delete!">
+        </p>
+        <p>
+            Create, Retrieve, Update, Delete... these are four basic actions you need to perform 
+            whenever you work with models and databases. I believe the last exercise was mainly 
+            retrieving, so that kinda goes against the previous sentence, but let's see where he's 
+            going with this. In this exercise, we'll focus more on the Create, Update, and Delete 
+            actions. So... CUD?
+        </p>
+        <p class="mattthoughts">
+            He's once again very excited that Django's CBV's are going to make this process easier. 
+            Unfortunately I wasn't that familiar with the non-Django version of this process, so the 
+            value may be lost on me.
+        </p>
+
+        <h3>The CreateView Class</h3>
+        <p>
+            I like this: he says "while using CreateView, we're going to purposely induce a few errors 
+            so that we can clarify where certain variable names are coming from." Seeing the errors 
+            is helpful to me, and for goodness sake, I'll take all the clarification you've got when it 
+            comes to these similar-sounding variable names.
+        </p>
+        <p>
+            Not surprisingly, subsequently lectures will cover <strong>UpdateView</strong> and <strong>DeleteView</strong>.
+        </p>
+        <h4>Big picture stuff:</h4>
+        <p>
+            There will be a lot of interaction between <strong>urls.py</strong>, <strong>views.py</strong>, 
+            <strong>models.py</strong>, and <strong>template files</strong>.
+        </p>
+        <h4>Ominous comment</h4>
+        <p>
+            "The nature of the interaction between all the files will make it almost impossible to give good 
+            help on this in the Q&A!" <br>
+            <img width="350" style="margin-top: 1rem;"
+            src="{% static 'main_app/images/thisIsTz.gif' %}" alt="">
+        </p>
+
+        <h4>First task: use CreateView to create a new 'School' in the database</h4>
+        <p>
+            Start this out by importing more generic views from Django in our <strong>views.py</strong>: <br>
+            <ul>
+                <li>CreateView;</li>
+                <li>UpdateView;</li>
+                <li>DeleteView;</li>
+            </ul>
+        </p>
+        <p>
+            Next step is to create a <strong>SchoolCreateView</strong>, and then head over to 
+            <strong>urls.py</strong> and start some trouble. Yeah, he modifies that regex again. 
+            I'm not even writing it this time. Thing is crazy and it's not what we're here for. 
+            Find another hero.
+        </p>
+        <p class="mattthoughts">I'm good now; we can move on.</p>
+        <p>
+            OK, so he modified that regex, and then we'll need a new <strong>urlpattern</strong> 
+            for our <strong>CreateView</strong>. It looks like this:
+        </p>
+        <p class="codeblock">
+            url(r'^create/$', views.SchoolCreateView.as_view(), name='create')
+        </p>
+        <h4>Our first error-handling example</h4>
+        <p>
+            The first error that he wanted to show us occurs when you attempt to go to the new <strong>/create</strong> 
+            page that we just [kinda] set up improperly [but deliberately]. Here first is the view that we 
+            added, followed by the resulting error:
+        </p>
+        <p class="codeblock">
+            class SchoolCreateView(CreateView): <br>
+            &emsp;model = models.School
+        </p>
+        <p class="codeblock" style="color: rgb(143, 39, 39);">
+            Using ModelFormMixin (base class of SchoolCreateView) without the 'fields' attribute is prohibited.
+        </p>
+        <p>
+            This error is saying "Hey! You didn't specify in this view, which fields are prohibited, and which 
+            fields are allowed." Fair enough - we dealt with fields during the models/forms portion of the course. 
+            So we'll modify the above specified view, like so:
+        </p>
+        <p class="codeblock">
+            class SchoolCreateView(CreateView): <br>
+            &emsp;<strong>fields = ('name','principal','location')</strong><br>
+            &emsp;model = models.School
+        </p>
+        <p>
+            Remember these? I kinda do. You could also have omitted certain fields, but for simplicity, our 
+            example is going to include all three fields associated with School objects.
+        </p>
+
+        <h4>Good news, bad news</h4>
+        <p>
+            We got past that first error... and immediately found another, which is simply stating that we 
+            haven't specified a template to associate with this view. If you look closely at the error, 
+            you can see it's looking for '<strong>basic_app/school_form.html</strong>'. That clues us in 
+            to the default name that Django gives to this web page. The instructor suggests using that name 
+            in this case, even though he showed us how to change it in previous examples.
+        </p>
+        
+        <h4>No problem; we'll make a new template</h4>
+        <p>
+            So we make <strong>school_form.html</strong>, and we populate an h1 tag with this logic statement:
+        </p>
+        <p class="codeblock">
+            {% if not form.instance.pk %<!---->} <br>
+            Create School <br>
+            {% else %<!---->} <br>
+            Update School <br>
+            {% endif %<!---->}      
+        </p>
+        <p>
+            This is saying 'look for an instance of a primary key, and if there isn't one, then the h1 tag will 
+            say "Create School"; but if there IS one, then the h1 tag will say "Update School"'.
+        </p>
+        <p class="mattthoughts">
+            I get it in theory but can't explain it just yet. I need to see what he does with the view first.
+        </p>
+        <p>
+            To finish up this template (at least enough to resolve the error), we create a form, and <em>don't 
+            forget to add your <strong>csrf_token</strong>!</em>
+        </p>
+        <p class="codeblock">
+            &lt;form method="post"&gt; <br>
+            &emsp;{% csrf_token %<!---->} <br>
+            &emsp;{{ form.as_p }<!---->} <br>
+            &emsp;&lt;input type="submit" class="btn btn-primary" value="Submit"&gt; <br>
+            &lt;/form&gt;
+        </p>
+        <p class="mattthoughts">
+            Hey, wait a minute - where'd the form actually come from? <br>
+            What we've done thus far has created a form on our new <strong>school_form.html</strong> template. 
+            But how? My guess is that somehow the pairing of <strong>CreateView</strong> with the specification 
+            of <strong>fields (i.e. name, principal, location)</strong> has allowed us to quickly create the 
+            <strong>form</strong> context which is now being passed to the template tags in our html. The view, 
+            of course, is pulling the information from our School model class.
+        </p>
+
+        <h4>Next error: what happens when you try to submit info on the form? Nothing.</h4>
+        <p>
+            Well, as impressive as that automatic form creation was.. we still need to do our part, and the 
+            resulting error suggests that our part is: "provide a url or define a get_absolute_url method 
+            <em>on the model</em>". We'll do the latter.
+        </p>
+        <p>
+            Since I italicized "model", you may have guessed that we're making our way over to <strong>models.py</strong>. 
+            Great guess. We'll modify our <strong>School</strong> model (since we're trying to create a School object), 
+            by adding the following method, as suggested by the error statement:
+        </p>
+        <p class="codeblock">
+            <span class="codecomment">
+                # First import 'reverse'
+            </span><br>
+            from django.core.urlresolvers import reverse <br>
+            <br>
+            def get_absolute_url(self): <br>
+            &emsp;return reverse('basic_app:detail', kwargs={'pk':self.pk})
+        </p>
+        <p>
+            And I continue to stack my house of cards (this is a callback). I don't think I really understood <strong>reverse</strong> 
+            the last time we used it, and here it is again. Then we've got more kwargs, and I at least get 
+            the syntax, which shows a key-value pair ('pk':self.pk). Let's break this down: <br>
+            <ul>
+                <li>
+                    Ahhh reverse... I don't get it, so I did a 
+                    <a href="https://stackoverflow.com/questions/11241668/what-is-reverse">stackoverflow search</a>, and 
+                    even those answers were confusing. But nested in the comments below the original question was a 
+                    helpful (for me) description. The person explained it as follows: <br>
+                    <p><em>
+                        Given a url pattern, Django uses url() to pick the right view and generate a page. 
+                        That is, url--> view name. But sometimes, like when redirecting, you need to go in 
+                        the reverse direction and give Django the name of a view, and Django generates the 
+                        appropriate url. In other words, view name --> url. That is, reverse() (it's the reverse 
+                        of the url function). It might seem more transparent to just call it generateUrlFromViewName 
+                        but that's too long and probably not general enough
+                    </em></p>
+                </li>
+                <li>
+                    <strong>basic_app:detail</strong> - where is there something called 'detail' in our code? Ahah! 
+                    It's in the <strong>urlpattern</strong> for our SchoolDetailView.. we gave it 
+                    <strong>name=detail</strong>! So this is going back to, I think, relative url's, where 
+                    <strong>basic_app</strong> refers to the value of the variable (<strong>app_name</strong>) 
+                    in our urls.py, and the right side of the colon points to the name of the urlpattern. 
+                </li>
+                <li>
+                    So going back to our 'reverse' concept, in which we're finding a urlpattern based on a view, 
+                    instead of the other way around (that's why it's "reverse"!), this <strong>get_absolute_url</strong> 
+                    method is saying "point us to the urlpattern with the name 'detail', and since that particular 
+                    urlpattern requires a Primary Key (pk), pass in as a kwarg the Primary Key that was assigned by Django to 
+                    this new school we just created."
+                </li>
+            </ul>
+        </p>
+
+        <h3>The UpdateView Class</h3>
+        <h4>First define our CBV</h4>
+        <p>
+            Just like the CreateView, we're going to define this CBV by adding <strong>fields</strong> 
+            and <strong>model</strong> variables:
+        </p>
+        <p class="codeblock">
+            class SchoolUpdateView(UpdateView): <br>
+            &emsp;fields = ('name', 'principal') <br>
+            &emsp;model = models.School
+        </p>
+
+        <h4>Next create a urlpattern</h4>
+        <p>
+            Much to my dismay, this url pattern is based on a copy of the pattern for SchoolDetailView, which 
+            if you recall, sent me into a regex emotional spiral. <br>
+            <img width="250" style="margin-top: 1rem;" 
+            src="{% static 'main_app/images/spiral.gif' %}" alt="spiral out">
+        </p>
+        <p>
+            The reason we're using the SchoolDetailView as a base, rather than the Update one is because 
+            this one already has the Primary Key dependency built into it. So when a user wants to update a 
+            school, they're already aware of what that school is, and therefore, Django is already looking 
+            at that particular Key. The resulting urlpattern is almost the same, except for a few updates 
+            (see what I did there...)
+        </p>
+        <p class="codeblock">
+            url(r'^<strong>update/</strong>(?P&lt;pk&gt;\d+)/$', views.School<strong>Update</strong>View.as_view(), name='<strong>update</strong>'),
+        </p>
+
+        <h4>Now add a little button to your DetailView page</h4>
+        <p>
+            What we're looking to accomplish here is to allow a user who is viewing a school's DetailView to be 
+            able to open up an update page from within the DetailView. So we'll go to the <strong>school_detail.html</strong> 
+            and drop in the following which links to the <strong>UpdateView</strong> template:
+        </p>
+        <p class="codeblock">
+            &lt;a class="btn btn-warning" <br> 
+            &emsp;href="{% url 'basic_app:update' pk=school_detail.pk %<!---->}"&gt;Update&lt;/a&gt;
+        </p>
+        <p>
+            Quite excitingly, we are taken to the form page, but in this case, only the <strong>name</strong> 
+            and <strong>principal</strong> fields show up because those are the ones that we specified as 
+            <strong>fields</strong> in the view. The fields are auto-populated with the current name and 
+            principal, but the user is now allowed to change them. When the fields are updated, and the user 
+            hits 'Submit', they are taken back to the DetailView page which is reflective of said updates.
+        </p>
+        <p class="mattthoughts">
+            I'm not 100% sure what lines of code direct us back to DetailView from UpdateView. The fact that I 
+            can't think any further on this at the moment suggests that it's time to stop for lunch; maybe 
+            some coffee... <br>
+            <img width="350" style="margin-top: 1rem;" 
+            src="{% static 'main_app/images/armed.jpg' %}" alt="this image is taking a lunch break">
+        </p>
+
+        <h4>New week with a fresh brain</h4>
+        <p>
+            <img width="200" style="margin-top: none;"
+            src="{% static 'main_app/images/freshbrain.jpg' %}" alt="fresh out of brains">
+        </p>
+        <style>
+            .crudlist li{
+                margin-top: 2rem;
+            }
+        </style>
+        <p>
+            I took more than a lunch break; I took a weekend, but I'm back and... <br>
+            I want to walk myself through the flow of this website to really understand which files and 
+            what lines of code are bringing us to the various templates. <br>
+            <ul class="crudlist">
+                <li>
+                    OK, main page - you click the <strong>School</strong> link in the navbar, and it brings 
+                    you to the <strong>SchoolListView</strong>.
+                </li>
+                <li>
+                    The School List page lists all the schools currently in our database; each one is listed 
+                    as a link that will take you to its <strong>Detail View</strong>.
+                </li>
+                <li>
+                    Let's say you click a school. What's happening? Well, the href you're clicking says 
+                    <strong>{{school.id}<!---->}</strong>, in which 'school' is an iterable variable representing 
+                    a school in your <strong>school_list</strong>. What is 'school_list'? It's the template 
+                    tag that was automatically created by Django by lowercasing your <strong>model</strong> 
+                    name ('School'), and adding '_list' to the end. <br>
+                    <br>
+                    So <strong>school.id</strong> is taking the unique ID that was automatically assigned by 
+                    Django to that individual school. This is our <strong>Primary Key</strong>. What I'm not 
+                    fully getting is how that Primary Key manifests itself in this clickable link. I get that 
+                    it represents 'ID= 1 or 2', for example, but how does that translate to a url? <br>
+                    <br>
+                    <strong>Answer found!</strong><br>
+                    The href in our a-tag is just a string that gets added as an extension to our current url. 
+                    For example, if our list view is located at <strong>127.0.0.1:8000/basic_app/</strong>, 
+                    then whatever string is in the href of the a-tag that you click gets appended to your current 
+                    url. This is actually just basic web operation - not fancy Django business. OK, so let's 
+                    say we click the first one, meaning that the href value will be '1'. That means our new 
+                    url will be <strong>127.0.0.1:8000/basic_app/1</strong>. Oh. OK.
+                </li>
+                <li>
+                    Where does that take us? Now <strong>urls.py</strong> for <strong>basic_app</strong> says 
+                    that when some Primary Key is passed in as an exension to '/basic_app/', Django will load 
+                    our <strong>SchoolDetailView</strong>. And then our SchoolDetailView says that we are going 
+                    to the <strong>school_detail.html</strong> template. <br>
+                    <br>
+                    It's important to note that when we go to school_detail.html, we're bringing a context object 
+                    with us. As defined in our <strong>views.py</strong>, its name is 'school_detail', and it is 
+                    this context that allows the Detail View to be customized based on the current school. The 
+                    legwork to populate the context object is done by Django's <strong>DetailView</strong> 
+                    class, which is parent to our <strong>SchoolDetailView</strong>. Phew.
+                </li>
+                <li>
+                    With all of that squared away, the custom information on our SchoolDetailView page should make 
+                    enough sense at this point. Our next question is what happens when we click the <strong>Update</strong> 
+                    button at the bottom of the detail page. Our href for the button is another template tag, that is 
+                    sending us to <strong>url 'basic_app:update'</strong>, meaning 'look in the urlpatterns for 
+                    <strong>basic_app</strong>, and pull up the one with <strong>name=update</strong>.' <br>
+                    <br>
+                    BUT! <br>
+                    Since that urlpattern requires that you pass in a Primary Key, the above mentioned template tag 
+                    also includes <strong>pk=school_detail.pk</strong>. While the syntax isn't quite sticking for me 
+                    just yet, I get it. Your Primary Key 'pk' is getting its value from the current school_detail, i.e. 
+                    whatever pk was assigned to this school. I'm currently not sure why it's <strong>.pk</strong> and 
+                    not <strong>.id</strong>. Perhaps I'm incorrectly associating pk's and id's? I actually tried 
+                    changing the line from pk to id, and it still worked. Using 'pk' must be the more accepted way 
+                    for whatever reason.
+                </li>
+                <li>
+                    OK, the <strong>Update</strong> button pulls up the urlpattern for 'update', and that calls up our 
+                    <strong>SchoolUpdateView</strong>. Recall that you can't see where SchoolUpdateView specifies a 
+                    template name, but the parent class <strong>UpdateView</strong> automatically specifies 
+                    <strong>school_form.html</strong> as our destination; once again lowercasing our model name, 
+                    and this time appending '_form' to the end. <br>
+                    <br>
+                    The resulting view will look almost the same as the 'Create' page, except we can (and did) specify 
+                    which fields will be displayed for the user to update. Also, the fields will be filled out with 
+                    the current respective values for each.
+                </li>
+                <li>
+                    Once the user has made their updates, they'll hit 'Submit', which takes us back to the DetailView 
+                    page for the current school. This was the tricky part because we had to create a 
+                    <strong>get_absolute_url</strong> class method in our <strong>School</strong> model, rather 
+                    than defining a urlpattern. We used a <strong>reverse</strong> statement to tell Django that 
+                    we need to figure out our urlpattern based on our view, rather than the other way around. Our 
+                    <strong>get_absolute_url</strong> method specified <strong>'basic_app:detail'</strong>, and it 
+                    also passed in the Primary Key, so that Django can once again pull up the SchoolDetailView url 
+                    with the appropriate <strong>pk</strong> value.
+                </li>
+            </ul>
+            <img width="350" style="margin-top: 1rem; margin-left: 2rem;"
+            src="{% static 'main_app/images/im_done.png' %}" alt="done">
+        </p>
+        <a href="#top">Back to the Top</a>
+
+
+        <h3>The DeleteView Class</h3>
+        <h4>The final piece of CRUD</h4>
+        <p>
+            This first step to creating our <strong>DeleteView</strong> CBV should be no surprise:
+        </p>
+        <p class="codeblock">
+            class SchoolDeleteView(DeleteView): <br>
+            &emsp;model = models.School <br>
+            &emsp;success_url = reverse_lazy('basic_app:list')
+        </p>
+        <p>
+            Looks like we got crazy and started using 'reverse' again; this time, in a new format: <strong>reverse_lazy</strong>, 
+            which honestly sounds like my kinda reverse. We will import it to our <strong>views.py</strong> 
+            from the same library that we used in order to import <strong>reverse</strong> into our models.py earlier.
+        </p>
+        <p class="codeblock">
+            from django.core.urlresolvers import reverse_lazy
+        </p>
+        <p>
+            But what is a <strong>success_url</strong>? It's the template that a user will be pointed to 
+            upon successfully deleting a school. In this case, we defined it to return the urlpattern 
+            with <strong>name='list'</strong>, which corresponds of course to our <strong>school_list.html</strong>.
+        </p>
+        <p class="mattthoughts">
+            Why 'lazy'? <br>
+            He briefly said that we use <strong>reverse_lazy</strong> because we don't want this line evaluated when 
+            running our .py file; we want to wait until it's called, after the 'success' of someone deleting a school. 
+            This must be a way to run the site more efficiently, I'm guessing. I didn't try running this with 'reverse' 
+            instead of 'reverse_lazy'.
+        </p>
+
+        <h4>We need a urlpattern for DeleteView</h4>
+        <p>
+            In the steps above, we defined where the user will be directed AFTER deleting a school, but we also 
+            need to point them somewhere to actually delete the school. To accomplish this, we copy the urlpattern 
+            for <strong>update</strong>, and just change all instances of 'update' to 'delete'. We do this because 
+            Django's <strong>UpdateView</strong> is a form-based view, requiring a Primary Key. DeleteView should 
+            follow the same approach.
+        </p>
+
+        <h4>We need a new template</h4>
+        <p>
+            Now we create <strong>school_confirm_delete.html</strong>, and we add a basic form (really just 
+            a button input).
+        </p>
+        <p class="codeblock">
+            &lt;form method="post"&gt; <br>
+            &emsp;{% csrf_token %<!---->} <br>
+            &emsp;&lt;input type="submit" class="btn btn-danger" value="Delete"&gt; <br>
+            <br>
+            <span class="codecomment"># Some sort of link in case they don't actually want to delete</span><br>
+            &emsp;&lt;a href="{% url 'basic_app:detail' pk=school.pk %<!---->}"&gt;Cancel&lt;/a&gt; <br>
+            &lt;/form&gt;            
+        </p>
+
+        <h4>Simplified explanation of our DeleteView</h4>
+        <p>
+            It's worth noting that in this exercise, we spent Zero time integrating the delete functionality 
+            in such a way to make it user friendly, but that was never the point. In order to access the 
+            delete function, you have to manually type its extension as: <br> 
+            <strong>/basic_app/delete/[school id #]</strong> 
+        </p>
+        <p>
+            This tells <strong>urls.py</strong> to bring up <strong>SchoolDeleteView</strong>, which consists 
+            only of a 'Delete' button, and a cancel button. The latter takes in the Primary Key for the school 
+            that you decided "Meh, I guess I won't delete this school", and it directs you back to the Detail 
+            View page for that school.
+        </p>
+        <p>
+            As for the Delete function itself... I don't actually see anything in our code that suggests that 
+            we're manually removing anything from the database, so my understanding is that based on the fact 
+            that you set this view up to inherit from <strong>DeleteView</strong>, it just knows that any(really?.. 
+            any??) button press means that Django should delete the school associated with the PK value in the 
+            current url, and then based on how we defined our <strong>success_url</strong>, it will bring us 
+            back to the School List page.
+        </p>
+        <p class="mattthoughts">
+            But really? ANY button? How does Django know that our 'Delete' button means delete, but our 'Cancel' 
+            button does not? Does the button's 'value' HAVE to be 'Delete' for that to work? Or is it any input 
+            tag inside the form? The cancel button doesn't trigger a deletion - is that because it exists in an 
+            a-tag with an href? <br>
+            <br>
+            Models.py doesn't have anything that affects deletion, to my knowledge. And the only thing inside our 
+            DeleteView CBV is <strong>success_url = reverse_lazy('basic_app:list')</strong>. <br>
+            <br> 
+            I think that's the answer: <br> 
+            Django is waiting for anything to be posted from the form. Our delete button is one such post, 
+            and it tells Django to do its thing. Perhaps DeleteView's functionality is looking specifically for 
+            <strong>success_url</strong> to have a value. That would make sense to me. <br>
+            <br>
+            <img width="200" style="margin-left: 1rem; margin-top: 1rem;"
+            src="{% static 'main_app/images/makesperfectsense1.jpg' %}" alt="does it though">
+        </p>
+        <a href="#top">Back to the Top</a>
+
+
+
+        <!-- ISSUES -->
+        <h2 class="newsection" id="issues">Issues</h2>
+
+        <h3 class="issuheading" id="issue1">Primary Key vs. Foreign Key</h3>
+        <p>
+            Did you also forget what this means? Your best bet here is a Google search, but here's 
+            and overview from my quick scan of this 
+            <a href="https://www.crackdatascienceinterview.in/2022/01/primary-key-vs-foreign-keys-in-sql.html">website</a>:
+        </p>
+        <h4>Primary Key</h4>
+        <p>
+            A column with unique values, no null values, and only one such column is allowed in a 
+            table.
+        </p>
+        <h4>Foreign Key</h4>
+        <p>
+            A column (or multiple columns) that reference a column (most often the primary key) of 
+            another table. More than one foreign key is allowed in a table. Null values are allowed.
+        </p>
+        <h4>This isn't clicking yet</h4>
+        <p>
+            OK, so picture a table of Student data... i.e. First Name, Last Name, Age, and a Student ID. 
+            Out of all of those things, the only attribute that has to be unique for each student is their 
+            ID. I mean, their names CAN be unique, but they can also not be, so you wouldn't want to set 
+            their name as a Primary Key; you'd want to set the Student ID as the <strong>Primary Key</strong>.
+        </p>
+        <p>
+            Now picture a second, related table that tells which students are enrolled in which classes. 
+            In this table, the same Student ID will likely appear in several places, as a student will be 
+            enrolled in several classes. In this table, the Student ID is now a <strong>Foreign Key</strong>. 
+            In this table there is also a Class ID column, which again, can appear several times, since 
+            multiple students are going to be enrolled in each class. In this table, Class ID is also a 
+            <strong>Foreign Key</strong>.
+        </p>
+        <p>
+            Finally, picture a third table that is simply a list of available classes. In this table, 
+            the Class ID is unique to each element in the table, and it is therefore being used as the 
+            <strong>Primary Key</strong> in this table.
+        </p>
+        <h4>What if I don't want a primary key?</h4>
+        <p>
+            In some cases there's no real reason to have/set a Primary Key, and in such cases, Django 
+            will simply assign a serial number value to each item (1,2,3...)
+        </p>
+        <p class="mattthoughts">
+            I keep saying "picture a table", but really, you can just go to that link above and look at 
+            all the tables instead of picturing them. I just wanted to explain it a bit more; mostly to 
+            make sure I understood it well enough to explain to someone else. Which is really the point 
+            of my website in the first place.
+        </p>
+    </div>
+    
+{% endblock %}
